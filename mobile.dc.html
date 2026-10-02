@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Afisz z wyszukiwarką zdaniową — mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#C2410C}a:hover{color:#9A3412}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 844px; box-sizing: border-box; font-family: 'DM Sans', 'Helvetica Neue', sans-serif; color: #1C1B19; background: #FFFFFF; padding: 16px 16px 40px">
+  <div style="display: flex; justify-content: space-between; align-items: center">
+    <a href="#" style="font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; font-weight: 800; font-size: 20px; color: #1C1B19; text-decoration: none; letter-spacing: -0.02em">wydarzenia<span style="color: {{accent}}">.</span></a>
+    <button onClick="{{toggleMap}}" style="height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid #E4E2DD; background: #FFFFFF; font: inherit; font-size: 14px; color: #1C1B19; cursor: pointer; display: flex; align-items: center; gap: 8px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1C1B19" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"></path><path d="M9 4v14M15 6v14"></path></svg>{{mapBtn}}
+    </button>
+  </div>
+
+  <h1 style="margin: 18px 0 0; font-size: 22px; line-height: 1.9; font-weight: 500">Pokaż mi
+    <button onClick="{{nextCat}}" aria-label="Zmień kategorię" style="font: inherit; font-weight: 600; color: #9A3412; background: #FDEDE4; border: 0; border-bottom: 2px solid {{accent}}; border-radius: 8px 8px 3px 3px; padding: 0 8px; min-height: 40px; cursor: pointer">{{catLabel}} ▾</button>
+    <button onClick="{{nextArea}}" aria-label="Zmień miejsce" style="font: inherit; font-weight: 600; color: #9A3412; background: #FDEDE4; border: 0; border-bottom: 2px solid {{accent}}; border-radius: 8px 8px 3px 3px; padding: 0 8px; min-height: 40px; cursor: pointer">{{areaLabel}} ▾</button>,
+    <button onClick="{{nextWhen}}" aria-label="Zmień dni" style="font: inherit; font-weight: 600; color: #9A3412; background: #FDEDE4; border: 0; border-bottom: 2px solid {{accent}}; border-radius: 8px 8px 3px 3px; padding: 0 8px; min-height: 40px; cursor: pointer">{{whenLabel}} ▾</button>
+    <button onClick="{{nextTime}}" aria-label="Zmień porę dnia" style="font: inherit; font-weight: 600; color: #9A3412; background: #FDEDE4; border: 0; border-bottom: 2px solid {{accent}}; border-radius: 8px 8px 3px 3px; padding: 0 8px; min-height: 40px; cursor: pointer">{{timeLabel}} ▾</button>.
+  </h1>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px; padding-bottom: 14px; border-bottom: 3px solid #1C1B19">
+    <span style="font-size: 14px; color: #4A4844"><strong style="color: #1C1B19; font-weight: 600">5—11.10</strong> · {{countLabel}}</span>
+    <button onClick="{{reset}}" style="height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #E4E2DD; background: #FFFFFF; font: inherit; font-size: 13px; color: #1C1B19; cursor: pointer">Wyczyść</button>
+  </div>
+
+  <sc-if value="{{showMap}}" hint-placeholder-val="{{false}}">
+    <figure aria-label="Mapa z numerami wydarzeń" style="margin: 16px 0 0; height: 240px; border-radius: 18px; overflow: hidden; position: relative; background: #F5F4F1">
+      <svg viewBox="0 0 1000 700" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true" style="display: block; position: absolute; inset: 0">
+        <rect width="1000" height="700" fill="#F5F4F1"></rect>
+        <path d="M720 380 C800 360 880 400 900 470 C910 540 830 580 760 560 C700 540 680 420 720 380Z" fill="#E6EADF"></path>
+        <g stroke="#FFFFFF" stroke-width="14" fill="none" stroke-linecap="round"><path d="M0 420 L1000 380"></path><path d="M0 560 L1000 600"></path><path d="M200 0 L260 700"></path><path d="M470 0 L430 700"></path><path d="M700 0 L660 700"></path><path d="M80 120 L940 80"></path></g>
+        <path d="M-20 260 C120 230 220 300 330 270 C440 240 480 170 580 190 C680 210 700 300 820 280 C900 266 960 220 1020 230" fill="none" stroke="#BFD7EA" stroke-width="40" stroke-linecap="round"></path>
+      </svg>
+      <sc-for list="{{pins}}" as="p" hint-placeholder-count="8">
+        <span style="position: absolute; left: {{p.x}}%; top: {{p.y}}%; transform: translate(-50%, -50%); width: 24px; height: 24px; border-radius: 999px; background: {{accent}}; color: #FFFFFF; border: 2px solid #FFFFFF; font-size: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{p.no}}</span>
+      </sc-for>
+    </figure>
+  </sc-if>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px">
+    <span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #4A4844; font-weight: 600">{{rangeLabel}}</span>
+    <span style="font-size: 13px; color: #9A3412; font-weight: 500">przesuń w bok →</span>
+  </div>
+
+  <section aria-label="Program tygodnia" style="display: flex; gap: 10px; margin: 10px -16px 0; padding: 0 16px 8px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-left: 16px">
+    <sc-for list="{{cols}}" as="c" hint-placeholder-count="3">
+      <div style="flex: 0 0 168px; scroll-snap-align: start; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; align-items: baseline; gap: 8px; padding: 10px 12px; border-radius: 12px; background: {{c.bg}}">
+          <span style="font-family: 'Bricolage Grotesque', 'DM Sans', sans-serif; font-size: 40px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; color: {{c.numColor}}">{{c.n}}</span>
+          <span style="font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #4A4844; font-weight: 600">{{c.short}}</span>
+        </div>
+        <sc-for list="{{c.items}}" as="e" hint-placeholder-count="2">
+          <a href="#" style="display: flex; flex-direction: column; gap: 4px; color: #1C1B19; text-decoration: none">
+            <span style="position: relative; display: block; height: 112px; border-radius: 12px; background: {{e.img}}; overflow: hidden">
+              <span style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 11px; color: #4A4844">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A4844" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><circle cx="9" cy="9" r="2"></circle><path d="M21 15l-5-5L5 21"></path></svg>[zdjęcie]
+              </span>
+              <span style="position: absolute; left: 8px; top: 8px; width: 26px; height: 26px; border-radius: 999px; background: {{accent}}; color: #FFFFFF; border: 2px solid #FFFFFF; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{e.no}}</span>
+            </span>
+            <span style="font-size: 13px; font-weight: 600; color: #9A3412; margin-top: 4px">{{e.time}} · {{e.cat}}</span>
+            <span style="font-size: 15px; font-weight: 600; line-height: 1.3">{{e.title}}</span>
+            <span style="font-size: 12px; color: #4A4844">{{e.place}}</span>
+          </a>
+        </sc-for>
+        <sc-if value="{{c.empty}}" hint-placeholder-val="{{false}}">
+          <span style="font-size: 13px; color: #6B6862; font-style: italic; padding: 12px; border-radius: 12px; border: 1px dashed #E4E2DD">Nic pasującego tego dnia.</span>
+        </sc-if>
+      </div>
+    </sc-for>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#C2410C","options":["#C2410C","#1D4ED8","#047857","#7E22CE"]},"$preview":{"width":390,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { cat: 0, area: 0, when: 0, time: 0, map: false };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#C2410C';
+    const CATS = [['wszystko', null], ['muzykę na żywo', 'Muzyka'], ['kino', 'Film'], ['coś do jedzenia', 'Jedzenie'], ['ruch i spacery', 'Ruch'], ['warsztaty', 'Warsztaty']];
+    const AREAS = [['w całym mieście', null], ['na Nadodrzu', 'Nadodrze'], ['na Starym Mieście', 'Stare Miasto'], ['na Ostrowie i wyspach', 'Ostrów'], ['w Śródmieściu', 'Śródmieście'], ['na Ołbinie', 'Ołbin']];
+    const WHEN = ['w tym tygodniu', 'w weekend', 'w dni powszednie'];
+    const TIME = ['o każdej porze', 'wieczorem', 'w ciągu dnia'];
+    const DAYS = [['pon', '5'], ['wt', '6'], ['śr', '7'], ['czw', '8'], ['pt', '9'], ['sob', '10'], ['nd', '11']];
+    const TINT = { Muzyka: '#F3E3D8', Film: '#DDE6EE', Jedzenie: '#EDE6D6', Ruch: '#E3EADB', Warsztaty: '#EBE1E8', Sztuka: '#E6E3EE', Spotkania: '#EFE6DC', Komedia: '#F1E6D2' };
+    const EV = [
+      { no: 1, d: 0, time: '19:00', title: 'Koncert chóralny w katedrze', place: 'Ostrów Tumski', cat: 'Muzyka', area: 'Ostrów', x: 63, y: 27 },
+      { no: 2, d: 1, time: '18:00', title: 'Wystawa: miasto po zmroku', place: 'Muzeum Narodowe', cat: 'Sztuka', area: 'Śródmieście', x: 64, y: 47 },
+      { no: 3, d: 2, time: '18:30', title: 'Wieczór gier planszowych', place: 'Śródmieście', cat: 'Spotkania', area: 'Śródmieście', x: 74, y: 80 },
+      { no: 4, d: 3, time: '20:00', title: 'Stand-up w piwnicy', place: 'Rynek', cat: 'Komedia', area: 'Stare Miasto', x: 47, y: 65 },
+      { no: 5, d: 3, time: '21:30', title: 'Koncert w podwórku', place: 'Nadodrze', cat: 'Muzyka', area: 'Nadodrze', x: 33, y: 23 },
+      { no: 6, d: 4, time: '19:00', title: 'Jazz nad Odrą', place: 'Bulwar Dunikowskiego', cat: 'Muzyka', area: 'Ostrów', x: 54, y: 41 },
+      { no: 7, d: 4, time: '20:30', title: 'Kino plenerowe', place: 'Wyspa Słodowa', cat: 'Film', area: 'Ostrów', x: 44, y: 32 },
+      { no: 8, d: 5, time: '10:00', title: 'Targ producentów', place: 'Hala Stulecia', cat: 'Jedzenie', area: 'Śródmieście', x: 80, y: 63 },
+      { no: 9, d: 5, time: '14:00', title: 'Spacer po podwórkach', place: 'Nadodrze', cat: 'Ruch', area: 'Nadodrze', x: 28, y: 17 },
+      { no: 10, d: 5, time: '21:00', title: 'Nocny bieg', place: 'Ostrów Tumski', cat: 'Ruch', area: 'Ostrów', x: 58, y: 33 },
+      { no: 11, d: 6, time: '12:00', title: 'Warsztaty ceramiki', place: 'Ołbin', cat: 'Warsztaty', area: 'Ołbin', x: 68, y: 16 },
+      { no: 12, d: 6, time: '18:00', title: 'Recital organowy', place: 'Kościół przy Rynku', cat: 'Muzyka', area: 'Stare Miasto', x: 50, y: 69 }
+    ];
+    const s = this.state;
+    const dayOk = (d) => s.when === 0 || (s.when === 1 ? d >= 5 : d < 5);
+    const match = (e) => {
+      const h = parseInt(e.time, 10);
+      return (CATS[s.cat][1] === null || CATS[s.cat][1] === e.cat)
+        && (AREAS[s.area][1] === null || AREAS[s.area][1] === e.area)
+        && dayOk(e.d)
+        && (s.time === 0 || (s.time === 1 ? h >= 17 : h < 17));
+    };
+    const hits = EV.filter(match);
+    const plural = (c) => c === 0 ? 'nic nie pasuje' : c === 1 ? '1 wydarzenie' : (c < 5 ? c + ' wydarzenia' : c + ' wydarzeń');
+    const cols = DAYS.map((d, i) => ({ d, i })).filter((x) => dayOk(x.i)).map(({ d, i }) => {
+      const items = hits.filter((e) => e.d === i).map((e) => ({ ...e, img: TINT[e.cat] || '#EFEDE8' }));
+      return {
+        short: d[0], n: d[1], items,
+        bg: i >= 5 ? '#FDEDE4' : '#F5F4F1',
+        numColor: i >= 4 ? accent : '#1C1B19',
+        empty: items.length === 0
+      };
+    });
+    const RANGE = ['Tydzień 5–11 października', 'Weekend 10–11 października', 'Dni powszednie 5–9 października'];
+    const cycle = (key, len) => () => this.setState({ [key]: (s[key] + 1) % len });
+    return {
+      accent, cols, pins: hits, showMap: s.map, mapBtn: s.map ? 'Ukryj mapę' : 'Mapa', rangeLabel: RANGE[s.when],
+      catLabel: CATS[s.cat][0], areaLabel: AREAS[s.area][0], whenLabel: WHEN[s.when], timeLabel: TIME[s.time],
+      countLabel: plural(hits.length),
+      nextCat: cycle('cat', CATS.length), nextArea: cycle('area', AREAS.length), nextWhen: cycle('when', WHEN.length), nextTime: cycle('time', TIME.length),
+      toggleMap: () => this.setState({ map: !s.map }),
+      reset: () => this.setState({ cat: 0, area: 0, when: 0, time: 0 })
+    };
+  }
+}
+</script>
+</body>
+</html>
