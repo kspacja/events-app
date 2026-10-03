@@ -1,0 +1,79 @@
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it } from 'vitest';
+import { EventSelectionProvider, useEventSelection } from '../EventSelectionProvider';
+import type { Event } from '../types';
+import { EventCard } from './EventCard';
+
+const EVENT: Event = {
+  id: 'e1',
+  startsAt: '2026-06-06T17:00:00Z',
+  title: 'Koncert jazzowy',
+  venue: { name: 'Klub', city: 'Warszawa', lat: 52, lng: 21 },
+  category: 'music',
+};
+
+function SelectionProbe() {
+  const selection = useEventSelection();
+  return <output>{selection ? `${selection.source}:${selection.id}` : 'none'}</output>;
+}
+
+function renderCard(muted = false) {
+  return render(
+    <EventSelectionProvider>
+      <EventCard event={EVENT} muted={muted} />
+      <SelectionProbe />
+    </EventSelectionProvider>,
+  );
+}
+
+describe('EventCard', () => {
+  it('exposes a pin button named after the event', () => {
+    renderCard();
+
+    expect(
+      screen.getByRole('button', { name: 'Pokaż na mapie: Koncert jazzowy' }),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps the pin button on muted cards', () => {
+    renderCard(true);
+
+    expect(
+      screen.getByRole('button', { name: 'Pokaż na mapie: Koncert jazzowy' }),
+    ).toBeInTheDocument();
+  });
+
+  it('selects the event for the map when the pin is clicked', async () => {
+    const user = userEvent.setup();
+    renderCard();
+
+    await user.click(screen.getByRole('button', { name: /Pokaż na mapie/ }));
+
+    expect(screen.getByRole('status')).toHaveTextContent('card:e1');
+  });
+
+  it('selects the event when the pin is activated from the keyboard', async () => {
+    const user = userEvent.setup();
+    renderCard();
+
+    await user.tab();
+    await user.keyboard('{Enter}');
+
+    expect(screen.getByRole('status')).toHaveTextContent('card:e1');
+  });
+
+  it('tells screen readers that a muted event is outside the chosen period', () => {
+    renderCard(true);
+
+    expect(
+      screen.getByRole('heading', { name: 'Koncert jazzowy (poza wybranym terminem)' }),
+    ).toBeInTheDocument();
+  });
+
+  it('adds no extra text to a matching event', () => {
+    renderCard(false);
+
+    expect(screen.getByRole('heading', { name: 'Koncert jazzowy' })).toBeInTheDocument();
+  });
+});
