@@ -1,0 +1,30 @@
+:root {
+  --color-text: #1c1b19;
+  --color-text-secondary: #4a4844;
+  --color-text-tertiary: #949189;
+  --color-text-muted: #6b6862;
+  --color-text-disabled: #b5b2ab;
+
+  --color-accent: #c2410c;
+  --color-accent-strong: #9a3412;
+  --color-accent-soft: #fdede4;
+
+  --color-bg: #ffffff;
+  --color-bg-subtle: #f5f4f1;
+  --color-bg-weekend: #fbf8f4;
+
+  --color-border: #e4e2dd;
+  --color-map-water: #bfd7ea;
+
+  --radius-card: 12px;
+  --radius-map: 18px;
+  --radius-chip: 10px 10px 3px 3px;
+  --radius-chip-top: 10px;
+  --radius-chip-bottom: 3px;
+
+  --rule-thickness: 4px;
+  --day-column-width: 240px;
+
+  --font-heading: var(--font-bricolage), "DM Sans", sans-serif;
+  --font-body: var(--font-dm-sans), "Helvetica Neue", sans-serif;
+}
