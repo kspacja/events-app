@@ -1,0 +1,35 @@
+.dialog {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 10;
+  width: max-content;
+  max-width: min(420px, 90vw);
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: 0 12px 32px rgb(28 27 25 / 16%);
+}
+
+.dialog:not([open]):not(:popover-open) {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .dialog:modal {
+    position: fixed;
+    inset: auto 0 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 18px 18px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .dialog::backdrop {
+    background: rgb(28 27 25 / 40%);
+  }
+}

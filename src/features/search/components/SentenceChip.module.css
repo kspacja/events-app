@@ -1,0 +1,41 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 0;
+  border-bottom: 2px solid var(--color-accent);
+  border-radius: var(--radius-chip);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+  font: inherit;
+  font-weight: 600;
+  line-height: inherit;
+  cursor: default;
+}
+
+.interactive {
+  cursor: pointer;
+}
+
+.interactive:hover {
+  background: #fbe0d0;
+}
+
+.interactive[data-pending] {
+  opacity: 0.6;
+}
+
+.caret {
+  font-size: 0.6em;
+}
+
+@media (max-width: 768px) {
+  .chip {
+    min-height: 40px;
+  }
+
+  .interactive {
+    min-height: 44px;
+  }
+}
