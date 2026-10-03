@@ -1,0 +1,26 @@
+.link {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.link:focus {
+  z-index: 2;
+  top: 8px;
+  left: 8px;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 8px 14px;
+  overflow: visible;
+  clip-path: none;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--color-text);
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(28, 27, 25, 0.25);
+}

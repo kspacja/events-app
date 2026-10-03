@@ -1,0 +1,22 @@
+.section {
+  margin-top: 8px;
+}
+
+.section:focus {
+  outline: none;
+}
+
+.weeks {
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+}
+
+.week {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

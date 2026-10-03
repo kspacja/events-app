@@ -1,0 +1,45 @@
+import type { ReactNode } from 'react';
+import { formatRangeLabel, type DateRange } from '@/features/search/dateRange';
+import { formatTimeWindow, type TimeWindow } from '@/features/search/timeRange';
+import { getEvents } from '../api';
+import { buildSchedule, formatCount, scheduleSpan } from '../schedule';
+import { EventsMapLoader } from './EventsMapLoader';
+import { Header } from './Header';
+import { EventSelectionProvider } from '../EventSelectionProvider';
+import { MapToggle } from './MapToggle';
+import { SkipLink } from './SkipLink';
+import { WeekGrid } from './WeekGrid';
+
+interface EventsSectionProps {
+  readonly range: DateRange;
+  readonly time: TimeWindow | null;
+  readonly sentence: ReactNode;
+  readonly notice?: ReactNode;
+}
+
+export async function EventsSection({ range, time, sentence, notice }: EventsSectionProps) {
+  const events = await getEvents(scheduleSpan(range));
+  const schedule = buildSchedule(events, { range, time });
+  const timeKey = time ? `${time.from}-${time.to}` : null;
+
+  return (
+    <EventSelectionProvider>
+      <Header
+        sentence={sentence}
+        notice={notice}
+        rangeLabel={formatRangeLabel(range)}
+        timeLabel={time ? formatTimeWindow(time) : undefined}
+        countLabel={formatCount(schedule.activeCount)}
+        map={
+          <>
+            <SkipLink />
+            <MapToggle>
+              <EventsMapLoader points={schedule.mapPoints} focus={schedule.mapFocus} />
+            </MapToggle>
+          </>
+        }
+      />
+      <WeekGrid range={range} timeKey={timeKey} schedule={schedule} />
+    </EventSelectionProvider>
+  );
+}
