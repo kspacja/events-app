@@ -1,0 +1,118 @@
+import { TZDate, tz } from '@date-fns/tz';
+import {
+  addDays as addDaysToDate,
+  differenceInCalendarDays,
+  format,
+  getISODay,
+  startOfISOWeek,
+} from 'date-fns';
+import { pl } from 'date-fns/locale';
+
+export const APP_TIME_ZONE = 'Europe/Warsaw';
+/** The event day ends at 04:00 local time, so late-night events belong to the evening before. */
+export const DAY_BOUNDARY_MINUTES = 240;
+export const DAYS_IN_WEEK = 7;
+export const MINUTES_PER_HOUR = 60;
+
+/** Calendar day as `YYYY-MM-DD`, independent of any timezone. */
+export type CalendarDay = `${number}-${number}-${number}`;
+
+const DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const DAY_FORMAT = 'yyyy-MM-dd';
+const UTC = 'UTC';
+const warsaw = tz(APP_TIME_ZONE);
+
+function toCalendarDay(date: Date): CalendarDay {
+  return format(date, DAY_FORMAT) as CalendarDay;
+}
+
+/** UTC-anchored, so calendar math never depends on the machine's timezone. */
+function toDate(day: CalendarDay): TZDate {
+  const [year, month, date] = day.split('-').map(Number);
+  return new TZDate(year, month - 1, date, UTC);
+}
+
+export function isCalendarDay(value: string): value is CalendarDay {
+  if (!DAY_PATTERN.test(value)) return false;
+  return toCalendarDay(toDate(value as CalendarDay)) === value;
+}
+
+export function addDays(day: CalendarDay, amount: number): CalendarDay {
+  return toCalendarDay(addDaysToDate(toDate(day), amount));
+}
+
+export function diffInDays(from: CalendarDay, to: CalendarDay): number {
+  return differenceInCalendarDays(toDate(to), toDate(from));
+}
+
+/** Days since Monday: Monday = 0 ... Sunday = 6. */
+export function weekdayIndex(day: CalendarDay): number {
+  return getISODay(toDate(day)) - 1;
+}
+
+export function mondayOf(day: CalendarDay): CalendarDay {
+  return toCalendarDay(startOfISOWeek(toDate(day)));
+}
+
+function inWarsaw(instant: Date | string): TZDate {
+  return new TZDate(new Date(instant), APP_TIME_ZONE);
+}
+
+/** The local (Europe/Warsaw) calendar day containing the instant. */
+export function localDayOf(instant: Date | string): CalendarDay {
+  return toCalendarDay(inWarsaw(instant));
+}
+
+/** Minutes after local (Europe/Warsaw) midnight. */
+export function localMinutesOf(iso: string): number {
+  const local = inWarsaw(iso);
+  return local.getHours() * MINUTES_PER_HOUR + local.getMinutes();
+}
+
+/** Uses wall-clock time, so the boundary stays at 04:00 on DST change days. */
+export function eventDayOf(iso: string): CalendarDay {
+  const calendarDay = localDayOf(iso);
+  return localMinutesOf(iso) < DAY_BOUNDARY_MINUTES
+    ? addDays(calendarDay, -1)
+    : calendarDay;
+}
+
+/** The event day "now" falls in; before 04:00 it is still the previous day. */
+export function currentEventDay(now: Date): CalendarDay {
+  return eventDayOf(now.toISOString());
+}
+
+/** Formats a calendar day with a date-fns pattern in Polish. */
+export function formatDay(day: CalendarDay, pattern: string): string {
+  return format(toDate(day), pattern, { locale: pl });
+}
+
+/** e.g. `sobota, 3.10` */
+export function formatCalendarDay(day: CalendarDay): string {
+  return formatDay(day, 'EEEE, d.MM');
+}
+
+/** e.g. `19:00` */
+export function formatLocalTime(iso: string): string {
+  return format(new Date(iso), 'HH:mm', { in: warsaw });
+}
+
+/** Minutes after midnight as `HH:mm`. */
+export function formatClock(minutes: number): string {
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${pad(Math.floor(minutes / MINUTES_PER_HOUR))}:${pad(minutes % MINUTES_PER_HOUR)}`;
+}
+
+/** ISO string for a local wall-clock time, with the UTC offset valid on that day. */
+export function toInstantIso(day: CalendarDay, minutes: number): string {
+  const [year, month, date] = day.split('-').map(Number);
+  const local = new TZDate(
+    year,
+    month - 1,
+    date,
+    Math.floor(minutes / MINUTES_PER_HOUR),
+    minutes % MINUTES_PER_HOUR,
+    APP_TIME_ZONE,
+  );
+  return format(local, "yyyy-MM-dd'T'HH:mm:ssxxx");
+}
