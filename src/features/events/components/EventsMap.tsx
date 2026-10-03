@@ -1,0 +1,226 @@
+'use client';
+
+import 'maplibre-gl/dist/maplibre-gl.css';
+import * as maplibregl from 'maplibre-gl';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEventSelection, useEventSelectionStore } from '../EventSelectionProvider';
+import {
+  Layer,
+  Map,
+  NavigationControl,
+  Popup,
+  Source,
+  type LayerProps,
+  type MapLayerMouseEvent,
+  type MapRef,
+} from 'react-map-gl/maplibre';
+import type { FeatureCollection, Point } from 'geojson';
+import { MAP_CONTROL_LOCALE } from '../labels';
+import { viewFor, type MapPoint } from '../mapView';
+import styles from './EventsMap.module.css';
+
+// Bundlers break maplibre's default worker URL (derived from import.meta.url)
+maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
+
+const MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/bright';
+const SOURCE_ID = 'events';
+const CLUSTER_LAYER_ID = 'event-clusters';
+const POINT_LAYER_ID = 'event-points';
+// One past clusterMaxZoom so a requested point is never inside a cluster
+const SELECTED_MIN_ZOOM = 15;
+
+// Layer paint can't read CSS variables; keep in sync with tokens.css
+const COLOR_ACCENT = '#C2410C';
+const COLOR_MUTED = '#B5B2AB';
+const COLOR_HALO = '#FFFFFF';
+
+const hasActive: maplibregl.ExpressionSpecification = ['>', ['get', 'activeCount'], 0];
+
+const clusterLayer: LayerProps = {
+  id: CLUSTER_LAYER_ID,
+  type: 'circle',
+  source: SOURCE_ID,
+  filter: ['has', 'point_count'],
+  paint: {
+    'circle-color': ['case', hasActive, COLOR_ACCENT, COLOR_MUTED],
+    'circle-radius': ['step', ['get', 'point_count'], 14, 10, 18, 30, 22],
+    'circle-stroke-width': 2,
+    'circle-stroke-color': COLOR_HALO,
+  },
+};
+
+const clusterCountLayer: LayerProps = {
+  id: 'event-cluster-count',
+  type: 'symbol',
+  source: SOURCE_ID,
+  filter: ['has', 'point_count'],
+  layout: {
+    'text-field': ['to-string', ['case', hasActive, ['get', 'activeCount'], ['get', 'point_count']]],
+    'text-font': ['Noto Sans Bold'],
+    'text-size': 12,
+    'text-allow-overlap': true,
+  },
+  paint: { 'text-color': COLOR_HALO },
+};
+
+const pointLayer: LayerProps = {
+  id: POINT_LAYER_ID,
+  type: 'circle',
+  source: SOURCE_ID,
+  filter: ['!', ['has', 'point_count']],
+  layout: { 'circle-sort-key': ['case', ['get', 'active'], 1, 0] },
+  paint: {
+    'circle-color': ['case', ['get', 'active'], COLOR_ACCENT, COLOR_MUTED],
+    'circle-radius': ['case', ['get', 'active'], 7, 5],
+    'circle-stroke-width': 2,
+    'circle-stroke-color': COLOR_HALO,
+  },
+};
+
+interface EventsMapProps {
+  readonly points: readonly MapPoint[];
+  readonly focus: readonly MapPoint[];
+}
+
+export function EventsMap({ points, focus }: EventsMapProps) {
+  const mapRef = useRef<MapRef>(null);
+  const [cursor, setCursor] = useState('');
+  const [loaded, setLoaded] = useState(false);
+  const flownSeq = useRef(0);
+  const selectionStore = useEventSelectionStore();
+  const selection = useEventSelection();
+  const selected = points.find((p) => p.id === selection?.id);
+  const selectedSeq = selection?.seq;
+  const selectedSource = selection?.source;
+  const pointsKey = focus.map((p) => `${p.id}:${p.lat}:${p.lng}`).join('|');
+  const data = useMemo(() => toFeatureCollection(points), [points]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const view = viewFor(focus);
+    if ('bounds' in view) {
+      map.fitBounds(view.bounds, { ...view.fitBoundsOptions, duration: 0 });
+    } else {
+      map.jumpTo({ center: [view.longitude, view.latitude], zoom: view.zoom });
+    }
+    // focus is covered by pointsKey
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pointsKey]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!loaded || !map || !selected || selectedSource !== 'card') return;
+    if (selectedSeq === undefined || flownSeq.current === selectedSeq) return;
+    flownSeq.current = selectedSeq;
+    map.flyTo({
+      center: [selected.lng, selected.lat],
+      zoom: Math.max(map.getZoom(), SELECTED_MIN_ZOOM),
+    });
+  }, [loaded, selected, selectedSeq, selectedSource]);
+
+  const hasSelection = selected !== undefined;
+  useEffect(() => {
+    if (!hasSelection) return;
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') selectionStore.close();
+    }
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [hasSelection, selectionStore]);
+
+  function handleClick(event: MapLayerMouseEvent) {
+    const feature = event.features?.[0];
+    if (feature?.layer.id === POINT_LAYER_ID) {
+      const id = feature.properties?.id;
+      if (typeof id === 'string') selectionStore.selectFromMap(id);
+      else selectionStore.close();
+      return;
+    }
+    selectionStore.close();
+    if (feature?.layer.id === CLUSTER_LAYER_ID) void zoomIntoCluster(event);
+  }
+
+  async function zoomIntoCluster(event: MapLayerMouseEvent) {
+    const map = mapRef.current;
+    const feature = event.features?.[0];
+    const clusterId = feature?.properties?.cluster_id;
+    if (!map || !feature || typeof clusterId !== 'number' || feature.geometry.type !== 'Point') return;
+    const source = map.getSource<maplibregl.GeoJSONSource>(SOURCE_ID);
+    if (!source) return;
+    const zoom = await source.getClusterExpansionZoom(clusterId);
+    const [lng, lat] = feature.geometry.coordinates;
+    map.easeTo({ center: [lng, lat], zoom });
+  }
+
+  return (
+    <Map
+      ref={mapRef}
+      mapLib={maplibregl}
+      reuseMaps
+      mapStyle={MAP_STYLE_URL}
+      initialViewState={initialViewStateFor(focus)}
+      attributionControl={{ compact: true }}
+      locale={MAP_CONTROL_LOCALE}
+      interactiveLayerIds={[CLUSTER_LAYER_ID, POINT_LAYER_ID]}
+      cursor={cursor}
+      onLoad={() => setLoaded(true)}
+      onClick={handleClick}
+      onMouseEnter={() => setCursor('pointer')}
+      onMouseLeave={() => setCursor('')}
+      style={{ width: '100%', height: '100%' }}
+    >
+      <NavigationControl position="top-right" showCompass={false} />
+      <Source
+        id={SOURCE_ID}
+        type="geojson"
+        data={data}
+        cluster
+        clusterRadius={40}
+        clusterMaxZoom={14}
+        clusterProperties={{ activeCount: ['+', ['case', ['get', 'active'], 1, 0]] }}
+      >
+        <Layer {...clusterLayer} />
+        <Layer {...clusterCountLayer} />
+        <Layer {...pointLayer} />
+      </Source>
+      {selected ? (
+        <Popup
+          key={selection?.seq}
+          longitude={selected.lng}
+          latitude={selected.lat}
+          anchor="bottom"
+          offset={12}
+          closeOnClick={false}
+          focusAfterOpen={selectedSource === 'card'}
+          onClose={() => {
+            if (selectionStore.getSelection()?.seq === selectedSeq) selectionStore.close();
+          }}
+          className={styles.popup}
+        >
+          <div role="dialog" aria-label={selected.title}>
+            <p className={styles.title}>{selected.title}</p>
+            <p className={styles.when}>
+              {selected.date} · {selected.time}
+            </p>
+          </div>
+        </Popup>
+      ) : null}
+    </Map>
+  );
+}
+
+function toFeatureCollection(points: readonly MapPoint[]): FeatureCollection<Point> {
+  return {
+    type: 'FeatureCollection',
+    features: points.map((p) => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [p.lng, p.lat] },
+      properties: { id: p.id, title: p.title, active: p.active },
+    })),
+  };
+}
+
+function initialViewStateFor(points: readonly MapPoint[]) {
+  return { ...viewFor(points) };
+}

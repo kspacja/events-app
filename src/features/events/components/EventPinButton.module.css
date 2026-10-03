@@ -1,0 +1,30 @@
+.pin {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.pin::after {
+  content: '';
+  position: absolute;
+  inset: -9px;
+}
+
+.pin:hover {
+  background: var(--color-accent-strong);
+}
+
+.pin:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
