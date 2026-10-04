@@ -9,7 +9,7 @@ describe('eventSelectionStore', () => {
 
     store.selectFromCard('e1', document.createElement('button'));
 
-    expect(store.getSelection()).toMatchObject({ id: 'e1', source: 'card' });
+    expect(store.getSelection()).toMatchObject({ occurrenceId: 'e1', source: 'card' });
     expect(listener).toHaveBeenCalledOnce();
   });
 

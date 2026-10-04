@@ -1,16 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { ScheduleDay } from '../schedule';
-import type { Event } from '../types';
+import type { OccurrenceListing } from '../types';
 import { EventSelectionProvider } from '../EventSelectionProvider';
 import { DayColumn } from './DayColumn';
 
-const EVENT: Event = {
-  id: 'e1',
+const LISTING: OccurrenceListing = {
+  occurrenceId: 'e1-2026-06-06',
   startsAt: '2026-06-06T17:00:00Z',
-  title: 'Koncert jazzowy',
+  price: null,
+  event: { id: 'e1', title: 'Koncert jazzowy', category: 'music' },
   venue: { name: 'Klub', city: 'Warszawa', lat: 52, lng: 21 },
-  category: 'music',
 };
 
 function makeDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
@@ -48,13 +48,13 @@ describe('DayColumn', () => {
   });
 
   it('marks events that do not match the time filter as muted', () => {
-    renderColumn(makeDay({ entries: [{ event: EVENT, active: false }] }));
+    renderColumn(makeDay({ entries: [{ listing: LISTING, active: false }] }));
 
     expect(screen.getByRole('article')).toHaveAttribute('data-muted', 'true');
   });
 
   it('renders matching events as not muted', () => {
-    renderColumn(makeDay({ entries: [{ event: EVENT, active: true }] }));
+    renderColumn(makeDay({ entries: [{ listing: LISTING, active: true }] }));
 
     expect(screen.getByRole('article')).toHaveAttribute('data-muted', 'false');
   });

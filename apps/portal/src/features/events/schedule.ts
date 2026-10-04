@@ -15,10 +15,10 @@ import {
 import { formatCalendarDay, formatLocalTime } from '@/lib/format';
 import { COUNT_LABELS } from './labels';
 import type { MapPoint } from './mapView';
-import type { Event } from './types';
+import type { OccurrenceListing } from './types';
 
 export interface ScheduleEntry {
-  readonly event: Event;
+  readonly listing: OccurrenceListing;
   readonly active: boolean;
 }
 
@@ -47,7 +47,7 @@ const WEEKEND_START_INDEX = 5;
 
 const pluralRules = new Intl.PluralRules('pl');
 
-/** The Monday-Sunday span covering the range; fetch events for exactly this. */
+/** The Monday-Sunday span covering the range; fetch occurrences for exactly this. */
 export function scheduleSpan(range: DateRange): DateRange {
   return {
     from: mondayOf(range.from),
@@ -55,16 +55,20 @@ export function scheduleSpan(range: DateRange): DateRange {
   };
 }
 
-function compareEvents(a: Event, b: Event): number {
+function compareListings(a: OccurrenceListing, b: OccurrenceListing): number {
   const byTime = Date.parse(a.startsAt) - Date.parse(b.startsAt);
   if (byTime !== 0) return byTime;
-  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+  return a.occurrenceId < b.occurrenceId ? -1 : a.occurrenceId > b.occurrenceId ? 1 : 0;
 }
 
-function toMapPoint({ id, title, venue, startsAt }: Event, active: boolean): MapPoint {
+function toMapPoint(
+  { occurrenceId, event, venue, startsAt }: OccurrenceListing,
+  active: boolean,
+): MapPoint {
   return {
-    id,
-    title,
+    occurrenceId,
+    eventId: event.id,
+    title: event.title,
     lat: venue.lat,
     lng: venue.lng,
     date: formatCalendarDay(eventDayOf(startsAt)),
@@ -74,19 +78,19 @@ function toMapPoint({ id, title, venue, startsAt }: Event, active: boolean): Map
 }
 
 export function buildSchedule(
-  events: readonly Event[],
+  listings: readonly OccurrenceListing[],
   { range, time }: ScheduleQuery,
 ): Schedule {
-  const entries = [...events].sort(compareEvents).map((event) => ({
-    event,
+  const entries = [...listings].sort(compareListings).map((listing) => ({
+    listing,
     active:
-      isDayInRange(eventDayOf(event.startsAt), range) &&
-      matchesTimeWindow(event.startsAt, time),
+      isDayInRange(eventDayOf(listing.startsAt), range) &&
+      matchesTimeWindow(listing.startsAt, time),
   }));
 
   const byDay = new Map<CalendarDay, ScheduleEntry[]>();
   for (const entry of entries) {
-    const day = eventDayOf(entry.event.startsAt);
+    const day = eventDayOf(entry.listing.startsAt);
     byDay.set(day, [...(byDay.get(day) ?? []), entry]);
   }
 
@@ -103,7 +107,7 @@ export function buildSchedule(
     }),
   );
 
-  const mapPoints = entries.map(({ event, active }) => toMapPoint(event, active));
+  const mapPoints = entries.map(({ listing, active }) => toMapPoint(listing, active));
   const activePoints = mapPoints.filter((point) => point.active);
 
   return {

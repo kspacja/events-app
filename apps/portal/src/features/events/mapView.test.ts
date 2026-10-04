@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { viewFor, type MapPoint } from './mapView';
 
 function point(id: string, lat: number, lng: number): MapPoint {
-  return { id, lat, lng, title: id, date: 'sobota, 6.06', time: '19:00', active: true };
+  return { occurrenceId: id, eventId: id, lat, lng, title: id, date: 'sobota, 6.06', time: '19:00', active: true };
 }
 
 describe('viewFor', () => {

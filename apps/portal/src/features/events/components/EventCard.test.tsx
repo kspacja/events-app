@@ -2,26 +2,26 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { EventSelectionProvider, useEventSelection } from '../EventSelectionProvider';
-import type { Event } from '../types';
+import type { OccurrenceListing } from '../types';
 import { EventCard } from './EventCard';
 
-const EVENT: Event = {
-  id: 'e1',
+const LISTING: OccurrenceListing = {
+  occurrenceId: 'e1-2026-06-06',
   startsAt: '2026-06-06T17:00:00Z',
-  title: 'Koncert jazzowy',
+  price: null,
+  event: { id: 'e1', title: 'Koncert jazzowy', category: 'music' },
   venue: { name: 'Klub', city: 'Warszawa', lat: 52, lng: 21 },
-  category: 'music',
 };
 
 function SelectionProbe() {
   const selection = useEventSelection();
-  return <output>{selection ? `${selection.source}:${selection.id}` : 'none'}</output>;
+  return <output>{selection ? `${selection.source}:${selection.occurrenceId}` : 'none'}</output>;
 }
 
 function renderCard(muted = false) {
   return render(
     <EventSelectionProvider>
-      <EventCard event={EVENT} muted={muted} />
+      <EventCard listing={LISTING} muted={muted} />
       <SelectionProbe />
     </EventSelectionProvider>,
   );
@@ -44,23 +44,23 @@ describe('EventCard', () => {
     ).toBeInTheDocument();
   });
 
-  it('selects the event for the map when the pin is clicked', async () => {
+  it('selects the occurrence for the map when the pin is clicked', async () => {
     const user = userEvent.setup();
     renderCard();
 
     await user.click(screen.getByRole('button', { name: /Pokaż na mapie/ }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('card:e1');
+    expect(screen.getByRole('status')).toHaveTextContent('card:e1-2026-06-06');
   });
 
-  it('selects the event when the pin is activated from the keyboard', async () => {
+  it('selects the occurrence when the pin is activated from the keyboard', async () => {
     const user = userEvent.setup();
     renderCard();
 
     await user.tab();
     await user.keyboard('{Enter}');
 
-    expect(screen.getByRole('status')).toHaveTextContent('card:e1');
+    expect(screen.getByRole('status')).toHaveTextContent('card:e1-2026-06-06');
   });
 
   it('tells screen readers that a muted event is outside the chosen period', () => {

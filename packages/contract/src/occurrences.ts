@@ -4,7 +4,7 @@ import { CATEGORY_SLUGS } from './categories';
 
 export const MAX_DAYS_PER_REQUEST = 31;
 
-export const eventCategorySchema = z.enum(CATEGORY_SLUGS);
+export const categorySlugSchema = z.enum(CATEGORY_SLUGS);
 
 export const venueSchema = z
   .object({
@@ -15,20 +15,42 @@ export const venueSchema = z
   })
   .readonly();
 
-export const eventSchema = z
+export const priceSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('free') }).readonly(),
+  z
+    .object({
+      kind: z.literal('paid'),
+      from: z.number().nonnegative(),
+      to: z.number().nonnegative().optional(),
+      currency: z.literal('PLN'),
+    })
+    .readonly(),
+]);
+
+export const listedEventSchema = z
   .object({
     id: z.string(),
-    startsAt: z.iso.datetime({ offset: true }),
     title: z.string(),
-    venue: venueSchema,
-    category: eventCategorySchema,
+    category: categorySlugSchema,
     imageUrl: z.string().optional(),
   })
   .readonly();
 
-export const eventsResponseSchema = z.object({ events: z.array(eventSchema) });
+export const occurrenceListingSchema = z
+  .object({
+    occurrenceId: z.string(),
+    startsAt: z.iso.datetime({ offset: true }),
+    price: priceSchema.nullable(),
+    event: listedEventSchema,
+    venue: venueSchema,
+  })
+  .readonly();
 
-export const EVENTS_QUERY_ERRORS = {
+export const occurrencesResponseSchema = z.object({
+  occurrences: z.array(occurrenceListingSchema),
+});
+
+export const OCCURRENCES_QUERY_ERRORS = {
   missing: 'Query parameters "from" and "to" are required.',
   format: 'Parameters "from" and "to" must be YYYY-MM-DD dates.',
   order: '"from" must not be after "to".',
@@ -36,10 +58,10 @@ export const EVENTS_QUERY_ERRORS = {
 } as const;
 
 const calendarDaySchema = z
-  .string({ error: EVENTS_QUERY_ERRORS.missing })
-  .refine(isCalendarDay, { error: EVENTS_QUERY_ERRORS.format });
+  .string({ error: OCCURRENCES_QUERY_ERRORS.missing })
+  .refine(isCalendarDay, { error: OCCURRENCES_QUERY_ERRORS.format });
 
-export const eventsQuerySchema = z
+export const occurrencesQuerySchema = z
   .object({ from: calendarDaySchema, to: calendarDaySchema })
   .check((ctx) => {
     const { from, to } = ctx.value;
@@ -47,13 +69,13 @@ export const eventsQuerySchema = z
     if (length < 0) {
       ctx.issues.push({
         code: 'custom',
-        message: EVENTS_QUERY_ERRORS.order,
+        message: OCCURRENCES_QUERY_ERRORS.order,
         input: ctx.value,
       });
     } else if (length + 1 > MAX_DAYS_PER_REQUEST) {
       ctx.issues.push({
         code: 'custom',
-        message: EVENTS_QUERY_ERRORS.tooLong,
+        message: OCCURRENCES_QUERY_ERRORS.tooLong,
         input: ctx.value,
       });
     }

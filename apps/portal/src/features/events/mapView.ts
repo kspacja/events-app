@@ -1,5 +1,6 @@
 export interface MapPoint {
-  readonly id: string;
+  readonly occurrenceId: string;
+  readonly eventId: string;
   readonly lat: number;
   readonly lng: number;
   readonly title: string;

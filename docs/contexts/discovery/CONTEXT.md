@@ -15,3 +15,6 @@ _Avoid_: dzień kalendarzowy, doba
 **Grupa** (na mapie) (`MapGroup`):
 Kilka pobliskich Terminów pokazanych na mapie jako jeden znacznik z liczbą.
 _Avoid_: klaster
+
+**Wpis programu** (`OccurrenceListing`):
+Termin razem z jego Wydarzeniem i Miejscem, w kształcie, w jakim pokazuje go portal.

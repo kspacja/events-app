@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { formatRangeLabel, type DateRange } from '@/features/search/dateRange';
 import { formatTimeWindow, type TimeWindow } from '@/features/search/timeRange';
-import { getEvents } from '../api';
+import { getOccurrenceSource } from '../source/getOccurrenceSource';
 import { buildSchedule, formatCount, scheduleSpan } from '../schedule';
 import { EventsMapLoader } from './EventsMapLoader';
 import { Header } from './Header';
@@ -18,8 +18,8 @@ interface EventsSectionProps {
 }
 
 export async function EventsSection({ range, time, sentence, notice }: EventsSectionProps) {
-  const events = await getEvents(scheduleSpan(range));
-  const schedule = buildSchedule(events, { range, time });
+  const listings = await getOccurrenceSource().listOccurrences(scheduleSpan(range));
+  const schedule = buildSchedule(listings, { range, time });
   const timeKey = time ? `${time.from}-${time.to}` : null;
 
   return (

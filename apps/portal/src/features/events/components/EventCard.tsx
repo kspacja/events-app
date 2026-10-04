@@ -3,17 +3,18 @@ import { CATEGORIES } from '@events/contract/categories';
 import { formatLocalTime } from '@/lib/format';
 import { CARD_LABELS } from '../labels';
 import { cardAttributes } from '../scheduleDom';
-import type { Event } from '../types';
+import type { OccurrenceListing } from '../types';
 import { EventPinButton } from './EventPinButton';
 import styles from './EventCard.module.css';
 
 interface EventCardProps {
-  readonly event: Event;
+  readonly listing: OccurrenceListing;
   readonly muted?: boolean;
 }
 
-export function EventCard({ event, muted = false }: EventCardProps) {
-  const { title, venue, category, imageUrl, startsAt } = event;
+export function EventCard({ listing, muted = false }: EventCardProps) {
+  const { occurrenceId, startsAt, event, venue } = listing;
+  const { title, category, imageUrl } = event;
   const label = CATEGORIES.find((c) => c.slug === category)?.label ?? category;
 
   return (
@@ -32,7 +33,7 @@ export function EventCard({ event, muted = false }: EventCardProps) {
             className={styles.photo}
           />
         ) : null}
-        <EventPinButton eventId={event.id} title={title} />
+        <EventPinButton occurrenceId={occurrenceId} title={title} />
       </div>
       <p className={styles.meta}>
         {formatLocalTime(startsAt)} · {label}

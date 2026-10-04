@@ -115,10 +115,10 @@ export function EventsMap({ points, focus }: EventsMapProps) {
   const flownSeq = useRef(0);
   const selectionStore = useEventSelectionStore();
   const selection = useEventSelection();
-  const selected = points.find((p) => p.id === selection?.id);
+  const selected = points.find((p) => p.occurrenceId === selection?.occurrenceId);
   const selectedSeq = selection?.seq;
   const selectedSource = selection?.source;
-  const pointsKey = focus.map((p) => `${p.id}:${p.lat}:${p.lng}`).join('|');
+  const pointsKey = focus.map((p) => `${p.occurrenceId}:${p.lat}:${p.lng}`).join('|');
   const data = useMemo(() => toFeatureCollection(points), [points]);
 
   useEffect(() => {
@@ -162,8 +162,8 @@ export function EventsMap({ points, focus }: EventsMapProps) {
   function handleClick(event: MapLayerMouseEvent) {
     const feature = event.features?.[0];
     if (feature?.layer.id === POINT_LAYER_ID) {
-      const id = feature.properties?.id;
-      if (typeof id === 'string') selectionStore.selectFromMap(id);
+      const occurrenceId = feature.properties?.occurrenceId;
+      if (typeof occurrenceId === 'string') selectionStore.selectFromMap(occurrenceId);
       else selectionStore.close();
       return;
     }
@@ -250,7 +250,7 @@ function toFeatureCollection(points: readonly MapPoint[]): FeatureCollection<Poi
     features: points.map((p) => ({
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [p.lng, p.lat] },
-      properties: { id: p.id, title: p.title, active: p.active },
+      properties: { occurrenceId: p.occurrenceId, title: p.title, active: p.active },
     })),
   };
 }

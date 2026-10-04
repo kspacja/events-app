@@ -6,11 +6,11 @@ import { CARD_LABELS } from '../labels';
 import styles from './EventPinButton.module.css';
 
 interface EventPinButtonProps {
-  readonly eventId: string;
+  readonly occurrenceId: string;
   readonly title: string;
 }
 
-export function EventPinButton({ eventId, title }: EventPinButtonProps) {
+export function EventPinButton({ occurrenceId, title }: EventPinButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
   const store = useEventSelectionStore();
 
@@ -20,7 +20,7 @@ export function EventPinButton({ eventId, title }: EventPinButtonProps) {
       type="button"
       className={styles.pin}
       onClick={() => {
-        if (ref.current) store.selectFromCard(eventId, ref.current);
+        if (ref.current) store.selectFromCard(occurrenceId, ref.current);
       }}
     >
       <span className="visually-hidden">{`${CARD_LABELS.showOnMap}: ${title}`}</span>

@@ -23,9 +23,9 @@ export function DayColumn({
       </h2>
       {entries.length > 0 ? (
         <ul className={styles.events}>
-          {entries.map(({ event, active }) => (
-            <li key={event.id}>
-              <EventCard event={event} muted={!active} />
+          {entries.map(({ listing, active }) => (
+            <li key={listing.occurrenceId}>
+              <EventCard listing={listing} muted={!active} />
             </li>
           ))}
         </ul>

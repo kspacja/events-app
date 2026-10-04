@@ -2,10 +2,12 @@ import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 import { EVENTS_API_URL } from '@/config/env';
 import { addDays, localDayOf, mondayOf } from '@events/time';
+import type { DateRange } from '@/features/search/dateRange';
 import { server } from '@/mocks/node';
-import { EventsApiError, getEvents } from './api';
+import { getOccurrenceSource } from './getOccurrenceSource';
+import { OccurrenceSourceError } from './occurrenceSource';
 
-const EVENTS_URL = `${EVENTS_API_URL}/events`;
+const OCCURRENCES_URL = `${EVENTS_API_URL}/occurrences`;
 const SIX_WEEKS_DAYS = 42;
 const MOCK_DATA_WEEKS = 5;
 
@@ -15,26 +17,28 @@ function countRequests() {
   const urls: URL[] = [];
   server.events.on('request:start', ({ request }) => {
     const url = new URL(request.url);
-    if (url.pathname.endsWith('/events')) urls.push(url);
+    if (url.pathname.endsWith('/occurrences')) urls.push(url);
   });
   return urls;
 }
 
-describe('getEvents', () => {
-  it('returns unique events from every populated week of a six-week range', async () => {
-    const events = await getEvents({
+const listOccurrences = (range: DateRange) => getOccurrenceSource().listOccurrences(range);
+
+describe('OccurrenceSource', () => {
+  it('returns unique occurrences from every populated week of a six-week range', async () => {
+    const occurrences = await listOccurrences({
       from: firstMonday,
       to: addDays(firstMonday, SIX_WEEKS_DAYS - 1),
     });
 
-    const ids = events.map(({ id }) => id);
+    const ids = occurrences.map(({ occurrenceId }) => occurrenceId);
     expect(new Set(ids).size).toBe(ids.length);
 
     for (let week = 0; week < MOCK_DATA_WEEKS; week += 1) {
       const weekStart = addDays(firstMonday, week * 7);
       const weekEnd = addDays(weekStart, 6);
-      const inWeek = events.filter((event) => {
-        const day = localDayOf(event.startsAt);
+      const inWeek = occurrences.filter((occurrence) => {
+        const day = localDayOf(occurrence.startsAt);
         return day >= weekStart && day <= weekEnd;
       });
       expect(inWeek.length).toBeGreaterThan(0);
@@ -43,7 +47,7 @@ describe('getEvents', () => {
 
   it('uses a single request for a 31-day range', async () => {
     const urls = countRequests();
-    await getEvents({ from: firstMonday, to: addDays(firstMonday, 30) });
+    await listOccurrences({ from: firstMonday, to: addDays(firstMonday, 30) });
     server.events.removeAllListeners();
 
     expect(urls).toHaveLength(1);
@@ -51,56 +55,56 @@ describe('getEvents', () => {
 
   it('splits a 32-day range into two requests', async () => {
     const urls = countRequests();
-    await getEvents({ from: firstMonday, to: addDays(firstMonday, 31) });
+    await listOccurrences({ from: firstMonday, to: addDays(firstMonday, 31) });
     server.events.removeAllListeners();
 
     expect(urls).toHaveLength(2);
   });
 
-  it('de-duplicates events returned by more than one chunk', async () => {
-    const event = {
-      id: 'dup',
+  it('de-duplicates occurrences returned by more than one chunk', async () => {
+    const listing = {
+      occurrenceId: 'dup-2030-01-01',
       startsAt: '2030-01-01T18:00:00+01:00',
-      title: 'Duplicate',
+      price: null,
+      event: { id: 'dup', title: 'Duplicate', category: 'music' },
       venue: { name: 'Hall', city: 'Warszawa', lat: 52, lng: 21 },
-      category: 'music',
     };
     server.use(
-      http.get(EVENTS_URL, () => HttpResponse.json({ events: [event] })),
+      http.get(OCCURRENCES_URL, () => HttpResponse.json({ occurrences: [listing] })),
     );
 
-    const events = await getEvents({
+    const occurrences = await listOccurrences({
       from: firstMonday,
       to: addDays(firstMonday, 40),
     });
 
-    expect(events).toHaveLength(1);
+    expect(occurrences).toHaveLength(1);
   });
 
-  it('wraps a 500 response in EventsApiError', async () => {
+  it('wraps a 500 response in OccurrenceSourceError', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    server.use(http.get(EVENTS_URL, () => new HttpResponse(null, { status: 500 })));
+    server.use(http.get(OCCURRENCES_URL, () => new HttpResponse(null, { status: 500 })));
 
     await expect(
-      getEvents({ from: firstMonday, to: firstMonday }),
-    ).rejects.toBeInstanceOf(EventsApiError);
+      listOccurrences({ from: firstMonday, to: firstMonday }),
+    ).rejects.toBeInstanceOf(OccurrenceSourceError);
   });
 
-  it('wraps a malformed body in EventsApiError', async () => {
+  it('wraps a malformed body in OccurrenceSourceError', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     server.use(
-      http.get(EVENTS_URL, () => HttpResponse.json({ events: [{ id: 1 }] })),
+      http.get(OCCURRENCES_URL, () => HttpResponse.json({ occurrences: [{ occurrenceId: 1 }] })),
     );
 
     await expect(
-      getEvents({ from: firstMonday, to: firstMonday }),
-    ).rejects.toBeInstanceOf(EventsApiError);
+      listOccurrences({ from: firstMonday, to: firstMonday }),
+    ).rejects.toBeInstanceOf(OccurrenceSourceError);
   });
 });
 
-describe('mock events handler contract', () => {
+describe('mock occurrences handler contract', () => {
   async function call(query: string) {
-    const response = await fetch(`${EVENTS_URL}${query}`);
+    const response = await fetch(`${OCCURRENCES_URL}${query}`);
     return { status: response.status, body: (await response.json()) as unknown };
   }
 
