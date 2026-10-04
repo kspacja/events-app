@@ -34,12 +34,12 @@ describe('occurrencesQuerySchema', () => {
 });
 
 describe('priceSchema', () => {
-  it('accepts free and paid prices, with or without an upper bound', () => {
-    expect(priceSchema.safeParse({ kind: 'free' }).success).toBe(true);
-    expect(priceSchema.safeParse({ kind: 'paid', from: 20, currency: 'PLN' }).success).toBe(true);
-    expect(
-      priceSchema.safeParse({ kind: 'paid', from: 20, to: 60, currency: 'PLN' }).success,
-    ).toBe(true);
+  it.each([
+    ['free', { kind: 'free' }],
+    ['paid without an upper bound', { kind: 'paid', from: 20, currency: 'PLN' }],
+    ['paid with an upper bound', { kind: 'paid', from: 20, to: 60, currency: 'PLN' }],
+  ])('accepts a %s price', (_name, price) => {
+    expect(priceSchema.safeParse(price).success).toBe(true);
   });
 
   it('rejects a paid price without a lower bound', () => {
@@ -63,6 +63,13 @@ describe('occurrencesResponseSchema', () => {
   it('accepts a valid payload, with or without a price', () => {
     const priced = { ...listing, price: { kind: 'free' } };
     expect(occurrencesResponseSchema.safeParse({ occurrences: [listing, priced] }).success).toBe(true);
+  });
+
+  it('accepts price null as the "not provided" state', () => {
+    const parsed = occurrencesResponseSchema.safeParse({ occurrences: [listing] });
+
+    expect(parsed.success && parsed.data.occurrences[0].price).toBeNull();
+    expect(priceSchema.safeParse(null).success).toBe(false);
   });
 
   it('rejects an unknown category', () => {

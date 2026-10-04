@@ -67,7 +67,6 @@ function toMapPoint(
 ): MapPoint {
   return {
     occurrenceId,
-    eventId: event.id,
     title: event.title,
     lat: venue.lat,
     lng: venue.lng,

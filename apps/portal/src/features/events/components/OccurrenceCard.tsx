@@ -4,15 +4,15 @@ import { formatLocalTime } from '@/lib/format';
 import { CARD_LABELS } from '../labels';
 import { cardAttributes } from '../scheduleDom';
 import type { OccurrenceListing } from '../types';
-import { EventPinButton } from './EventPinButton';
-import styles from './EventCard.module.css';
+import { ShowOnMapButton } from './ShowOnMapButton';
+import styles from './OccurrenceCard.module.css';
 
-interface EventCardProps {
+interface OccurrenceCardProps {
   readonly listing: OccurrenceListing;
   readonly muted?: boolean;
 }
 
-export function EventCard({ listing, muted = false }: EventCardProps) {
+export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) {
   const { occurrenceId, startsAt, event, venue } = listing;
   const { title, category, imageUrl } = event;
   const label = CATEGORY_LABELS[category];
@@ -33,7 +33,7 @@ export function EventCard({ listing, muted = false }: EventCardProps) {
             className={styles.photo}
           />
         ) : null}
-        <EventPinButton occurrenceId={occurrenceId} title={title} />
+        <ShowOnMapButton occurrenceId={occurrenceId} title={title} />
       </div>
       <p className={styles.meta}>
         {formatLocalTime(startsAt)} · {label}

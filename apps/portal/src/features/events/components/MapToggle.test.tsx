@@ -1,8 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
+import { occurrenceIdSchema } from '@events/contract/occurrences';
 import { EventSelectionProvider, useEventSelectionStore } from '../EventSelectionProvider';
 import { MapToggle } from './MapToggle';
+
+const OCCURRENCE_ID = occurrenceIdSchema.parse('e1-2026-06-06');
 
 function renderToggle() {
   return render(
@@ -18,7 +21,7 @@ function RequestButton() {
   return (
     <button
       type="button"
-      onClick={(event) => store.selectFromCard('e1', event.currentTarget)}
+      onClick={(event) => store.selectFromCard(OCCURRENCE_ID, event.currentTarget)}
     >
       request
     </button>

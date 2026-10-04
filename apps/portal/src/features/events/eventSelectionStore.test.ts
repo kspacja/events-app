@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
+import { occurrenceIdSchema } from '@events/contract/occurrences';
 import { createEventSelectionStore } from './eventSelectionStore';
+
+const OCC_1 = occurrenceIdSchema.parse('e1-2026-06-06');
+const OCC_2 = occurrenceIdSchema.parse('e2-2026-06-06');
 
 describe('eventSelectionStore', () => {
   it('records a card request and notifies subscribers', () => {
@@ -7,9 +11,9 @@ describe('eventSelectionStore', () => {
     const listener = vi.fn();
     store.subscribe(listener);
 
-    store.selectFromCard('e1', document.createElement('button'));
+    store.selectFromCard(OCC_1, document.createElement('button'));
 
-    expect(store.getSelection()).toMatchObject({ occurrenceId: 'e1', source: 'card' });
+    expect(store.getSelection()).toMatchObject({ occurrenceId: OCC_1, source: 'card' });
     expect(listener).toHaveBeenCalledOnce();
   });
 
@@ -17,9 +21,9 @@ describe('eventSelectionStore', () => {
     const store = createEventSelectionStore();
     const button = document.createElement('button');
 
-    store.selectFromCard('e1', button);
+    store.selectFromCard(OCC_1, button);
     const first = store.getSelection()?.seq;
-    store.selectFromCard('e1', button);
+    store.selectFromCard(OCC_1, button);
 
     expect(store.getSelection()?.seq).not.toBe(first);
   });
@@ -29,7 +33,7 @@ describe('eventSelectionStore', () => {
     const button = document.createElement('button');
     document.body.append(button);
 
-    store.selectFromCard('e1', button);
+    store.selectFromCard(OCC_1, button);
     store.close();
 
     expect(store.getSelection()).toBeNull();
@@ -41,8 +45,8 @@ describe('eventSelectionStore', () => {
     const button = document.createElement('button');
     document.body.append(button);
 
-    store.selectFromCard('e1', button);
-    store.selectFromMap('e2');
+    store.selectFromCard(OCC_1, button);
+    store.selectFromMap(OCC_2);
     store.close();
 
     expect(button).not.toHaveFocus();
@@ -53,7 +57,7 @@ describe('eventSelectionStore', () => {
     const listener = vi.fn();
     store.subscribe(listener)();
 
-    store.selectFromMap('e1');
+    store.selectFromMap(OCC_1);
 
     expect(listener).not.toHaveBeenCalled();
   });

@@ -162,8 +162,8 @@ export function EventsMap({ points, focus }: EventsMapProps) {
   function handleClick(event: MapLayerMouseEvent) {
     const feature = event.features?.[0];
     if (feature?.layer.id === POINT_LAYER_ID) {
-      const occurrenceId = feature.properties?.occurrenceId;
-      if (typeof occurrenceId === 'string') selectionStore.selectFromMap(occurrenceId);
+      const clicked = points.find((p) => p.occurrenceId === feature.properties?.occurrenceId);
+      if (clicked) selectionStore.selectFromMap(clicked.occurrenceId);
       else selectionStore.close();
       return;
     }

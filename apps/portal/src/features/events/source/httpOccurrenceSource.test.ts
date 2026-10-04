@@ -4,7 +4,7 @@ import { EVENTS_API_URL } from '@/config/env';
 import { addDays, localDayOf, mondayOf } from '@events/time';
 import type { DateRange } from '@/features/search/dateRange';
 import { server } from '@/mocks/node';
-import { getOccurrenceSource } from './getOccurrenceSource';
+import { createHttpOccurrenceSource } from './httpOccurrenceSource';
 import { OccurrenceSourceError } from './occurrenceSource';
 
 const OCCURRENCES_URL = `${EVENTS_API_URL}/occurrences`;
@@ -22,9 +22,10 @@ function countRequests() {
   return urls;
 }
 
-const listOccurrences = (range: DateRange) => getOccurrenceSource().listOccurrences(range);
+const httpSource = createHttpOccurrenceSource();
+const listOccurrences = (range: DateRange) => httpSource.listOccurrences(range);
 
-describe('OccurrenceSource', () => {
+describe('HTTP occurrence source', () => {
   it('returns unique occurrences from every populated week of a six-week range', async () => {
     const occurrences = await listOccurrences({
       from: firstMonday,

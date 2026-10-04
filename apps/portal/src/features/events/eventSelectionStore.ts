@@ -1,7 +1,9 @@
+import type { OccurrenceId } from './types';
+
 export type SelectionSource = 'card' | 'map';
 
 export interface EventSelection {
-  readonly occurrenceId: string;
+  readonly occurrenceId: OccurrenceId;
   readonly seq: number;
   readonly source: SelectionSource;
 }
@@ -9,8 +11,8 @@ export interface EventSelection {
 export interface EventSelectionStore {
   readonly subscribe: (listener: () => void) => () => void;
   readonly getSelection: () => EventSelection | null;
-  readonly selectFromMap: (occurrenceId: string) => void;
-  readonly selectFromCard: (occurrenceId: string, trigger: HTMLElement) => void;
+  readonly selectFromMap: (occurrenceId: OccurrenceId) => void;
+  readonly selectFromCard: (occurrenceId: OccurrenceId, trigger: HTMLElement) => void;
   /** Clears the selection; focus goes back to the card button that opened it, if any. */
   readonly close: () => void;
 }

@@ -3,14 +3,15 @@
 import { useRef } from 'react';
 import { useEventSelectionStore } from '../EventSelectionProvider';
 import { CARD_LABELS } from '../labels';
-import styles from './EventPinButton.module.css';
+import type { OccurrenceId } from '../types';
+import styles from './ShowOnMapButton.module.css';
 
-interface EventPinButtonProps {
-  readonly occurrenceId: string;
+interface ShowOnMapButtonProps {
+  readonly occurrenceId: OccurrenceId;
   readonly title: string;
 }
 
-export function EventPinButton({ occurrenceId, title }: EventPinButtonProps) {
+export function ShowOnMapButton({ occurrenceId, title }: ShowOnMapButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
   const store = useEventSelectionStore();
 

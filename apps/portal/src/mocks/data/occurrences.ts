@@ -1,4 +1,5 @@
 import type { CategorySlug } from '@events/contract/categories';
+import { eventIdSchema, occurrenceIdSchema } from '@events/contract/occurrences';
 import type { OccurrenceListing, Price, Venue } from '@/features/events/types';
 import {
   addDays,
@@ -7,7 +8,7 @@ import {
   toInstantIso,
 } from '@events/time';
 
-interface MockEvent {
+interface MockEventTemplate {
   readonly id: string;
   readonly title: string;
   readonly category: CategorySlug;
@@ -37,7 +38,7 @@ const paid = (from: number, to?: number): Price => ({
   currency: 'PLN',
 });
 
-const MOCK_EVENTS: readonly MockEvent[] = [
+const MOCK_EVENTS: readonly MockEventTemplate[] = [
   { id: 'wro-choir', title: 'Koncert chóralny w katedrze', category: 'music', venue: venue('Ostrów Tumski', WROCLAW, 51.1142, 17.0465), dayOffset: 0, time: '19:00', price: free },
   { id: 'wro-exhibition', title: 'Wystawa: miasto po zmroku', category: 'art', venue: venue('Muzeum Narodowe', WROCLAW, 51.1100, 17.0480), dayOffset: 1, time: '18:00', price: paid(15) },
   { id: 'wro-boardgames', title: 'Wieczór gier planszowych', category: 'meetups', venue: venue('Śródmieście', WROCLAW, 51.0980, 17.0330), dayOffset: 2, time: '18:30' },
@@ -94,11 +95,11 @@ export function generateOccurrences(now: Date = new Date()): OccurrenceListing[]
       );
       return [
         {
-          occurrenceId: `${mockEvent.id}-${day}`,
+          occurrenceId: occurrenceIdSchema.parse(`${mockEvent.id}-${day}`),
           startsAt: toInstantIso(day, minutesOfClock(mockEvent.time)),
           price: mockEvent.price ?? null,
           event: {
-            id: mockEvent.id,
+            id: eventIdSchema.parse(mockEvent.id),
             title: mockEvent.title,
             category: mockEvent.category,
           },

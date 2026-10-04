@@ -1,4 +1,4 @@
-// Contract between DayColumn/EventCard (writers) and DayStrip (reader); CSS modules match the same attributes.
+// Contract between DayColumn/OccurrenceCard (writers) and DayStrip (reader); CSS modules match the same attributes.
 export const SCHEDULE_DOM = {
   sectionId: 'program',
   inRangeAttr: 'data-in-range',

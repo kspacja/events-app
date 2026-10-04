@@ -1,6 +1,7 @@
+import type { OccurrenceId } from './types';
+
 export interface MapPoint {
-  readonly occurrenceId: string;
-  readonly eventId: string;
+  readonly occurrenceId: OccurrenceId;
   readonly lat: number;
   readonly lng: number;
   readonly title: string;

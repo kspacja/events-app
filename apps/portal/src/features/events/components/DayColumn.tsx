@@ -1,7 +1,7 @@
 import { DAY_NAMES, UI_LABELS } from '../labels';
 import type { ScheduleDay } from '../schedule';
 import { columnAttributes } from '../scheduleDom';
-import { EventCard } from './EventCard';
+import { OccurrenceCard } from './OccurrenceCard';
 import styles from './DayColumn.module.css';
 
 interface DayColumnProps {
@@ -25,7 +25,7 @@ export function DayColumn({
         <ul className={styles.events}>
           {entries.map(({ listing, active }) => (
             <li key={listing.occurrenceId}>
-              <EventCard listing={listing} muted={!active} />
+              <OccurrenceCard listing={listing} muted={!active} />
             </li>
           ))}
         </ul>

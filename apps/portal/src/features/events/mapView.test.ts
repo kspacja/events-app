@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { occurrenceIdSchema } from '@events/contract/occurrences';
 import { viewFor, type MapPoint } from './mapView';
 
 function point(id: string, lat: number, lng: number): MapPoint {
-  return { occurrenceId: id, eventId: id, lat, lng, title: id, date: 'sobota, 6.06', time: '19:00', active: true };
+  return { occurrenceId: occurrenceIdSchema.parse(id), lat, lng, title: id, date: 'sobota, 6.06', time: '19:00', active: true };
 }
 
 describe('viewFor', () => {

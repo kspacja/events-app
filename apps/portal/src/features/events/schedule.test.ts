@@ -1,3 +1,4 @@
+import { eventIdSchema, occurrenceIdSchema } from '@events/contract/occurrences';
 import { describe, expect, it } from 'vitest';
 import type { DateRange } from '@/features/search/dateRange';
 import { TIME_PRESET_WINDOWS } from '@/features/search/timeRange';
@@ -11,10 +12,10 @@ function makeListing(
   eventId = occurrenceId,
 ): OccurrenceListing {
   return {
-    occurrenceId,
+    occurrenceId: occurrenceIdSchema.parse(occurrenceId),
     startsAt,
     price: null,
-    event: { id: eventId, title: `Event ${eventId}`, category: 'music' },
+    event: { id: eventIdSchema.parse(eventId), title: `Event ${eventId}`, category: 'music' },
     venue: { name: 'Venue', city: 'Warszawa', lat, lng: 21 },
   };
 }
@@ -43,10 +44,10 @@ describe('buildSchedule active rule', () => {
   const saturdayEvening = makeListing('sat-evening', '2026-06-06T20:00:00+02:00');
   const mondayEvening = makeListing('mon-evening', '2026-06-01T20:00:00+02:00');
   const saturdayMorning = makeListing('sat-morning', '2026-06-06T08:00:00+02:00');
-  const events = [saturdayEvening, mondayEvening, saturdayMorning];
+  const listings = [saturdayEvening, mondayEvening, saturdayMorning];
 
   it('uses only the date range when there is no time window', () => {
-    expect(activeIds(events, { range: SATURDAY, time: null }).sort()).toEqual([
+    expect(activeIds(listings, { range: SATURDAY, time: null }).sort()).toEqual([
       'sat-evening',
       'sat-morning',
     ]);
@@ -54,13 +55,13 @@ describe('buildSchedule active rule', () => {
 
   it('uses only the time window when the range covers every day', () => {
     expect(
-      activeIds(events, { range: WEEK, time: TIME_PRESET_WINDOWS.evening }).sort(),
+      activeIds(listings, { range: WEEK, time: TIME_PRESET_WINDOWS.evening }).sort(),
     ).toEqual(['mon-evening', 'sat-evening']);
   });
 
   it('requires both date range and time window', () => {
     expect(
-      activeIds(events, { range: SATURDAY, time: TIME_PRESET_WINDOWS.evening }),
+      activeIds(listings, { range: SATURDAY, time: TIME_PRESET_WINDOWS.evening }),
     ).toEqual(['sat-evening']);
   });
 
@@ -115,12 +116,12 @@ describe('buildSchedule days and weeks', () => {
   });
 
   it('orders events chronologically within a day, with the 04:00 rule', () => {
-    const events = [
+    const listings = [
       makeListing('b', '2026-06-06T20:00:00+02:00'),
       makeListing('night', '2026-06-07T02:00:00+02:00'),
       makeListing('a', '2026-06-06T09:00:00+02:00'),
     ];
-    const schedule = buildSchedule(events, { range: SATURDAY, time: null });
+    const schedule = buildSchedule(listings, { range: SATURDAY, time: null });
     const saturday = schedule.weeks[0][5];
     expect(saturday.entries.map(({ listing }) => listing.occurrenceId)).toEqual(['a', 'b', 'night']);
   });
@@ -140,22 +141,13 @@ describe('buildSchedule occurrences of one event', () => {
     ]);
     expect(new Set(entries.map(({ listing }) => listing.event.id))).toEqual(new Set(['club']));
   });
-
-  it('gives each map point its own occurrence id and the shared event id', () => {
-    const { mapPoints } = buildSchedule([first, second], { range: WEEK, time: null });
-
-    expect(mapPoints.map(({ occurrenceId, eventId }) => [occurrenceId, eventId])).toEqual([
-      ['club-2026-06-05', 'club'],
-      ['club-2026-06-06', 'club'],
-    ]);
-  });
 });
 
 describe('buildSchedule counts and map', () => {
   const inside = makeListing('in', '2026-06-06T12:00:00+02:00', 50);
   const outside = makeListing('out', '2026-06-01T12:00:00+02:00', 54);
 
-  it('counts active events', () => {
+  it('counts active occurrences', () => {
     expect(buildSchedule([inside, outside], { range: SATURDAY, time: null }).activeCount).toBe(1);
   });
 

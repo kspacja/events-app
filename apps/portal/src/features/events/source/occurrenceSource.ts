@@ -7,8 +7,8 @@ export interface OccurrenceSource {
 }
 
 export class OccurrenceSourceError extends Error {
-  constructor() {
-    super('The programme is temporarily unavailable.');
+  constructor(options?: ErrorOptions) {
+    super('The programme is temporarily unavailable.', options);
     this.name = 'OccurrenceSourceError';
   }
 }

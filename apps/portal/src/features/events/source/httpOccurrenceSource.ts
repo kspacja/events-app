@@ -51,7 +51,7 @@ async function fetchChunk(range: DateRange): Promise<OccurrenceListing[]> {
         status: response.status,
         url,
       });
-      throw new OccurrenceSourceError();
+      throw new OccurrenceSourceError({ cause: `HTTP ${response.status}` });
     }
     const parsed = occurrencesResponseSchema.safeParse(await response.json());
     if (!parsed.success) {
@@ -59,13 +59,13 @@ async function fetchChunk(range: DateRange): Promise<OccurrenceListing[]> {
         url,
         issues: parsed.error.issues,
       });
-      throw new OccurrenceSourceError();
+      throw new OccurrenceSourceError({ cause: parsed.error });
     }
     return parsed.data.occurrences;
   } catch (error: unknown) {
     if (error instanceof OccurrenceSourceError) throw error;
     logger.error('Occurrences API request failed', { url, error });
-    throw new OccurrenceSourceError();
+    throw new OccurrenceSourceError({ cause: error });
   }
 }
 

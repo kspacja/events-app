@@ -27,9 +27,15 @@ export const priceSchema = z.discriminatedUnion('kind', [
     .readonly(),
 ]);
 
+export const occurrenceIdSchema = z.string().brand<'OccurrenceId'>();
+export const eventIdSchema = z.string().brand<'EventId'>();
+
+export type OccurrenceId = z.infer<typeof occurrenceIdSchema>;
+export type EventId = z.infer<typeof eventIdSchema>;
+
 export const listedEventSchema = z
   .object({
-    id: z.string(),
+    id: eventIdSchema,
     title: z.string(),
     category: categorySlugSchema,
     imageUrl: z.string().optional(),
@@ -38,7 +44,7 @@ export const listedEventSchema = z
 
 export const occurrenceListingSchema = z
   .object({
-    occurrenceId: z.string(),
+    occurrenceId: occurrenceIdSchema,
     startsAt: z.iso.datetime({ offset: true }),
     price: priceSchema.nullable(),
     event: listedEventSchema,
