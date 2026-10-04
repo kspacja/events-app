@@ -39,7 +39,7 @@ const PACKAGE_PATTERNS = [
 ];
 
 const TESTING_ONLY_PATTERN = {
-  group: ['@events/contract/source/testing', '@events/catalog/testing'],
+  group: ['@events/contract/source/testing', '@events/catalog/testing', '**/*.testing', '**/*.testing.*'],
   message: 'Testing entry points may only be imported from test files.',
 };
 
@@ -48,7 +48,7 @@ const HTTP_TRANSPORT_ONLY_PATTERN = {
   message: 'The HTTP transport is for the HTTP adapter and the mocks only.',
 };
 
-const TEST_FILES = ['**/*.test.*', '**/vitest.setup.*'];
+const TEST_FILES = ['**/*.test.*', '**/*.testing.*', '**/vitest.setup.*'];
 const HTTP_TRANSPORT_FILES = ['**/source/httpOccurrenceSource*', '**/mocks/**'];
 
 function restrictImports({ paths, patterns }, scope = {}) {

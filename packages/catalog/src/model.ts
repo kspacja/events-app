@@ -10,7 +10,7 @@ import { isWarsawIso } from '@events/time';
 export type { Category, EventId, OccurrenceId, Price };
 
 export const venueIdSchema = brandedIdSchema<'VenueId'>();
-export type VenueId = ReturnType<typeof venueIdSchema.parse>;
+export type VenueId = ReturnType<typeof venueIdSchema.parse>; // catalog has no direct zod dependency, so no z.infer
 
 export const venueId = (value: string): VenueId => venueIdSchema.parse(value);
 
@@ -52,10 +52,12 @@ export class CatalogIntegrityError extends Error {
   }
 }
 
+/** Package-internal: not re-exported from index.ts. */
 export function indexBy<T>(items: readonly T[], keyOf: (item: T) => string): ReadonlyMap<string, T> {
   return new Map(items.map((item) => [keyOf(item), item]));
 }
 
+/** Package-internal: not re-exported from index.ts. */
 export function lookup<T>(index: ReadonlyMap<string, T>, key: string, what: string): T {
   const found = index.get(key);
   if (!found) throw new CatalogIntegrityError(`Unknown ${what}: ${key}`);
@@ -84,29 +86,29 @@ function assertIntegrity(data: CatalogData): void {
   }
 }
 
-/** Opaque: the private constructor means only `createCatalog` can produce one, so integrity holds by construction. */
+function freezeAll<T extends object>(items: readonly T[]): readonly T[] {
+  return Object.freeze(items.map((item) => Object.freeze({ ...item })));
+}
+
+/** Opaque: the brand makes the type nominal and index.ts exports it as a type only; build one with `createCatalog`. */
 export class Catalog implements CatalogData {
   // A private member makes the type nominal: a spread or literal copy is not assignable
-  declare private readonly validated: true;
+  declare private readonly brand: true;
   readonly categories: readonly Category[];
   readonly venues: readonly Venue[];
   readonly events: readonly Event[];
   readonly occurrences: readonly Occurrence[];
 
-  private constructor({ categories, venues, events, occurrences }: CatalogData) {
-    this.categories = categories;
-    this.venues = venues;
-    this.events = events;
-    this.occurrences = occurrences;
-  }
-
-  static validated(data: CatalogData): Catalog {
+  constructor(data: CatalogData) {
     assertIntegrity(data);
-    return new Catalog(data);
+    this.categories = freezeAll(data.categories);
+    this.venues = freezeAll(data.venues);
+    this.events = freezeAll(data.events);
+    this.occurrences = freezeAll(data.occurrences);
   }
 }
 
 /** Unique ids, resolving references and Warsaw ISO start times; throws CatalogIntegrityError otherwise. */
 export function createCatalog(data: CatalogData): Catalog {
-  return Catalog.validated(data);
+  return new Catalog(data);
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { eventIdSchema, occurrenceIdSchema } from '@events/contract/listing';
-import { CatalogIntegrityError, createCatalog, venueId, type CatalogData } from './model';
+import { listOccurrences } from './listOccurrences';
+import { Catalog, CatalogIntegrityError, createCatalog, venueId, type CatalogData } from './model';
 
 const MUSIC = { slug: 'music', label: 'Muzyka' };
 const VENUE = { id: venueId('hall'), name: 'Hala', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
@@ -55,5 +56,27 @@ describe('createCatalog', () => {
   it('rejects an occurrence whose startsAt is not canonical Warsaw ISO', () => {
     const utc = { ...VALID, occurrences: [{ ...OCCURRENCE, startsAt: '2030-01-01T18:00:00Z' }] };
     expect(() => createCatalog(utc)).toThrow(CatalogIntegrityError);
+  });
+
+  it('is unaffected by later mutation of the input arrays', () => {
+    const input = { categories: [MUSIC], venues: [VENUE], events: [EVENT], occurrences: [OCCURRENCE] };
+    const catalog = createCatalog(input);
+    const range = { from: '2030-01-01', to: '2030-01-31' } as const;
+    const before = listOccurrences(catalog, range);
+    input.occurrences.length = 0;
+    input.events.length = 0;
+    expect(listOccurrences(catalog, range)).toEqual(before);
+    expect(before).toHaveLength(1);
+    expect(Object.isFrozen(catalog.occurrences)).toBe(true);
+  });
+
+  it('is opaque: a plain object or spread copy is not a Catalog', () => {
+    const catalog = createCatalog(VALID);
+    // @ts-expect-error a literal lacks the private brand
+    const fromLiteral: Catalog = { ...VALID };
+    // @ts-expect-error a spread copy loses the brand
+    const fromSpread: Catalog = { ...catalog };
+    expect(fromLiteral).not.toBeInstanceOf(Catalog);
+    expect(fromSpread).not.toBeInstanceOf(Catalog);
   });
 });

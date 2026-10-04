@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { describeOccurrenceSourceConformance } from '@events/contract/source/testing';
 import { OccurrenceSourceError, type OccurrenceSource } from '@events/contract/source';
-import { brokenCatalog } from './brokenCatalog';
+import { brokenCatalog } from './brokenCatalog.testing';
 import { catalogFromListings } from './catalogFromListings';
 import { createInMemoryOccurrenceSource } from './inMemoryOccurrenceSource';
 import { listOccurrences } from './listOccurrences';
