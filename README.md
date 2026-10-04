@@ -65,10 +65,10 @@ Doba wydarzeń kończy się o 04:00: wydarzenie z niedzieli 01:30 należy do sob
 
 ## Typowe problemy
 
-- **Pusta mapa, `Worker failed to load`** — brak plików w `public/maplibre/`. Uruchom `node scripts/copy-maplibre-worker.mjs` w `apps/portal`.
-- **„Nie udało się wczytać wydarzeń”** — brak `.env.local` albo `API_MOCKING` nie jest `enabled`. Po zmianie env zrestartuj serwer.
+- **Pusta mapa, `Worker failed to load`** — brak plików w `apps/portal/public/maplibre/`. Folder jest generowany (nie ma go w repozytorium, jest w `.gitignore`); `pnpm install` i `pnpm dev` go odtwarzają, a ręcznie: uruchom `node scripts/copy-maplibre-worker.mjs` w `apps/portal`.
+- **„Nie udało się wczytać wydarzeń”** — brak `apps/portal/.env.local` albo `API_MOCKING` nie jest `enabled`. Po zmianie env zrestartuj serwer.
 - **Zmiany w danych mocka nie są widoczne** — Next trzyma odpowiedzi API w `apps/portal/.next/cache/fetch-cache` (5 min, przeżywa rebuild). Usuń `apps/portal/.next/cache/fetch-cache` i zrestartuj serwer.
-- **`typecheck` zgłasza błąd w `.next/dev/types/...`** — nieaktualne typy po `next dev`. Usuń `.next` i uruchom ponownie.
+- **`typecheck` zgłasza błąd w `.next/dev/types/...`** — nieaktualne typy po `next dev`. Usuń `apps/portal/.next` i uruchom ponownie.
 
 ## Struktura
 

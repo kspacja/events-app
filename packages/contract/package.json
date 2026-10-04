@@ -8,6 +8,7 @@
     "./time": "./src/time.ts"
   },
   "scripts": {
+    "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -18,7 +19,9 @@
   },
   "devDependencies": {
     "@events/typescript-config": "workspace:*",
+    "eslint": "^9.39.5",
     "typescript": "^5",
+    "typescript-eslint": "^8.71.0",
     "vitest": "^5.0.3"
   }
 }

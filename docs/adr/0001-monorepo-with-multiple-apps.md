@@ -22,5 +22,6 @@ Pakiety: `packages/catalog`, `packages/recommendations`, `packages/identity`, `p
 
 ## Consequences
 
-- Potrzebne jest narzędzie do workspace'ów. Zakładamy pnpm workspaces + Turborepo, ale ten wybór nie jest jeszcze ostateczny.
-- Obecna aplikacja events-app zostaje przeniesiona do `apps/portal`.
+- Wybrane narzędzie do workspace'ów: pnpm workspaces + Turborepo.
+- Obecna aplikacja events-app została przeniesiona do `apps/portal`.
+- `packages/contract` zawiera na razie także reguły czasu lokalnego i doby wydarzeń (wspólny kernel). To stan tymczasowy: osobny krok wydzieli je z kontraktu.
