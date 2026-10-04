@@ -16,7 +16,7 @@ export const MINUTES_PER_HOUR = 60;
 /** Calendar day as `YYYY-MM-DD`, independent of any timezone. */
 export type CalendarDay = `${number}-${number}-${number}`;
 
-const DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const DAY_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const DAY_FORMAT = 'yyyy-MM-dd';
 const UTC = 'UTC';
 
@@ -31,8 +31,15 @@ export function calendarDayToDate(day: CalendarDay): TZDate {
 }
 
 export function isCalendarDay(value: string): value is CalendarDay {
-  if (!DAY_PATTERN.test(value)) return false;
-  return toCalendarDay(calendarDayToDate(value as CalendarDay)) === value;
+  const match = DAY_PATTERN.exec(value);
+  if (!match) return false;
+  const [year, month, date] = match.slice(1).map(Number);
+  const utc = new Date(Date.UTC(year, month - 1, date));
+  return (
+    utc.getUTCFullYear() === year &&
+    utc.getUTCMonth() === month - 1 &&
+    utc.getUTCDate() === date
+  );
 }
 
 export function addDays(day: CalendarDay, amount: number): CalendarDay {

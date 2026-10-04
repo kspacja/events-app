@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { CATEGORIES } from '@events/contract/categories';
+import { CATEGORY_LABELS } from '@events/contract/categories';
 import { formatLocalTime } from '@/lib/format';
 import { CARD_LABELS } from '../labels';
 import { cardAttributes } from '../scheduleDom';
@@ -15,13 +15,13 @@ interface EventCardProps {
 export function EventCard({ listing, muted = false }: EventCardProps) {
   const { occurrenceId, startsAt, event, venue } = listing;
   const { title, category, imageUrl } = event;
-  const label = CATEGORIES.find((c) => c.slug === category)?.label ?? category;
+  const label = CATEGORY_LABELS[category];
 
   return (
     <article className={styles.card} {...cardAttributes(muted)}>
       <div
         className={styles.image}
-        style={{ backgroundColor: `var(--category-${category})` }}
+        style={{ backgroundColor: `var(--category-${category}, var(--color-bg-subtle))` }}
       >
         {imageUrl ? (
           <Image

@@ -51,7 +51,8 @@ Bramki (z korzenia, przez Turborepo): `pnpm typecheck`, `pnpm lint`, `pnpm test`
 | `pnpm typecheck` | portal: `next typegen` + `tsc --noEmit` (typegen generuje typy tras Nexta, bez niego `tsc` pada na świeżym checkoucie); pakiety: `tsc --noEmit` |
 | `pnpm lint` | ESLint |
 | `pnpm test` | Vitest we wszystkich pakietach (portal: jsdom + MSW z tymi samymi handlerami co aplikacja) |
-| `pnpm --filter @events/contract test` | testy samego kontraktu (`pnpm --filter @events/time test` — czasu lokalnego) |
+| `pnpm --filter @events/contract test` | testy samego kontraktu |
+| `pnpm --filter @events/time test` | testy czasu lokalnego |
 
 ## Adresy do sprawdzenia
 

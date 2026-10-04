@@ -58,7 +58,9 @@ export const packageBoundaries = restrictImports({
 export function typeAwareRules({ tsconfigRootDir }) {
   return {
     files: ['**/*.{ts,tsx,mts,cts}'],
+    plugins: { '@typescript-eslint': tseslint.plugin },
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: { projectService: true, tsconfigRootDir },
     },
     rules: {

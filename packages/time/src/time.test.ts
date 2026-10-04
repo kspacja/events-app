@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   eventDayOf,
+  isCalendarDay,
   localDayOf,
   localMinutesOf,
   mondayOf,
@@ -71,5 +72,23 @@ describe('mondayOf', () => {
 
   it('returns a Monday unchanged', () => {
     expect(mondayOf('2026-09-28')).toBe('2026-09-28');
+  });
+});
+
+describe('isCalendarDay', () => {
+  it('accepts real dates, including a leap day', () => {
+    expect(isCalendarDay('2026-07-12')).toBe(true);
+    expect(isCalendarDay('2028-02-29')).toBe(true);
+  });
+
+  it('rejects dates that do not exist', () => {
+    expect(isCalendarDay('2026-02-30')).toBe(false);
+    expect(isCalendarDay('2026-13-01')).toBe(false);
+    expect(isCalendarDay('2027-02-29')).toBe(false);
+  });
+
+  it('rejects malformed strings', () => {
+    expect(isCalendarDay('2026-7-12')).toBe(false);
+    expect(isCalendarDay('12.07.2026')).toBe(false);
   });
 });

@@ -17,13 +17,18 @@ export interface Category {
 }
 
 // Temporary home: becomes Catalog rows in stage 1
-export const CATEGORIES: readonly Category[] = [
-  { slug: 'music', label: 'Muzyka' },
-  { slug: 'film', label: 'Film' },
-  { slug: 'food', label: 'Jedzenie' },
-  { slug: 'movement', label: 'Ruch' },
-  { slug: 'workshops', label: 'Warsztaty' },
-  { slug: 'art', label: 'Sztuka' },
-  { slug: 'meetups', label: 'Spotkania' },
-  { slug: 'comedy', label: 'Komedia' },
-];
+export const CATEGORY_LABELS: Readonly<Record<CategorySlug, string>> = {
+  music: 'Muzyka',
+  film: 'Film',
+  food: 'Jedzenie',
+  movement: 'Ruch',
+  workshops: 'Warsztaty',
+  art: 'Sztuka',
+  meetups: 'Spotkania',
+  comedy: 'Komedia',
+};
+
+export const CATEGORIES: readonly Category[] = CATEGORY_SLUGS.map((slug) => ({
+  slug,
+  label: CATEGORY_LABELS[slug],
+}));
