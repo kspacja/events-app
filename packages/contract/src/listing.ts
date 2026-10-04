@@ -6,8 +6,12 @@ const ID_FORMAT = /^[A-Za-z0-9_-]+$/;
 // Slugs end up in CSS custom property names, so only lowercase words joined by hyphens
 const CATEGORY_SLUG_FORMAT = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export const occurrenceIdSchema = z.string().regex(ID_FORMAT).brand<'OccurrenceId'>();
-export const eventIdSchema = z.string().regex(ID_FORMAT).brand<'EventId'>();
+/** Shared id format, so every context's ids stay safe in DOM ids and URLs. */
+export const brandedIdSchema = <Brand extends string>() =>
+  z.string().regex(ID_FORMAT).brand<Brand>();
+
+export const occurrenceIdSchema = brandedIdSchema<'OccurrenceId'>();
+export const eventIdSchema = brandedIdSchema<'EventId'>();
 
 export type OccurrenceId = z.infer<typeof occurrenceIdSchema>;
 export type EventId = z.infer<typeof eventIdSchema>;

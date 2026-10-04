@@ -5,6 +5,7 @@ export {
   createCatalog,
   venueId,
   type Catalog,
+  type CatalogData,
   type Category,
   type Event,
   type EventId,

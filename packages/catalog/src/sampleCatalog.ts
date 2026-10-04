@@ -23,10 +23,12 @@ const venue = (id: string, name: string, city: string, lat: number, lng: number)
 });
 
 const OSTROW_TUMSKI = venue('ostrow-tumski', 'Ostrów Tumski', WROCLAW, 51.1142, 17.0465);
+const OSTROW_TUMSKI_BRZEG = venue('ostrow-tumski-brzeg', 'Ostrów Tumski', WROCLAW, 51.1150, 17.0450);
 const MUZEUM_NARODOWE = venue('muzeum-narodowe', 'Muzeum Narodowe', WROCLAW, 51.1100, 17.0480);
 const SRODMIESCIE = venue('srodmiescie', 'Śródmieście', WROCLAW, 51.0980, 17.0330);
 const RYNEK = venue('rynek', 'Rynek', WROCLAW, 51.1100, 17.0320);
 const NADODRZE = venue('nadodrze', 'Nadodrze', WROCLAW, 51.1240, 17.0290);
+const NADODRZE_PODWORKA = venue('nadodrze-podworka', 'Nadodrze', WROCLAW, 51.1250, 17.0300);
 const BULWAR_DUNIKOWSKIEGO = venue('bulwar-dunikowskiego', 'Bulwar Dunikowskiego', WROCLAW, 51.1135, 17.0420);
 const WYSPA_SLODOWA = venue('wyspa-slodowa', 'Wyspa Słodowa', WROCLAW, 51.1130, 17.0380);
 const HALA_STULECIA = venue('hala-stulecia', 'Hala Stulecia', WROCLAW, 51.1067, 17.0770);
@@ -44,10 +46,12 @@ const OLOWIANKA = venue('olowianka', 'Ołowianka', 'Gdańsk', 54.3490, 18.6650);
 
 const SAMPLE_VENUES: readonly Venue[] = [
   OSTROW_TUMSKI,
+  OSTROW_TUMSKI_BRZEG,
   MUZEUM_NARODOWE,
   SRODMIESCIE,
   RYNEK,
   NADODRZE,
+  NADODRZE_PODWORKA,
   BULWAR_DUNIKOWSKIEGO,
   WYSPA_SLODOWA,
   HALA_STULECIA,
@@ -95,8 +99,8 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'wro-jazz', title: 'Jazz nad Odrą', category: MUSIC, venue: BULWAR_DUNIKOWSKIEGO, dayOffset: 4, time: '19:00', price: paid(40, 80) },
   { id: 'wro-cinema', title: 'Kino plenerowe', category: FILM, venue: WYSPA_SLODOWA, dayOffset: 4, time: '20:30', price: free },
   { id: 'wro-market', title: 'Targ producentów', category: FOOD, venue: HALA_STULECIA, dayOffset: 5, time: '10:00', price: free },
-  { id: 'wro-walk', title: 'Spacer po podwórkach', category: MOVEMENT, venue: NADODRZE, dayOffset: 5, time: '14:00' },
-  { id: 'wro-run', title: 'Nocny bieg', category: MOVEMENT, venue: OSTROW_TUMSKI, dayOffset: 5, time: '21:00' },
+  { id: 'wro-walk', title: 'Spacer po podwórkach', category: MOVEMENT, venue: NADODRZE_PODWORKA, dayOffset: 5, time: '14:00' },
+  { id: 'wro-run', title: 'Nocny bieg', category: MOVEMENT, venue: OSTROW_TUMSKI_BRZEG, dayOffset: 5, time: '21:00' },
   { id: 'wro-ceramics', title: 'Warsztaty ceramiki', category: WORKSHOPS, venue: OLBIN, dayOffset: 6, time: '12:00' },
   { id: 'wro-organ', title: 'Recital organowy', category: MUSIC, venue: KOSCIOL_PRZY_RYNKU, dayOffset: 6, time: '18:00' },
 

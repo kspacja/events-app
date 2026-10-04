@@ -1,17 +1,7 @@
 import type { OccurrenceListing } from '@events/contract/listing';
 import { compareListings } from '@events/contract/source';
 import { eventDayOf, isDayInRange, type DateRange } from '@events/time';
-import { CatalogIntegrityError, type Catalog } from './model';
-
-function indexBy<T>(items: readonly T[], keyOf: (item: T) => string): ReadonlyMap<string, T> {
-  return new Map(items.map((item) => [keyOf(item), item]));
-}
-
-function lookup<T>(index: ReadonlyMap<string, T>, key: string, what: string): T {
-  const found = index.get(key);
-  if (!found) throw new CatalogIntegrityError(`Unknown ${what}: ${key}`);
-  return found;
-}
+import { indexBy, lookup, type Catalog } from './model';
 
 /** Projects the catalog onto the read model: event days in range, sorted, ids unique per catalog. */
 export function listOccurrences(catalog: Catalog, range: DateRange): OccurrenceListing[] {

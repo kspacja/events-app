@@ -28,10 +28,12 @@ describe('createSampleCatalog', () => {
     ]);
   });
 
-  it('has one Venue per place, so no name repeats within a city', () => {
-    const places = catalog.venues.map(({ name, city }) => `${city}/${name}`);
+  it('identifies venues by id, so places may share a name', () => {
+    const ids = catalog.venues.map(({ id }) => id);
+    const tumski = catalog.venues.filter(({ name }) => name === 'Ostrów Tumski');
 
-    expect(new Set(places).size).toBe(places.length);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(new Set(tumski.map(({ location }) => location.lat)).size).toBe(2);
   });
 
   it('is consistent: every reference resolves', () => {
@@ -54,8 +56,9 @@ describe('createSampleCatalog', () => {
   it('puts the Sunday 01:30 stand-up on Saturday', () => {
     const night = listOccurrences(catalog, WEEK).find(({ event }) => event.id === 'krk-latenight');
 
-    expect(night && localMinutesOf(night.startsAt)).toBe(90);
-    expect(night && eventDayOf(night.startsAt)).toBe('2030-01-12');
+    if (!night) throw new Error('late-night stand-up missing from the week');
+    expect(localMinutesOf(night.startsAt)).toBe(90);
+    expect(eventDayOf(night.startsAt)).toBe('2030-01-12');
   });
 
   it('is served through the in-memory source unchanged', async () => {

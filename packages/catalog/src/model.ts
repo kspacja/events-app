@@ -1,16 +1,18 @@
-import type { Category, Price } from '@events/contract/listing';
-import type { EventId, OccurrenceId } from '@events/contract/listing';
+import {
+  brandedIdSchema,
+  type Category,
+  type EventId,
+  type OccurrenceId,
+  type Price,
+} from '@events/contract/listing';
+import { isWarsawIso } from '@events/time';
 
 export type { Category, EventId, OccurrenceId, Price };
 
-const VENUE_ID_FORMAT = /^[A-Za-z0-9_-]+$/;
+export const venueIdSchema = brandedIdSchema<'VenueId'>();
+export type VenueId = ReturnType<typeof venueIdSchema.parse>;
 
-export type VenueId = string & { readonly __brand: 'VenueId' };
-
-export function venueId(value: string): VenueId {
-  if (!VENUE_ID_FORMAT.test(value)) throw new Error(`Invalid venue id: "${value}"`);
-  return value as VenueId;
-}
+export const venueId = (value: string): VenueId => venueIdSchema.parse(value);
 
 export interface Venue {
   readonly id: VenueId;
@@ -36,7 +38,7 @@ export interface Occurrence {
 }
 
 // Venue.organizerId and Submission arrive with stages 1-2 (see docs/plans/stages/1-baza-i-katalog.md)
-export interface Catalog {
+export interface CatalogData {
   readonly categories: readonly Category[];
   readonly venues: readonly Venue[];
   readonly events: readonly Event[];
@@ -50,29 +52,61 @@ export class CatalogIntegrityError extends Error {
   }
 }
 
+export function indexBy<T>(items: readonly T[], keyOf: (item: T) => string): ReadonlyMap<string, T> {
+  return new Map(items.map((item) => [keyOf(item), item]));
+}
+
+export function lookup<T>(index: ReadonlyMap<string, T>, key: string, what: string): T {
+  const found = index.get(key);
+  if (!found) throw new CatalogIntegrityError(`Unknown ${what}: ${key}`);
+  return found;
+}
+
 function assertUnique(kind: string, ids: readonly string[]): void {
   const duplicate = ids.find((id, index) => ids.indexOf(id) !== index);
   if (duplicate !== undefined) throw new CatalogIntegrityError(`Duplicate ${kind} id: ${duplicate}`);
 }
 
-function assertKnown(kind: string, id: string, known: ReadonlySet<string>): void {
-  if (!known.has(id)) throw new CatalogIntegrityError(`Unknown ${kind}: ${id}`);
+function assertIntegrity(data: CatalogData): void {
+  assertUnique('category', data.categories.map(({ slug }) => slug));
+  assertUnique('venue', data.venues.map(({ id }) => id));
+  assertUnique('event', data.events.map(({ id }) => id));
+  assertUnique('occurrence', data.occurrences.map(({ id }) => id));
+
+  const slugs = indexBy(data.categories, ({ slug }) => slug);
+  const venues = indexBy(data.venues, ({ id }) => id);
+  const events = indexBy(data.events, ({ id }) => id);
+  for (const { id, categorySlug } of data.events) lookup(slugs, categorySlug, `category of event ${id}`);
+  for (const { id, eventId, venueId, startsAt } of data.occurrences) {
+    lookup(events, eventId, `event of occurrence ${id}`);
+    lookup(venues, venueId, `venue of occurrence ${id}`);
+    if (!isWarsawIso(startsAt)) throw new CatalogIntegrityError(`Invalid startsAt of occurrence ${id}: ${startsAt}`);
+  }
 }
 
-/** Returns the catalog if ids are unique and every reference resolves; throws CatalogIntegrityError otherwise. */
-export function createCatalog(catalog: Catalog): Catalog {
-  assertUnique('category', catalog.categories.map(({ slug }) => slug));
-  assertUnique('venue', catalog.venues.map(({ id }) => id));
-  assertUnique('event', catalog.events.map(({ id }) => id));
-  assertUnique('occurrence', catalog.occurrences.map(({ id }) => id));
+/** Opaque: the private constructor means only `createCatalog` can produce one, so integrity holds by construction. */
+export class Catalog implements CatalogData {
+  // A private member makes the type nominal: a spread or literal copy is not assignable
+  declare private readonly validated: true;
+  readonly categories: readonly Category[];
+  readonly venues: readonly Venue[];
+  readonly events: readonly Event[];
+  readonly occurrences: readonly Occurrence[];
 
-  const slugs = new Set(catalog.categories.map(({ slug }) => slug));
-  const venueIds = new Set<string>(catalog.venues.map(({ id }) => id));
-  const eventIds = new Set<string>(catalog.events.map(({ id }) => id));
-  for (const { id, categorySlug } of catalog.events) assertKnown(`category of event ${id}`, categorySlug, slugs);
-  for (const { id, eventId, venueId } of catalog.occurrences) {
-    assertKnown(`event of occurrence ${id}`, eventId, eventIds);
-    assertKnown(`venue of occurrence ${id}`, venueId, venueIds);
+  private constructor({ categories, venues, events, occurrences }: CatalogData) {
+    this.categories = categories;
+    this.venues = venues;
+    this.events = events;
+    this.occurrences = occurrences;
   }
-  return catalog;
+
+  static validated(data: CatalogData): Catalog {
+    assertIntegrity(data);
+    return new Catalog(data);
+  }
+}
+
+/** Unique ids, resolving references and Warsaw ISO start times; throws CatalogIntegrityError otherwise. */
+export function createCatalog(data: CatalogData): Catalog {
+  return Catalog.validated(data);
 }

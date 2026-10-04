@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { eventIdSchema, occurrenceIdSchema, occurrenceListingSchema } from '@events/contract/listing';
-import { createCatalog, venueId, type Catalog } from './model';
+import { createCatalog, venueId, type Occurrence } from './model';
 import { listOccurrences } from './listOccurrences';
 
 const VENUE = { id: venueId('hall'), name: 'Hala', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
@@ -10,7 +10,7 @@ const EVENT = {
   categorySlug: 'music',
   imageUrl: '/jazz.jpg',
 };
-const occurrence = (id: string, startsAt: string, price: Catalog['occurrences'][number]['price'] = null) => ({
+const occurrence = (id: string, startsAt: string, price: Occurrence['price'] = null) => ({
   id: occurrenceIdSchema.parse(id),
   eventId: EVENT.id,
   venueId: VENUE.id,
@@ -57,11 +57,5 @@ describe('listOccurrences', () => {
 
     expect(listOccurrences(night, { from: '2030-01-05', to: '2030-01-05' })).toHaveLength(1);
     expect(listOccurrences(night, { from: '2030-01-06', to: '2030-01-06' })).toHaveLength(0);
-  });
-
-  it('throws on a reference the catalog does not resolve', () => {
-    const dangling: Catalog = { ...catalog, venues: [] };
-
-    expect(() => listOccurrences(dangling, { from: '2030-01-01', to: '2030-01-02' })).toThrow();
   });
 });

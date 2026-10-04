@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { describeOccurrenceSourceConformance } from '@events/contract/source/testing';
 import { OccurrenceSourceError, type OccurrenceSource } from '@events/contract/source';
+import { brokenCatalog } from './brokenCatalog';
 import { catalogFromListings } from './catalogFromListings';
 import { createInMemoryOccurrenceSource } from './inMemoryOccurrenceSource';
 import { listOccurrences } from './listOccurrences';
@@ -15,10 +16,8 @@ describeOccurrenceSourceConformance('In-memory occurrence source', () => {
     seed: (listings) => {
       current = createInMemoryOccurrenceSource(catalogFromListings(listings));
     },
-    // Saturday 2030-03-30 (probed by the suite) has sample occurrences, whose venues are missing here
     breakBackend: () => {
-      const sample = createSampleCatalog(new Date('2030-03-30T12:00:00Z'));
-      current = createInMemoryOccurrenceSource({ ...sample, venues: [] });
+      current = createInMemoryOccurrenceSource(brokenCatalog(createSampleCatalog(new Date('2030-03-30T12:00:00Z'))));
     },
   };
 });
@@ -34,7 +33,7 @@ describe('createInMemoryOccurrenceSource', () => {
 
   it('keeps the original failure as the cause', async () => {
     const catalog = createSampleCatalog(new Date('2030-01-01T12:00:00Z'));
-    const broken = createInMemoryOccurrenceSource({ ...catalog, venues: [] });
+    const broken = createInMemoryOccurrenceSource(brokenCatalog(catalog));
 
     const failure = await broken.listOccurrences(RANGE).catch((error: unknown) => error);
 

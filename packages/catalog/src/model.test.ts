@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { eventIdSchema, occurrenceIdSchema } from '@events/contract/listing';
-import { CatalogIntegrityError, createCatalog, venueId, type Catalog } from './model';
+import { CatalogIntegrityError, createCatalog, venueId, type CatalogData } from './model';
 
 const MUSIC = { slug: 'music', label: 'Muzyka' };
 const VENUE = { id: venueId('hall'), name: 'Hala', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
@@ -12,7 +12,7 @@ const OCCURRENCE = {
   startsAt: '2030-01-01T19:00:00+01:00',
   price: null,
 };
-const VALID: Catalog = {
+const VALID: CatalogData = {
   categories: [MUSIC],
   venues: [VENUE],
   events: [EVENT],
@@ -22,12 +22,13 @@ const VALID: Catalog = {
 describe('venueId', () => {
   it('rejects characters that are unsafe in DOM ids and URLs', () => {
     expect(() => venueId('bad id')).toThrow();
+    expect(venueId('ok_id-1')).toBe('ok_id-1');
   });
 });
 
 describe('createCatalog', () => {
-  it('returns a consistent catalog unchanged', () => {
-    expect(createCatalog(VALID)).toBe(VALID);
+  it('returns a catalog holding the given data', () => {
+    expect(createCatalog(VALID)).toMatchObject(VALID);
   });
 
   it.each([
@@ -49,5 +50,10 @@ describe('createCatalog', () => {
     const unknownVenue = { ...VALID, occurrences: [{ ...OCCURRENCE, venueId: venueId('x') }] };
     expect(() => createCatalog(unknownEvent)).toThrow(CatalogIntegrityError);
     expect(() => createCatalog(unknownVenue)).toThrow(CatalogIntegrityError);
+  });
+
+  it('rejects an occurrence whose startsAt is not canonical Warsaw ISO', () => {
+    const utc = { ...VALID, occurrences: [{ ...OCCURRENCE, startsAt: '2030-01-01T18:00:00Z' }] };
+    expect(() => createCatalog(utc)).toThrow(CatalogIntegrityError);
   });
 });

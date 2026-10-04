@@ -39,8 +39,8 @@ const PACKAGE_PATTERNS = [
 ];
 
 const TESTING_ONLY_PATTERN = {
-  group: ['@events/contract/source/testing'],
-  message: 'The conformance suite may only be imported from test files.',
+  group: ['@events/contract/source/testing', '@events/catalog/testing'],
+  message: 'Testing entry points may only be imported from test files.',
 };
 
 const HTTP_TRANSPORT_ONLY_PATTERN = {
