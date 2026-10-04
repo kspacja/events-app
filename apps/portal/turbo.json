@@ -8,9 +8,6 @@
     },
     "dev": {
       "env": ["OCCURRENCE_SOURCE", "EVENTS_API_URL", "API_MOCKING"]
-    },
-    "test": {
-      "env": ["OCCURRENCE_SOURCE"]
     }
   }
 }

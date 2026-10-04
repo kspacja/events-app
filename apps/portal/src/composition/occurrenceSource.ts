@@ -6,18 +6,16 @@ import { getRuntimeConfig, type RuntimeConfig } from '@/config/runtimeConfig';
 import { createHttpOccurrenceSource } from '@/features/events/source/httpOccurrenceSource';
 
 // Stage 1 adds the 'catalog' branch here
-export function createOccurrenceSource(config: RuntimeConfig): OccurrenceSource {
+export function createOccurrenceSource(config: RuntimeConfig, now: Date): OccurrenceSource {
   switch (config.source) {
     case 'http':
       return createHttpOccurrenceSource(config.eventsApiUrl);
     case 'memory':
-      return createInMemoryOccurrenceSource(createSampleCatalog(new Date()));
+      return createInMemoryOccurrenceSource(createSampleCatalog(now));
   }
 }
 
-let cached: OccurrenceSource | undefined;
-
-export function getOccurrenceSource(): OccurrenceSource {
-  cached ??= createOccurrenceSource(getRuntimeConfig());
-  return cached;
+// The sample catalog is relative to `now`, so it is built per call; only the config is cached
+export function getOccurrenceSource(now: Date = new Date()): OccurrenceSource {
+  return createOccurrenceSource(getRuntimeConfig(), now);
 }

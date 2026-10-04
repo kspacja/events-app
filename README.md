@@ -38,7 +38,9 @@ Strona: [http://localhost:3000](http://localhost:3000).
 | `EVENTS_API_URL` | `http://api.events.local` | adres API. Wymagany i musi być poprawnym adresem http(s) tylko przy `OCCURRENCE_SOURCE=http`; przy `memory` jest ignorowany. Brak wartości domyślnej. |
 | `API_MOCKING` | `enabled` | tylko przy `http`: uruchamia MSW, który w procesie odpowiada pod `EVENTS_API_URL`. Bez tego strona próbuje połączyć się z prawdziwym API i pokazuje błąd. Przy `memory` jest ignorowany. |
 
-Konfiguracja jest walidowana raz, przy starcie serwera (`apps/portal/src/config/runtimeConfig.ts`); błędna konfiguracja zatrzymuje start z komunikatem o zmiennej (bez jej wartości). Źródło składa jedno miejsce: `apps/portal/src/composition/occurrenceSource.ts`.
+Konfiguracja jest walidowana przy starcie serwera, w hooku instrumentacji (`apps/portal/src/config/runtimeConfig.ts`). Błędna konfiguracja nie zatrzymuje serwera (Next 16): serwer działa dalej i odpowiada 500, a w logu jest czytelny komunikat z nazwami zmiennych (bez ich wartości). Na Vercel błąd ujawni się więc w czasie działania (po deployu), nie podczas builda. Źródło składa jedno miejsce: `apps/portal/src/composition/occurrenceSource.ts`.
+
+Reguła produkcyjna: gdy `VERCEL_ENV=production`, wartości `OCCURRENCE_SOURCE=memory` i `API_MOCKING=enabled` są odrzucane (500 z komunikatem), żeby błędny deploy nie serwował po cichu przykładowych danych. Reguła nie opiera się na `NODE_ENV`, bo lokalny `next start` też jest „produkcyjny”.
 
 `OCCURRENCE_SOURCE=memory` pozwala uruchomić portal bez MSW i bez adresu API; dane są te same co w mocku (ten sam przykładowy Katalog).
 

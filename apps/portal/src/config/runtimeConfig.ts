@@ -2,8 +2,8 @@ import 'server-only';
 
 import { z } from 'zod';
 
-export const OCCURRENCE_SOURCES = ['http', 'memory'] as const;
-export const DEFAULT_OCCURRENCE_SOURCE = 'http';
+const OCCURRENCE_SOURCES = ['http', 'memory'] as const;
+const DEFAULT_OCCURRENCE_SOURCE = 'http';
 
 export type RuntimeConfig =
   | { readonly source: 'memory' }
@@ -43,9 +43,21 @@ function problemsOf(error: z.ZodError): string[] {
   return error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`);
 }
 
+// Production (VERCEL_ENV, not NODE_ENV: local `next start` is also production) must never serve sample data
+function productionProblems(env: Readonly<Record<string, string | undefined>>, source: string): string[] {
+  if (env.VERCEL_ENV !== 'production') return [];
+  const problems: string[] = [];
+  if (source === 'memory') problems.push('OCCURRENCE_SOURCE: memory is not allowed in production');
+  if (env.API_MOCKING === 'enabled') problems.push('API_MOCKING: enabled is not allowed in production');
+  return problems;
+}
+
 export function parseRuntimeConfig(env: Readonly<Record<string, string | undefined>>): RuntimeConfig {
   const sourceResult = sourceEnvSchema.safeParse(env);
   if (!sourceResult.success) throw new RuntimeConfigError(problemsOf(sourceResult.error));
+
+  const forbidden = productionProblems(env, sourceResult.data.OCCURRENCE_SOURCE);
+  if (forbidden.length > 0) throw new RuntimeConfigError(forbidden);
 
   if (sourceResult.data.OCCURRENCE_SOURCE === 'memory') return { source: 'memory' };
 

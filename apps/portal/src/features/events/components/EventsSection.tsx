@@ -1,3 +1,5 @@
+import 'server-only';
+
 import type { ReactNode } from 'react';
 import type { OccurrenceSource } from '@events/contract/source';
 import type { DateRange } from '@events/time';
