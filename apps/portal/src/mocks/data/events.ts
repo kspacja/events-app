@@ -1,4 +1,5 @@
-import type { Event, EventCategory, Venue } from '@/features/events/types';
+import type { CategorySlug } from '@events/contract/categories';
+import type { Event, Venue } from '@/features/events/types';
 import {
   addDays,
   localDayOf,
@@ -9,7 +10,7 @@ import {
 interface EventTemplate {
   readonly id: string;
   readonly title: string;
-  readonly category: EventCategory;
+  readonly category: CategorySlug;
   readonly venue: Venue;
   /** Days since Monday: 0..6 */
   readonly dayOffset: number;

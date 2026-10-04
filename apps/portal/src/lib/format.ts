@@ -1,10 +1,10 @@
-import { toDate, localMinutesOf, MINUTES_PER_HOUR, type CalendarDay } from '@events/time';
+import { calendarDayToDate, localMinutesOf, MINUTES_PER_HOUR, type CalendarDay } from '@events/time';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
 /** Formats a calendar day with a date-fns pattern in Polish. */
 export function formatDay(day: CalendarDay, pattern: string): string {
-  return format(toDate(day), pattern, { locale: pl });
+  return format(calendarDayToDate(day), pattern, { locale: pl });
 }
 
 /** e.g. `sobota, 3.10` */

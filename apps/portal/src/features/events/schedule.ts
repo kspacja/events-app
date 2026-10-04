@@ -12,7 +12,7 @@ import {
   weekdayIndex,
   type CalendarDay,
 } from '@events/time';
-import { formatCalendarDay, formatLocalTime } from '@/features/format/format';
+import { formatCalendarDay, formatLocalTime } from '@/lib/format';
 import { COUNT_LABELS } from './labels';
 import type { MapPoint } from './mapView';
 import type { Event } from './types';

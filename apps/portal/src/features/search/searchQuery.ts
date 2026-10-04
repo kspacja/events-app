@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { formatClock } from '@/features/format/format';
+import { formatClock } from '@/lib/format';
 import {
   DATE_PRESETS,
   resolvePreset,

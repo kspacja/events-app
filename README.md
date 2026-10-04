@@ -51,7 +51,7 @@ Bramki (z korzenia, przez Turborepo): `pnpm typecheck`, `pnpm lint`, `pnpm test`
 | `pnpm typecheck` | portal: `next typegen` + `tsc --noEmit` (typegen generuje typy tras Nexta, bez niego `tsc` pada na świeżym checkoucie); pakiety: `tsc --noEmit` |
 | `pnpm lint` | ESLint |
 | `pnpm test` | Vitest we wszystkich pakietach (portal: jsdom + MSW z tymi samymi handlerami co aplikacja) |
-| `pnpm --filter @events/contract test` | testy samego kontraktu i czasu lokalnego |
+| `pnpm --filter @events/contract test` | testy samego kontraktu (`pnpm --filter @events/time test` — czasu lokalnego) |
 
 ## Adresy do sprawdzenia
 
@@ -73,9 +73,11 @@ Doba wydarzeń kończy się o 04:00: wydarzenie z niedzieli 01:30 należy do sob
 ## Struktura
 
 - `apps/portal` — aplikacja Next.js (`@events/portal`); dalsze aplikacje (studio, moderation, worker) dojdą w `apps/`
-- `packages/contract` (`@events/contract`) — wspólny kontrakt: schematy zod wydarzeń (`/events`) i czas lokalny (`/time`); źródła TS, bez builda
+- `packages/time` (`@events/time`) — czas lokalny (Europe/Warsaw): dzień kalendarzowy, doba wydarzeń kończąca się o 04:00, DST; źródła TS, bez builda
+- `packages/contract` (`@events/contract`) — wspólny kontrakt: schematy zod wydarzeń (`/events`) oraz lista kategorii (`/categories`, tymczasowo do Katalogu); źródła TS, bez builda
 - `packages/ui` (`@events/ui`) — tokeny CSS (`@events/ui/tokens.css`); fonty zostają w layoucie portalu
 - `packages/typescript-config` — wspólne `tsconfig` (strict) i wariant dla Nexta
+- `packages/eslint-config` (`@events/eslint-config`) — wspólny ESLint: granice importów (bez importów w głąb `src` pakietu i bez ścieżek względnych między pakietami/aplikacjami; pakiety bez Reacta/Nexta i bez importu aplikacji) oraz reguły wymagające typów
 - `docs/adr`, `docs/contexts`, `CONTEXT-MAP.md` — decyzje i mapa kontekstów
 - `HANDOFF.md`, `*.dc.html` — referencja UI (nie kod produkcyjny)
 - `docs/plans` — plan implementacji
@@ -83,7 +85,7 @@ Doba wydarzeń kończy się o 04:00: wydarzenie z niedzieli 01:30 należy do sob
 ### Wnętrze `apps/portal`
 
 - `src/app` — strona startowa, `loading`, `error`
-- `@events/contract/time` — czas lokalny (Europe/Warsaw): dzień, doba wydarzeń do 04:00, formatowanie, DST
+- `src/lib/format.ts` — formatowanie dat i godzin po polsku (na bazie `@events/time`); obok `logger.ts`
 - `src/features/events/api.ts` — źródło wydarzeń (server-only); dowolny zakres, sam dzieli zapytania po ≤31 dni
 - `src/features/events/schedule.ts` — „Program”: reguła aktywnego wydarzenia, tygodnie, licznik, punkty mapy
 - `src/features/events/components` — siatka dni, karty, mapa

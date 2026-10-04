@@ -3,7 +3,7 @@ import {
   localMinutesOf,
   MINUTES_PER_HOUR,
 } from '@events/time';
-import { formatClock } from '@/features/format/format';
+import { formatClock } from '@/lib/format';
 
 export const TIME_PRESETS = [
   'morning',

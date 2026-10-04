@@ -16,6 +16,15 @@
   --color-border: #e4e2dd;
   --color-map-water: #bfd7ea;
 
+  --category-music: #f3e3d8;
+  --category-film: #dde6ee;
+  --category-food: #ede6d6;
+  --category-movement: #e3eadb;
+  --category-workshops: #ebe1e8;
+  --category-art: #e6e3ee;
+  --category-meetups: #efe6dc;
+  --category-comedy: #f1e6d2;
+
   --radius-card: 12px;
   --radius-map: 18px;
   --radius-chip: 10px 10px 3px 3px;

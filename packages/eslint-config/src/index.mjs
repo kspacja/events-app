@@ -1,49 +1,58 @@
 import tseslint from 'typescript-eslint';
 
+const NO_DEEP_IMPORT_MESSAGE = 'Import only what the package declares in "exports".';
+const NO_RELATIVE_SEAM_MESSAGE = 'Reach packages by name (@events/...), not through relative paths.';
+const FRAMEWORK_FREE_MESSAGE = 'Packages must stay framework-free.';
+
 const DEEP_IMPORT_PATTERNS = [
   {
     group: ['@events/*/src', '@events/*/src/**'],
-    message: 'Import only what the package declares in "exports".',
+    message: NO_DEEP_IMPORT_MESSAGE,
   },
   {
     group: ['**/packages/**', '**/apps/**'],
-    message: 'Reach packages by name (@events/...), not through relative paths.',
+    message: NO_RELATIVE_SEAM_MESSAGE,
   },
 ];
 
 const PACKAGE_PATHS = [
-  { name: 'next', message: 'Packages must stay framework-free.' },
-  { name: 'react', message: 'Packages must stay framework-free.' },
-  { name: 'react-dom', message: 'Packages must stay framework-free.' },
+  { name: 'next', message: FRAMEWORK_FREE_MESSAGE },
+  { name: 'react', message: FRAMEWORK_FREE_MESSAGE },
+  { name: 'react-dom', message: FRAMEWORK_FREE_MESSAGE },
 ];
 
 const PACKAGE_PATTERNS = [
+  {
+    // A package's own files are reached with ./ or a deeper ../; ../<name>/src is a sibling package
+    group: ['../*/src', '../*/src/**', '../../*/src', '../../*/src/**'],
+    message: NO_RELATIVE_SEAM_MESSAGE,
+  },
   {
     group: ['@/*', 'next/*', 'react/*', 'react-dom/*'],
     message: 'Packages must not depend on an app or a UI framework.',
   },
   {
-    group: ['@events/portal', '@events/portal/**', '@events/studio', '@events/studio/**', '@events/moderation', '@events/moderation/**', '@events/worker', '@events/worker/**'],
+    // Future apps: add their name here
+    group: ['@events/portal', '@events/portal/**'],
     message: 'Packages must not import apps.',
   },
 ];
 
-/** Seam rules from ADR-0002; pass `isPackage` for code under packages/*. */
-export function importBoundaries({ isPackage }) {
-  return {
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: isPackage ? PACKAGE_PATHS : [],
-          patterns: isPackage
-            ? [...DEEP_IMPORT_PATTERNS, ...PACKAGE_PATTERNS]
-            : DEEP_IMPORT_PATTERNS,
-        },
-      ],
-    },
-  };
+function restrictImports({ paths, patterns }) {
+  return { rules: { 'no-restricted-imports': ['error', { paths, patterns }] } };
 }
+
+/**
+ * Package/app seams: no deep imports into a package's src and no relative paths across
+ * packages/apps. Context-to-context seams (ADR-0002) arrive with packages/catalog.
+ */
+export const appBoundaries = restrictImports({ paths: [], patterns: DEEP_IMPORT_PATTERNS });
+
+/** Same as appBoundaries, plus: packages stay framework-free and must not import apps. */
+export const packageBoundaries = restrictImports({
+  paths: PACKAGE_PATHS,
+  patterns: [...DEEP_IMPORT_PATTERNS, ...PACKAGE_PATTERNS],
+});
 
 /** Type-aware rules that code-quality-js.md requires; needs the TS project service. */
 export function typeAwareRules({ tsconfigRootDir }) {

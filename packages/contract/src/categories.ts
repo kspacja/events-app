@@ -12,21 +12,18 @@ export const CATEGORY_SLUGS = [
 export type CategorySlug = (typeof CATEGORY_SLUGS)[number];
 
 export interface Category {
+  readonly slug: CategorySlug;
   readonly label: string;
-  readonly tint: string;
 }
 
-export const CATEGORIES: Readonly<Record<CategorySlug, Category>> = {
-  music: { label: 'Muzyka', tint: '#F3E3D8' },
-  film: { label: 'Film', tint: '#DDE6EE' },
-  food: { label: 'Jedzenie', tint: '#EDE6D6' },
-  movement: { label: 'Ruch', tint: '#E3EADB' },
-  workshops: { label: 'Warsztaty', tint: '#EBE1E8' },
-  art: { label: 'Sztuka', tint: '#E6E3EE' },
-  meetups: { label: 'Spotkania', tint: '#EFE6DC' },
-  comedy: { label: 'Komedia', tint: '#F1E6D2' },
-};
-
-export function getCategory(slug: CategorySlug): Category {
-  return CATEGORIES[slug];
-}
+// Temporary home: becomes Catalog rows in stage 1
+export const CATEGORIES: readonly Category[] = [
+  { slug: 'music', label: 'Muzyka' },
+  { slug: 'film', label: 'Film' },
+  { slug: 'food', label: 'Jedzenie' },
+  { slug: 'movement', label: 'Ruch' },
+  { slug: 'workshops', label: 'Warsztaty' },
+  { slug: 'art', label: 'Sztuka' },
+  { slug: 'meetups', label: 'Spotkania' },
+  { slug: 'comedy', label: 'Komedia' },
+];

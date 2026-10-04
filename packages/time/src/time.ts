@@ -25,31 +25,31 @@ function toCalendarDay(date: Date): CalendarDay {
 }
 
 /** UTC-anchored, so calendar math never depends on the machine's timezone. */
-export function toDate(day: CalendarDay): TZDate {
+export function calendarDayToDate(day: CalendarDay): TZDate {
   const [year, month, date] = day.split('-').map(Number);
   return new TZDate(year, month - 1, date, UTC);
 }
 
 export function isCalendarDay(value: string): value is CalendarDay {
   if (!DAY_PATTERN.test(value)) return false;
-  return toCalendarDay(toDate(value as CalendarDay)) === value;
+  return toCalendarDay(calendarDayToDate(value as CalendarDay)) === value;
 }
 
 export function addDays(day: CalendarDay, amount: number): CalendarDay {
-  return toCalendarDay(addDaysToDate(toDate(day), amount));
+  return toCalendarDay(addDaysToDate(calendarDayToDate(day), amount));
 }
 
 export function diffInDays(from: CalendarDay, to: CalendarDay): number {
-  return differenceInCalendarDays(toDate(to), toDate(from));
+  return differenceInCalendarDays(calendarDayToDate(to), calendarDayToDate(from));
 }
 
 /** Days since Monday: Monday = 0 ... Sunday = 6. */
 export function weekdayIndex(day: CalendarDay): number {
-  return getISODay(toDate(day)) - 1;
+  return getISODay(calendarDayToDate(day)) - 1;
 }
 
 export function mondayOf(day: CalendarDay): CalendarDay {
-  return toCalendarDay(startOfISOWeek(toDate(day)));
+  return toCalendarDay(startOfISOWeek(calendarDayToDate(day)));
 }
 
 function inWarsaw(instant: Date | string): TZDate {

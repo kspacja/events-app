@@ -7,7 +7,7 @@ import {
   mondayOf,
   type CalendarDay,
 } from '@events/time';
-import { formatDay } from '@/features/format/format';
+import { formatDay } from '@/lib/format';
 
 export const MAX_CUSTOM_RANGE_DAYS = 31;
 

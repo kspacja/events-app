@@ -30,6 +30,10 @@ const POINT_LAYER_ID = 'event-points';
 // One past clusterMaxZoom so a requested point is never inside a cluster
 const SELECTED_MIN_ZOOM = 15;
 
+const FALLBACK_ACCENT = '#c2410c';
+const FALLBACK_MUTED = '#b5b2ab';
+const FALLBACK_HALO = '#ffffff';
+
 const hasActive: maplibregl.ExpressionSpecification = ['>', ['get', 'activeCount'], 0];
 
 interface Palette {
@@ -41,11 +45,12 @@ interface Palette {
 // Layer paint can't read CSS variables, so resolve them from tokens.css once the map is up
 function readPalette(container: HTMLElement): Palette {
   const styles = getComputedStyle(container);
-  const token = (name: string) => styles.getPropertyValue(name).trim();
+  // A missing token resolves to '' and MapLibre rejects an empty colour
+  const token = (name: string, fallback: string) => styles.getPropertyValue(name).trim() || fallback;
   return {
-    accent: token('--color-accent'),
-    muted: token('--color-text-disabled'),
-    halo: token('--color-bg'),
+    accent: token('--color-accent', FALLBACK_ACCENT),
+    muted: token('--color-text-disabled', FALLBACK_MUTED),
+    halo: token('--color-bg', FALLBACK_HALO),
   };
 }
 
@@ -94,6 +99,8 @@ function layersFor({ accent, muted, halo }: Palette) {
   return { clusterLayer, clusterCountLayer, pointLayer };
 }
 
+type MapLayers = ReturnType<typeof layersFor>;
+
 interface EventsMapProps {
   readonly points: readonly MapPoint[];
   readonly focus: readonly MapPoint[];
@@ -102,8 +109,9 @@ interface EventsMapProps {
 export function EventsMap({ points, focus }: EventsMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [cursor, setCursor] = useState('');
-  const [loaded, setLoaded] = useState(false);
-  const [palette, setPalette] = useState<Palette | null>(null);
+  // Built once on load so the layer props stay referentially stable
+  const [layers, setLayers] = useState<MapLayers | null>(null);
+  const loaded = layers !== null;
   const flownSeq = useRef(0);
   const selectionStore = useEventSelectionStore();
   const selection = useEventSelection();
@@ -112,7 +120,6 @@ export function EventsMap({ points, focus }: EventsMapProps) {
   const selectedSource = selection?.source;
   const pointsKey = focus.map((p) => `${p.id}:${p.lat}:${p.lng}`).join('|');
   const data = useMemo(() => toFeatureCollection(points), [points]);
-  const layers = useMemo(() => (palette ? layersFor(palette) : null), [palette]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -149,8 +156,7 @@ export function EventsMap({ points, focus }: EventsMapProps) {
   }, [hasSelection, selectionStore]);
 
   function handleLoad(event: MapEvent) {
-    setPalette(readPalette(event.target.getContainer()));
-    setLoaded(true);
+    setLayers(layersFor(readPalette(event.target.getContainer())));
   }
 
   function handleClick(event: MapLayerMouseEvent) {

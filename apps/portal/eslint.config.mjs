@@ -1,12 +1,12 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
-import { importBoundaries, typeAwareRules } from "@events/eslint-config";
+import { appBoundaries, typeAwareRules } from "@events/eslint-config";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  importBoundaries({ isPackage: false }),
+  appBoundaries,
   typeAwareRules({ tsconfigRootDir: import.meta.dirname }),
   // Override default ignores of eslint-config-next.
   globalIgnores([
