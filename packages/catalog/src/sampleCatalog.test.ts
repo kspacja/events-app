@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { eventDayOf, localMinutesOf, mondayOf, addDays } from '@events/time';
+import { currentEventDay, eventDayOf, localMinutesOf, mondayOf, addDays } from '@events/time';
 import { createInMemoryOccurrenceSource } from './inMemoryOccurrenceSource';
 import { listOccurrences } from './listOccurrences';
 import { createSampleCatalog } from './sampleCatalog';
@@ -65,5 +65,15 @@ describe('createSampleCatalog', () => {
     const listed = await createInMemoryOccurrenceSource(catalog).listOccurrences(WEEK);
 
     expect(listed).toEqual(listOccurrences(catalog, WEEK));
+  });
+
+  it('includes the week shown by the portal on Monday 00:30 Warsaw', () => {
+    const mondayAfterMidnight = new Date('2030-01-13T23:30:00Z');
+    const shownMonday = mondayOf(currentEventDay(mondayAfterMidnight));
+    const shownWeek = { from: shownMonday, to: addDays(shownMonday, 6) };
+
+    expect(shownMonday).toBe(FIRST_MONDAY);
+    expect(listOccurrences(createSampleCatalog(mondayAfterMidnight), shownWeek)).toHaveLength(CARDS_IN_FIRST_WEEK);
+    expect(listOccurrences(createSampleCatalog(NOW), shownWeek)).toHaveLength(CARDS_IN_FIRST_WEEK);
   });
 });

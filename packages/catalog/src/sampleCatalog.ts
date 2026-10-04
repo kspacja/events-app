@@ -1,5 +1,5 @@
 import { eventIdSchema, occurrenceIdSchema, type Category, type Price } from '@events/contract/listing';
-import { addDays, localDayOf, mondayOf, warsawIsoAt } from '@events/time';
+import { addDays, currentEventDay, mondayOf, warsawIsoAt } from '@events/time';
 import { createCatalog, venueId, type Catalog, type Event, type Occurrence, type Venue } from './model';
 
 const WROCLAW = 'Wrocław';
@@ -132,9 +132,9 @@ function isSkipped(weekIndex: number, templateIndex: number): boolean {
   return weekIndex > 0 && (weekIndex + templateIndex) % SKIP_CYCLE === SKIPPED_REMAINDER;
 }
 
-/** Sample data for the current week and the 4 after it, so it never goes stale. */
+/** Sample data for the current event-day week and the 4 after it, so it never goes stale. */
 export function createSampleCatalog(now: Date): Catalog {
-  const firstMonday = mondayOf(localDayOf(now));
+  const firstMonday = mondayOf(currentEventDay(now));
 
   const events: Event[] = SAMPLE_EVENTS.map(({ id, title, category }) => ({
     id: eventIdSchema.parse(id),
