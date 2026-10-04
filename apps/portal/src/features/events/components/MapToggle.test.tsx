@@ -2,26 +2,26 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { occurrenceIdSchema } from '@events/contract/occurrences';
-import { EventSelectionProvider, useEventSelectionStore } from '../EventSelectionProvider';
+import { OccurrenceSelectionProvider, useOccurrenceSelection } from '../OccurrenceSelectionProvider';
 import { MapToggle } from './MapToggle';
 
 const OCCURRENCE_ID = occurrenceIdSchema.parse('e1-2026-06-06');
 
 function renderToggle() {
   return render(
-    <EventSelectionProvider>
+    <OccurrenceSelectionProvider>
       <MapToggle>map content</MapToggle>
       <RequestButton />
-    </EventSelectionProvider>,
+    </OccurrenceSelectionProvider>,
   );
 }
 
 function RequestButton() {
-  const store = useEventSelectionStore();
+  const selection = useOccurrenceSelection();
   return (
     <button
       type="button"
-      onClick={(event) => store.selectFromCard(OCCURRENCE_ID, event.currentTarget)}
+      onClick={() => selection.selectFromCard(OCCURRENCE_ID, () => {})}
     >
       request
     </button>

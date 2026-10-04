@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { EventSelectionProvider } from '../EventSelectionProvider';
+import { OccurrenceSelectionProvider } from '../OccurrenceSelectionProvider';
 import { buildSchedule } from '../schedule';
 import { SCHEDULE_SECTION_ID } from '../scheduleDom';
 import { SkipLink } from './SkipLink';
@@ -12,10 +12,10 @@ describe('skip link and schedule section', () => {
   it('links to a focusable schedule section', () => {
     const schedule = buildSchedule([], { range: RANGE, time: null });
     render(
-      <EventSelectionProvider>
+      <OccurrenceSelectionProvider>
         <SkipLink />
         <WeekGrid schedule={schedule} />
-      </EventSelectionProvider>,
+      </OccurrenceSelectionProvider>,
     );
 
     const link = screen.getByRole('link', { name: 'Przejdź do listy wydarzeń' });

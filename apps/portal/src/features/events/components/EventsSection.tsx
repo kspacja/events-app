@@ -5,7 +5,7 @@ import { getOccurrenceSource } from '../source/getOccurrenceSource';
 import { buildSchedule, formatCount, scheduleSpan } from '../schedule';
 import { EventsMapLoader } from './EventsMapLoader';
 import { Header } from './Header';
-import { EventSelectionProvider } from '../EventSelectionProvider';
+import { OccurrenceSelectionProvider } from '../OccurrenceSelectionProvider';
 import { MapToggle } from './MapToggle';
 import { SkipLink } from './SkipLink';
 import { WeekGrid } from './WeekGrid';
@@ -22,7 +22,7 @@ export async function EventsSection({ range, time, sentence, notice }: EventsSec
   const schedule = buildSchedule(listings, { range, time });
 
   return (
-    <EventSelectionProvider>
+    <OccurrenceSelectionProvider>
       <Header
         sentence={sentence}
         notice={notice}
@@ -39,6 +39,6 @@ export async function EventsSection({ range, time, sentence, notice }: EventsSec
         }
       />
       <WeekGrid schedule={schedule} />
-    </EventSelectionProvider>
+    </OccurrenceSelectionProvider>
   );
 }

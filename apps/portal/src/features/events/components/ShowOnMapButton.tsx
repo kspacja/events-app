@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { useEventSelectionStore } from '../EventSelectionProvider';
+import { useOccurrenceSelection } from '../OccurrenceSelectionProvider';
 import { CARD_LABELS } from '../labels';
 import type { OccurrenceId } from '../types';
 import styles from './ShowOnMapButton.module.css';
@@ -13,16 +13,14 @@ interface ShowOnMapButtonProps {
 
 export function ShowOnMapButton({ occurrenceId, title }: ShowOnMapButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
-  const store = useEventSelectionStore();
+  const selection = useOccurrenceSelection();
 
   return (
     <button
       ref={ref}
       type="button"
       className={styles.pin}
-      onClick={() => {
-        if (ref.current) store.selectFromCard(occurrenceId, ref.current);
-      }}
+      onClick={() => selection.selectFromCard(occurrenceId, () => ref.current?.focus())}
     >
       <span className="visually-hidden">{`${CARD_LABELS.showOnMap}: ${title}`}</span>
       <svg

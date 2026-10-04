@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
-import { useEventSelectionStore } from '../EventSelectionProvider';
+import { useOccurrenceSelection } from '../OccurrenceSelectionProvider';
 import { MAP_LABELS } from '../labels';
 import styles from './MapToggle.module.css';
 
@@ -30,21 +30,21 @@ export function MapToggle({ children }: MapToggleProps) {
   const descriptionId = `${panelId}-description`;
   const figureRef = useRef<HTMLElement>(null);
   const isDesktop = useSyncExternalStore(subscribe, getIsDesktop, getServerIsDesktop);
-  const selectionStore = useEventSelectionStore();
+  const selection = useOccurrenceSelection();
 
-  useEffect(() => {
-    let handledSeq = 0;
-    return selectionStore.subscribe(() => {
-      const selection = selectionStore.getSelection();
-      if (selection?.source !== 'card' || selection.seq === handledSeq) return;
-      handledSeq = selection.seq;
-      setExpanded(true);
-      // Wait for the collapsed panel to become visible before measuring it
-      requestAnimationFrame(() => {
-        figureRef.current?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
-      });
-    });
-  }, [selectionStore]);
+  useEffect(
+    () =>
+      selection.subscribe(() => {
+        if (!selection.getInstructions().expandMap) return;
+        setExpanded(true);
+        selection.mapExpanded();
+        // Wait for the collapsed panel to become visible before measuring it
+        requestAnimationFrame(() => {
+          figureRef.current?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+        });
+      }),
+    [selection],
+  );
 
   return (
     <>

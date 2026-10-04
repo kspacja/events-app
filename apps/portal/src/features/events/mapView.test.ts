@@ -8,7 +8,14 @@ function point(id: string, lat: number, lng: number): MapPoint {
 
 describe('viewFor', () => {
   it('shows all of Poland when there are no points', () => {
-    expect(viewFor([])).toEqual({ longitude: 19.1, latitude: 52.0, zoom: 5 });
+    expect(viewFor([])).toEqual({
+      bounds: [
+        [14.12, 49.0],
+        [24.15, 54.84],
+      ],
+      maxZoom: 14,
+      padding: 48,
+    });
   });
 
   it('fits a single point with a zoom cap so it is not over-zoomed', () => {
@@ -19,7 +26,8 @@ describe('viewFor', () => {
         [19.94, 50.06],
         [19.94, 50.06],
       ],
-      fitBoundsOptions: { maxZoom: 14 },
+      maxZoom: 14,
+      padding: 48,
     });
   });
 
@@ -35,7 +43,8 @@ describe('viewFor', () => {
         [18.65, 50.06],
         [21.01, 54.35],
       ],
-      fitBoundsOptions: { maxZoom: 14 },
+      maxZoom: 14,
+      padding: 48,
     });
   });
 });

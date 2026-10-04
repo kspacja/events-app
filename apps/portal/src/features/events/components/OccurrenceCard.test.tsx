@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { EventSelectionProvider, useEventSelection } from '../EventSelectionProvider';
+import { OccurrenceSelectionProvider, useSelectionInstructions } from '../OccurrenceSelectionProvider';
 import { eventIdSchema, occurrenceIdSchema } from '@events/contract/occurrences';
 import type { OccurrenceListing } from '../types';
 import { OccurrenceCard } from './OccurrenceCard';
@@ -15,16 +15,16 @@ const LISTING: OccurrenceListing = {
 };
 
 function SelectionProbe() {
-  const selection = useEventSelection();
-  return <output>{selection ? `${selection.source}:${selection.occurrenceId}` : 'none'}</output>;
+  const { popup } = useSelectionInstructions();
+  return <output>{popup ? `${popup.takeFocus ? 'card' : 'map'}:${popup.occurrenceId}` : 'none'}</output>;
 }
 
 function renderCard(muted = false) {
   return render(
-    <EventSelectionProvider>
+    <OccurrenceSelectionProvider>
       <OccurrenceCard listing={LISTING} muted={muted} />
       <SelectionProbe />
-    </EventSelectionProvider>,
+    </OccurrenceSelectionProvider>,
   );
 }
 

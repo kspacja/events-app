@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { ScheduleDay } from '../schedule';
 import { eventIdSchema, occurrenceIdSchema } from '@events/contract/occurrences';
 import type { OccurrenceListing } from '../types';
-import { EventSelectionProvider } from '../EventSelectionProvider';
+import { OccurrenceSelectionProvider } from '../OccurrenceSelectionProvider';
 import { DayColumn } from './DayColumn';
 
 const LISTING: OccurrenceListing = {
@@ -27,11 +27,11 @@ function makeDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {
 
 function renderColumn(scheduleDay: ScheduleDay) {
   return render(
-    <EventSelectionProvider>
+    <OccurrenceSelectionProvider>
       <ol>
         <DayColumn scheduleDay={scheduleDay} />
       </ol>
-    </EventSelectionProvider>,
+    </OccurrenceSelectionProvider>,
   );
 }
 

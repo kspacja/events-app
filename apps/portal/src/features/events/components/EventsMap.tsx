@@ -3,7 +3,7 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
 import * as maplibregl from 'maplibre-gl';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useEventSelection, useEventSelectionStore } from '../EventSelectionProvider';
+import { useOccurrenceSelection, useSelectionInstructions } from '../OccurrenceSelectionProvider';
 import {
   Layer,
   Map,
@@ -112,48 +112,39 @@ export function EventsMap({ points, focus }: EventsMapProps) {
   // Built once on load so the layer props stay referentially stable
   const [layers, setLayers] = useState<MapLayers | null>(null);
   const loaded = layers !== null;
-  const flownSeq = useRef(0);
-  const selectionStore = useEventSelectionStore();
-  const selection = useEventSelection();
-  const selected = points.find((p) => p.occurrenceId === selection?.occurrenceId);
-  const selectedSeq = selection?.seq;
-  const selectedSource = selection?.source;
+  const selection = useOccurrenceSelection();
+  const { popup, flyTo } = useSelectionInstructions();
+  const selected = points.find((p) => p.occurrenceId === popup?.occurrenceId);
+  const flightTarget = points.find((p) => p.occurrenceId === flyTo);
   const pointsKey = focus.map((p) => `${p.occurrenceId}:${p.lat}:${p.lng}`).join('|');
   const data = useMemo(() => toFeatureCollection(points), [points]);
 
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    const view = viewFor(focus);
-    if ('bounds' in view) {
-      map.fitBounds(view.bounds, { ...view.fitBoundsOptions, duration: 0 });
-    } else {
-      map.jumpTo({ center: [view.longitude, view.latitude], zoom: view.zoom });
-    }
+    const { bounds, maxZoom, padding } = viewFor(focus);
+    mapRef.current?.fitBounds(bounds, { maxZoom, padding, duration: 0 });
     // focus is covered by pointsKey
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pointsKey]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!loaded || !map || !selected || selectedSource !== 'card') return;
-    if (selectedSeq === undefined || flownSeq.current === selectedSeq) return;
-    flownSeq.current = selectedSeq;
+    if (!loaded || !map || !flightTarget) return;
     map.flyTo({
-      center: [selected.lng, selected.lat],
+      center: [flightTarget.lng, flightTarget.lat],
       zoom: Math.max(map.getZoom(), SELECTED_MIN_ZOOM),
     });
-  }, [loaded, selected, selectedSeq, selectedSource]);
+    selection.flewTo();
+  }, [loaded, flightTarget, selection]);
 
-  const hasSelection = selected !== undefined;
+  const hasPopup = selected !== undefined;
   useEffect(() => {
-    if (!hasSelection) return;
+    if (!hasPopup) return;
     function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') selectionStore.close();
+      if (event.key === 'Escape') selection.close();
     }
     document.addEventListener('keydown', closeOnEscape);
     return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [hasSelection, selectionStore]);
+  }, [hasPopup, selection]);
 
   function handleLoad(event: MapEvent) {
     setLayers(layersFor(readPalette(event.target.getContainer())));
@@ -163,11 +154,11 @@ export function EventsMap({ points, focus }: EventsMapProps) {
     const feature = event.features?.[0];
     if (feature?.layer.id === POINT_LAYER_ID) {
       const clicked = points.find((p) => p.occurrenceId === feature.properties?.occurrenceId);
-      if (clicked) selectionStore.selectFromMap(clicked.occurrenceId);
-      else selectionStore.close();
+      if (clicked) selection.selectFromMap(clicked.occurrenceId);
+      else selection.close();
       return;
     }
-    selectionStore.close();
+    selection.close();
     if (feature?.layer.id === CLUSTER_LAYER_ID) void zoomIntoCluster(event);
   }
 
@@ -218,18 +209,16 @@ export function EventsMap({ points, focus }: EventsMapProps) {
           </>
         ) : null}
       </Source>
-      {selected ? (
+      {selected && popup ? (
         <Popup
-          key={selection?.seq}
+          key={popup.key}
           longitude={selected.lng}
           latitude={selected.lat}
           anchor="bottom"
           offset={12}
           closeOnClick={false}
-          focusAfterOpen={selectedSource === 'card'}
-          onClose={() => {
-            if (selectionStore.getSelection()?.seq === selectedSeq) selectionStore.close();
-          }}
+          focusAfterOpen={popup.takeFocus}
+          onClose={() => selection.close(popup.key)}
           className={styles.popup}
         >
           <div role="dialog" aria-label={selected.title}>
@@ -256,5 +245,6 @@ function toFeatureCollection(points: readonly MapPoint[]): FeatureCollection<Poi
 }
 
 function initialViewStateFor(points: readonly MapPoint[]) {
-  return { ...viewFor(points) };
+  const { bounds, maxZoom, padding } = viewFor(points);
+  return { bounds, fitBoundsOptions: { maxZoom, padding } };
 }
