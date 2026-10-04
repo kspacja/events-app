@@ -104,7 +104,7 @@ describe('buildSchedule landing', () => {
       range: WEEK,
       time: TIME_PRESET_WINDOWS.evening,
     });
-    expect(landing.occurrenceId).toBe('wed-evening');
+    expect(landing).toEqual({ day: '2026-06-03', occurrenceId: 'wed-evening' });
   });
 
   it('breaks an index tie by the earlier day', () => {
@@ -116,7 +116,7 @@ describe('buildSchedule landing', () => {
       range: WEEK,
       time: TIME_PRESET_WINDOWS.evening,
     });
-    expect(landing.occurrenceId).toBe('tue-evening');
+    expect(landing).toEqual({ day: '2026-06-02', occurrenceId: 'tue-evening' });
   });
 
   it('has no target when nothing matches the time window', () => {

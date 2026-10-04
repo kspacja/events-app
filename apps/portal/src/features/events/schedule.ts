@@ -32,6 +32,7 @@ export interface ScheduleDay {
 }
 
 export interface ScheduleLanding {
+  /** The target card's day when there is one, otherwise the first in-range day. */
   readonly day: CalendarDay;
   /** Set only when a time window is selected and something matches it. */
   readonly occurrenceId: OccurrenceId | null;
@@ -84,16 +85,18 @@ function toMapPoint(
   };
 }
 
-function firstActiveOccurrence(weeks: readonly (readonly ScheduleDay[])[]): OccurrenceId | null {
-  let best: { index: number; occurrenceId: OccurrenceId } | null = null;
-  for (const { entries } of weeks.flat()) {
+function firstActiveOccurrence(
+  weeks: readonly (readonly ScheduleDay[])[],
+): { day: CalendarDay; occurrenceId: OccurrenceId } | null {
+  let best: { index: number; day: CalendarDay; occurrenceId: OccurrenceId } | null = null;
+  for (const { day, entries } of weeks.flat()) {
     const index = entries.findIndex(({ active }) => active);
     // Strict comparison keeps the earlier day on ties
     if (index !== -1 && (best === null || index < best.index)) {
-      best = { index, occurrenceId: entries[index].listing.occurrenceId };
+      best = { index, day, occurrenceId: entries[index].listing.occurrenceId };
     }
   }
-  return best?.occurrenceId ?? null;
+  return best && { day: best.day, occurrenceId: best.occurrenceId };
 }
 
 export function buildSchedule(
@@ -129,9 +132,10 @@ export function buildSchedule(
   const mapPoints = entries.map(({ listing, active }) => toMapPoint(listing, active));
   const activePoints = mapPoints.filter((point) => point.active);
 
-  const landing: ScheduleLanding = {
+  const target = time ? firstActiveOccurrence(weeks) : null;
+  const landing: ScheduleLanding = target ?? {
     day: weeks.flat().find(({ inRange }) => inRange)?.day ?? range.from,
-    occurrenceId: time ? firstActiveOccurrence(weeks) : null,
+    occurrenceId: null,
   };
 
   return {
