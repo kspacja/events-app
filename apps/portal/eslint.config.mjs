@@ -6,7 +6,7 @@ import { appBoundaries, typeAwareRules } from "@events/eslint-config";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  appBoundaries,
+  ...appBoundaries,
   typeAwareRules({ tsconfigRootDir: import.meta.dirname }),
   // Override default ignores of eslint-config-next.
   globalIgnores([

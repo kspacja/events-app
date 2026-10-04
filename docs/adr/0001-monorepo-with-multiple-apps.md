@@ -24,4 +24,6 @@ Pakiety: `packages/catalog`, `packages/recommendations`, `packages/identity`, `p
 
 - Wybrane narzędzie do workspace'ów: pnpm workspaces + Turborepo.
 - Obecna aplikacja events-app została przeniesiona do `apps/portal`.
-- Reguły czasu lokalnego i doby wydarzeń (Europe/Warsaw, granica 04:00) mieszkają w `packages/time`, a `packages/contract` trzyma kształty danych (schematy zod i typy) oraz, tymczasowo do Katalogu (etap 1), listę referencyjną kategorii.
+- Reguły czasu lokalnego i doby wydarzeń (Europe/Warsaw, granica 04:00) mieszkają w `packages/time`, a `packages/contract` trzyma kształty danych (schematy zod i typy); Kategoria jest daną we Wpisie programu, a nie listą referencyjną (patrz aktualizacja poniżej).
+
+Aktualizacja 2026-10-04: lista Kategorii nie jest już w `contract` — Kategoria przychodzi jako dane `{ slug, label }` we Wpisie programu.

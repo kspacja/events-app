@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 import { describeOccurrenceSourceConformance } from '@events/contract/source/testing';
 import { OccurrenceSourceError } from '@events/contract/source';
-import { addDays, localDayOf, mondayOf } from '@events/time';
+import { addDays, localDayOf, mondayOf, type DateRange } from '@events/time';
 import { EVENTS_API_URL } from '@/config/env';
 import { occurrencesHandler } from '@/mocks/handlers';
 import { server } from '@/mocks/node';
@@ -22,7 +22,7 @@ function countRequests() {
 }
 
 const httpSource = createHttpOccurrenceSource();
-const listOccurrences = (range: { from: typeof firstMonday; to: typeof firstMonday }) =>
+const listOccurrences = (range: DateRange) =>
   httpSource.listOccurrences(range);
 
 describeOccurrenceSourceConformance('HTTP occurrence source', () => ({
@@ -92,6 +92,61 @@ describe('HTTP occurrence source', () => {
     await expect(
       listOccurrences({ from: firstMonday, to: firstMonday }),
     ).rejects.toBeInstanceOf(OccurrenceSourceError);
+  });
+
+  it('returns listings sorted even when the backend answers in shuffled order', async () => {
+    const at = (id: string, startsAt: string) => ({
+      occurrenceId: id,
+      startsAt,
+      price: null,
+      event: { id: `event-${id}`, title: id, category: { slug: 'music', label: 'Muzyka' } },
+      venue: { name: 'Hall', city: 'Warszawa', lat: 52, lng: 21 },
+    });
+    const shuffled = [
+      at('c', '2030-01-01T20:00:00+01:00'),
+      at('b', '2030-01-01T18:00:00+01:00'),
+      at('a', '2030-01-01T18:00:00+01:00'),
+    ];
+    server.use(
+      http.get(OCCURRENCES_URL, () => HttpResponse.json({ occurrences: shuffled })),
+    );
+
+    const result = await listOccurrences({ from: firstMonday, to: firstMonday });
+
+    expect(result.map(({ occurrenceId }) => occurrenceId)).toEqual(['a', 'b', 'c']);
+  });
+
+  it('retries once when the first body is malformed and succeeds on the valid second one', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const urls = countRequests();
+    let calls = 0;
+    server.use(
+      http.get(OCCURRENCES_URL, () => {
+        calls += 1;
+        return HttpResponse.json({ occurrences: calls === 1 ? [{ occurrenceId: 1 }] : [] });
+      }),
+    );
+
+    const result = await listOccurrences({ from: firstMonday, to: firstMonday });
+    server.events.removeAllListeners();
+
+    expect(result).toEqual([]);
+    expect(urls).toHaveLength(2);
+  });
+
+  it('gives up after one retry when the body stays malformed', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const urls = countRequests();
+    server.use(
+      http.get(OCCURRENCES_URL, () => HttpResponse.json({ occurrences: [{ occurrenceId: 1 }] })),
+    );
+
+    await expect(
+      listOccurrences({ from: firstMonday, to: firstMonday }),
+    ).rejects.toBeInstanceOf(OccurrenceSourceError);
+    server.events.removeAllListeners();
+
+    expect(urls).toHaveLength(2);
   });
 
   it('wraps a network failure in OccurrenceSourceError', async () => {

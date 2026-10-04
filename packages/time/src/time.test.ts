@@ -7,7 +7,7 @@ import {
   mondayOf,
   isDayInRange,
   isWarsawIso,
-  toInstantIso,
+  warsawIsoAt,
   toWarsawIso,
 } from './time';
 
@@ -31,27 +31,27 @@ describe('eventDayOf', () => {
   });
 });
 
-describe('toInstantIso', () => {
+describe('warsawIsoAt', () => {
   it('uses the summer offset in July', () => {
-    expect(toInstantIso('2026-07-12', 19 * 60)).toBe('2026-07-12T19:00:00+02:00');
+    expect(warsawIsoAt('2026-07-12', 19 * 60)).toBe('2026-07-12T19:00:00+02:00');
   });
 
   it('uses the winter offset in January', () => {
-    expect(toInstantIso('2026-01-12', 19 * 60)).toBe('2026-01-12T19:00:00+01:00');
+    expect(warsawIsoAt('2026-01-12', 19 * 60)).toBe('2026-01-12T19:00:00+01:00');
   });
 
   it('switches from +02:00 to +01:00 on the October clock change', () => {
-    expect(toInstantIso('2026-10-25', 90)).toBe('2026-10-25T01:30:00+02:00');
-    expect(toInstantIso('2026-10-25', 240)).toBe('2026-10-25T04:00:00+01:00');
+    expect(warsawIsoAt('2026-10-25', 90)).toBe('2026-10-25T01:30:00+02:00');
+    expect(warsawIsoAt('2026-10-25', 240)).toBe('2026-10-25T04:00:00+01:00');
   });
 
   it('switches from +01:00 to +02:00 on the March clock change', () => {
-    expect(toInstantIso('2026-03-29', 90)).toBe('2026-03-29T01:30:00+01:00');
-    expect(toInstantIso('2026-03-29', 240)).toBe('2026-03-29T04:00:00+02:00');
+    expect(warsawIsoAt('2026-03-29', 90)).toBe('2026-03-29T01:30:00+01:00');
+    expect(warsawIsoAt('2026-03-29', 240)).toBe('2026-03-29T04:00:00+02:00');
   });
 
   it('round-trips through the local clock', () => {
-    const iso = toInstantIso('2026-10-25', 240);
+    const iso = warsawIsoAt('2026-10-25', 240);
     expect(eventDayOf(iso)).toBe('2026-10-25');
     expect(localMinutesOf(iso)).toBe(240);
   });

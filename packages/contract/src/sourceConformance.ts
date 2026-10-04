@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { addDays, eventDayOf, toInstantIso, type CalendarDay } from '@events/time';
+import { addDays, eventDayOf, toWarsawIso, warsawIsoAt, type CalendarDay } from '@events/time';
 import {
   eventIdSchema,
   occurrenceIdSchema,
@@ -21,13 +21,16 @@ export interface OccurrenceSourceFixture {
 const SATURDAY: CalendarDay = '2030-03-30';
 const SUNDAY = addDays(SATURDAY, 1);
 const SUMMER_DAY: CalendarDay = '2030-07-13';
+// A plain winter Sunday and its Saturday, no clock change nearby
+const WINTER_SATURDAY: CalendarDay = '2030-01-12';
+const AUTUMN_CHANGE_NIGHT: CalendarDay = '2030-10-27';
 const MINUTES = { oneThirty: 90, threeFiftyNine: 239, four: 240, evening: 19 * 60 };
 const WIDE_RANGE_DAYS = 45;
 
-function listing(id: string, day: CalendarDay, minutes: number): OccurrenceListing {
+function listingAt(id: string, startsAt: string): OccurrenceListing {
   return occurrenceListingSchema.parse({
     occurrenceId: occurrenceIdSchema.parse(id),
-    startsAt: toInstantIso(day, minutes),
+    startsAt,
     price: null,
     event: {
       id: eventIdSchema.parse(`event-${id}`),
@@ -36,6 +39,10 @@ function listing(id: string, day: CalendarDay, minutes: number): OccurrenceListi
     },
     venue: { name: 'Venue', city: 'Warszawa', lat: 52.2, lng: 21 },
   });
+}
+
+function listing(id: string, day: CalendarDay, minutes: number): OccurrenceListing {
+  return listingAt(id, warsawIsoAt(day, minutes));
 }
 
 const ids = (listings: readonly OccurrenceListing[]) =>
@@ -93,6 +100,17 @@ export function describeOccurrenceSourceConformance(
         expect(ids(await list(SATURDAY, SATURDAY))).toEqual(['last-minute']);
         expect(ids(await list(SUNDAY, SUNDAY))).toEqual(['new-day']);
       });
+
+      it('keeps 03:59/04:00 apart on a Sunday without a clock change', async () => {
+        const sunday = addDays(WINTER_SATURDAY, 1);
+        await fixture.seed([
+          listing('last-minute', sunday, MINUTES.threeFiftyNine),
+          listing('new-day', sunday, MINUTES.four),
+        ]);
+
+        expect(ids(await list(WINTER_SATURDAY, WINTER_SATURDAY))).toEqual(['last-minute']);
+        expect(ids(await list(sunday, sunday))).toEqual(['new-day']);
+      });
     });
 
     describe('(b) order', () => {
@@ -110,14 +128,17 @@ export function describeOccurrenceSourceConformance(
         expect(result).toEqual([...result].sort(compareListings));
       });
 
-      it('orders by instant across the clock change, not by text', async () => {
-        // 01:30 +01:00 is earlier than 03:30 +02:00 on 2030-03-31 though 03:30 is later wall-clock
-        await fixture.seed([
-          listing('after-change', SUNDAY, 3 * 60 + 30),
-          listing('before-change', SUNDAY, MINUTES.oneThirty),
-        ]);
+      it('orders by instant across the autumn clock change, not by text', async () => {
+        // 02:30+02:00 (00:30Z) is earlier than 02:15+01:00 (01:15Z), yet its text sorts later
+        const earlier = listingAt('summer-time', toWarsawIso('2030-10-27T00:30:00Z'));
+        const later = listingAt('winter-time', toWarsawIso('2030-10-27T01:15:00Z'));
+        expect(earlier.startsAt).toBe('2030-10-27T02:30:00+02:00');
+        expect(later.startsAt).toBe('2030-10-27T02:15:00+01:00');
+        await fixture.seed([later, earlier]);
 
-        expect(ids(await list(SATURDAY, SUNDAY))).toEqual(['before-change', 'after-change']);
+        const result = await list(addDays(AUTUMN_CHANGE_NIGHT, -1), AUTUMN_CHANGE_NIGHT);
+
+        expect(ids(result)).toEqual(['summer-time', 'winter-time']);
       });
     });
 

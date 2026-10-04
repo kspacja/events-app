@@ -8,7 +8,11 @@ import {
   MAX_DAYS_PER_REQUEST,
   occurrencesResponseSchema,
 } from '@events/contract/occurrences-http';
-import { OccurrenceSourceError, type OccurrenceSource } from '@events/contract/source';
+import {
+  compareListings,
+  OccurrenceSourceError,
+  type OccurrenceSource,
+} from '@events/contract/source';
 
 const REQUEST_TIMEOUT_MS = 5000;
 const REVALIDATE_SECONDS = 300;
@@ -34,6 +38,25 @@ function dedupeByOccurrenceId(
   ];
 }
 
+function requestChunk(url: string, cache: RequestCache | undefined) {
+  return fetch(url, {
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    ...(cache ? { cache } : { next: { revalidate: REVALIDATE_SECONDS } }),
+  });
+}
+
+async function readChunk(url: string, cache?: RequestCache) {
+  const response = await requestChunk(url, cache);
+  if (!response.ok) {
+    logger.error('Occurrences API responded with an error status', {
+      status: response.status,
+      url,
+    });
+    throw new OccurrenceSourceError({ cause: { status: response.status } });
+  }
+  return occurrencesResponseSchema.safeParse(await response.json());
+}
+
 async function fetchChunk(range: DateRange): Promise<OccurrenceListing[]> {
   const url = `${EVENTS_API_URL}/occurrences?${new URLSearchParams({
     from: range.from,
@@ -41,18 +64,11 @@ async function fetchChunk(range: DateRange): Promise<OccurrenceListing[]> {
   })}`;
 
   try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      next: { revalidate: REVALIDATE_SECONDS },
-    });
-    if (!response.ok) {
-      logger.error('Occurrences API responded with an error status', {
-        status: response.status,
-        url,
-      });
-      throw new OccurrenceSourceError({ cause: { status: response.status } });
+    let parsed = await readChunk(url);
+    if (!parsed.success) {
+      // A cached body may predate a contract change; bypass the cache once before giving up
+      parsed = await readChunk(url, 'no-store');
     }
-    const parsed = occurrencesResponseSchema.safeParse(await response.json());
     if (!parsed.success) {
       logger.error('Occurrences API returned an unexpected payload shape', {
         url,
@@ -72,7 +88,7 @@ export function createHttpOccurrenceSource(): OccurrenceSource {
   return {
     async listOccurrences(range) {
       const chunks = await Promise.all(splitIntoChunks(range).map(fetchChunk));
-      return dedupeByOccurrenceId(chunks.flat());
+      return dedupeByOccurrenceId(chunks.flat()).sort(compareListings);
     },
   };
 }

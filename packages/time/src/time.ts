@@ -109,8 +109,8 @@ export function isWarsawIso(value: string): boolean {
   return !Number.isNaN(instant.getTime()) && toWarsawIso(instant) === value;
 }
 
-/** ISO string for a local wall-clock time, with the UTC offset valid on that day. */
-export function toInstantIso(day: CalendarDay, minutes: number): string {
+/** startsAt for a local wall-clock time (minutes after midnight), with the UTC offset valid on that day. */
+export function warsawIsoAt(day: CalendarDay, minutes: number): string {
   const [year, month, date] = day.split('-').map(Number);
   const local = new TZDate(
     year,
@@ -120,5 +120,5 @@ export function toInstantIso(day: CalendarDay, minutes: number): string {
     minutes % MINUTES_PER_HOUR,
     APP_TIME_ZONE,
   );
-  return format(local, WARSAW_ISO_FORMAT);
+  return toWarsawIso(local);
 }

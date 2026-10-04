@@ -42,7 +42,7 @@ export const categorySchema = z
   })
   .readonly();
 
-/** Europe/Warsaw wall clock with its UTC offset (`2030-03-01T19:00:00+01:00`), see `toWarsawIso`. */
+/** Strict on purpose: canonical Warsaw ISO only (no Z, no millis, e.g. `2030-03-01T19:00:00+01:00`); adapters normalise with `toWarsawIso`. */
 export const startsAtSchema = z.iso
   .datetime({ offset: true })
   .refine(isWarsawIso, { error: 'startsAt must be a Europe/Warsaw ISO string with its offset.' });

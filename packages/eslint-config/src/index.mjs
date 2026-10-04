@@ -38,18 +38,48 @@ const PACKAGE_PATTERNS = [
   },
 ];
 
-function restrictImports({ paths, patterns }) {
-  return { rules: { 'no-restricted-imports': ['error', { paths, patterns }] } };
+const TESTING_ONLY_PATTERN = {
+  group: ['@events/contract/source/testing'],
+  message: 'The conformance suite may only be imported from test files.',
+};
+
+const HTTP_TRANSPORT_ONLY_PATTERN = {
+  group: ['@events/contract/occurrences-http'],
+  message: 'The HTTP transport is for the HTTP adapter and the mocks only.',
+};
+
+const TEST_FILES = ['**/*.test.*', '**/vitest.setup.*'];
+const HTTP_TRANSPORT_FILES = ['**/source/httpOccurrenceSource*', '**/mocks/**'];
+
+function restrictImports({ paths, patterns }, scope = {}) {
+  return { ...scope, rules: { 'no-restricted-imports': ['error', { paths, patterns }] } };
+}
+
+/**
+ * no-restricted-imports replaces (not merges) per file, so each layer restates the full list;
+ * later layers win: everywhere, then the allowed files of each restricted entry point.
+ */
+function withEntryPointRules({ paths, patterns }) {
+  const restrict = (extra, scope) => restrictImports({ paths, patterns: [...patterns, ...extra] }, scope);
+  return [
+    restrict([TESTING_ONLY_PATTERN, HTTP_TRANSPORT_ONLY_PATTERN]),
+    restrict([TESTING_ONLY_PATTERN], { files: HTTP_TRANSPORT_FILES }),
+    restrict([HTTP_TRANSPORT_ONLY_PATTERN], { files: TEST_FILES }),
+    restrict([], {
+      files: TEST_FILES.flatMap((test) => HTTP_TRANSPORT_FILES.map((http) => [test, http])),
+    }),
+  ];
 }
 
 /**
  * Package/app seams: no deep imports into a package's src and no relative paths across
- * packages/apps. Context-to-context seams (ADR-0002) arrive with packages/catalog.
+ * packages/apps, plus the entry-point rules of @events/contract. Context-to-context seams
+ * (ADR-0002) arrive with packages/catalog.
  */
-export const appBoundaries = restrictImports({ paths: [], patterns: DEEP_IMPORT_PATTERNS });
+export const appBoundaries = withEntryPointRules({ paths: [], patterns: DEEP_IMPORT_PATTERNS });
 
 /** Same as appBoundaries, plus: packages stay framework-free and must not import apps. */
-export const packageBoundaries = restrictImports({
+export const packageBoundaries = withEntryPointRules({
   paths: PACKAGE_PATHS,
   patterns: [...DEEP_IMPORT_PATTERNS, ...PACKAGE_PATTERNS],
 });

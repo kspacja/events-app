@@ -7,6 +7,7 @@ import type { OccurrenceListing } from './listing';
  * (b) sorted by startsAt, then occurrenceId;
  * (c) no duplicate occurrenceIds;
  * (d) any failure rejects with OccurrenceSourceError.
+ * `startsAt` must be canonical Warsaw ISO (strict schema): adapters normalise with `toWarsawIso`.
  * `describeOccurrenceSourceConformance` (`@events/contract/source/testing`) checks all four.
  */
 export interface OccurrenceSource {
