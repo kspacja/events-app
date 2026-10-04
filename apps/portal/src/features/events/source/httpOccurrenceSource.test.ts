@@ -11,7 +11,7 @@ import { createHttpOccurrenceSource } from './httpOccurrenceSource';
 
 const OCCURRENCES_URL = `${TEST_EVENTS_API_URL}/occurrences`;
 
-const firstMonday = mondayOf(localDayOf(new Date()));
+const firstMonday = mondayOf(localDayOf(new Date('2026-10-07T12:00:00+02:00')));
 
 function countRequests() {
   const urls: URL[] = [];
