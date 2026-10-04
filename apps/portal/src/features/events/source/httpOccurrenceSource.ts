@@ -51,7 +51,7 @@ async function fetchChunk(range: DateRange): Promise<OccurrenceListing[]> {
         status: response.status,
         url,
       });
-      throw new OccurrenceSourceError({ cause: `HTTP ${response.status}` });
+      throw new OccurrenceSourceError({ cause: { status: response.status } });
     }
     const parsed = occurrencesResponseSchema.safeParse(await response.json());
     if (!parsed.success) {

@@ -14,9 +14,9 @@ interface DayStripProps {
 
 export function DayStrip({ className, landing, children }: DayStripProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const { day, occurrenceId } = landing;
 
   useEffect(() => {
+    const { day, occurrenceId } = landing;
     const strip = ref.current;
     const column = document.getElementById(dayDomId(day));
     if (!strip || !column) return;
@@ -29,7 +29,8 @@ export function DayStrip({ className, landing, children }: DayStripProps) {
     const top = card.getBoundingClientRect().top + window.scrollY - PAGE_SCROLL_MARGIN;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({ top, behavior: reduceMotion ? 'auto' : 'smooth' });
-  }, [day, occurrenceId]);
+  // A new landing object arrives with every server navigation, so range or time changes re-scroll
+  }, [landing]);
 
   return (
     <div ref={ref} className={className}>

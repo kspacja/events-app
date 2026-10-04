@@ -4,6 +4,8 @@ import {
   MAX_DAYS_PER_REQUEST,
   occurrencesQuerySchema,
   occurrencesResponseSchema,
+  eventIdSchema,
+  occurrenceIdSchema,
   priceSchema,
 } from './occurrences';
 import { addDays } from '@events/time';
@@ -81,5 +83,18 @@ describe('occurrencesResponseSchema', () => {
     const { occurrenceId, startsAt, price, event } = listing;
     const body = { occurrences: [{ occurrenceId, startsAt, price, event }] };
     expect(occurrencesResponseSchema.safeParse(body).success).toBe(false);
+  });
+});
+
+describe.each([
+  ['occurrenceIdSchema', occurrenceIdSchema],
+  ['eventIdSchema', eventIdSchema],
+])('%s', (_name, schema) => {
+  it.each(['wro-choir', 'concert_2030-03-01', '01HZX3K9QJ'])('accepts %s', (id) => {
+    expect(schema.safeParse(id).success).toBe(true);
+  });
+
+  it.each(['', 'two words', 'a"b', "a'b", 'a<b>', 'a\nb'])('rejects %j', (id) => {
+    expect(schema.safeParse(id).success).toBe(false);
   });
 });

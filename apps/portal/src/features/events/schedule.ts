@@ -134,7 +134,7 @@ export function buildSchedule(
 
   const target = time ? firstActiveOccurrence(weeks) : null;
   const landing: ScheduleLanding = target ?? {
-    day: weeks.flat().find(({ inRange }) => inRange)?.day ?? range.from,
+    day: range.from,
     occurrenceId: null,
   };
 

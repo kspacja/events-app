@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import { useOccurrenceSelection } from '../OccurrenceSelectionProvider';
 import { CARD_LABELS } from '../labels';
-import type { OccurrenceId } from '../types';
+import type { OccurrenceId } from '@events/contract/occurrences';
 import styles from './ShowOnMapButton.module.css';
 
 interface ShowOnMapButtonProps {

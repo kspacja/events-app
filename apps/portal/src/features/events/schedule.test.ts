@@ -119,6 +119,26 @@ describe('buildSchedule landing', () => {
     expect(landing).toEqual({ day: '2026-06-02', occurrenceId: 'tue-evening' });
   });
 
+  it('targets an occurrence in the second week of a multi-week range', () => {
+    const range: DateRange = { from: '2026-06-01', to: '2026-06-14' };
+    const listings = [
+      makeListing('week-1-morning', '2026-06-02T09:00:00+02:00'),
+      makeListing('week-2-evening', '2026-06-10T19:00:00+02:00'),
+    ];
+    const { landing } = buildSchedule(listings, { range, time: TIME_PRESET_WINDOWS.evening });
+    expect(landing).toEqual({ day: '2026-06-10', occurrenceId: 'week-2-evening' });
+  });
+
+  it('breaks a cross-week index tie by the earlier day', () => {
+    const range: DateRange = { from: '2026-06-01', to: '2026-06-14' };
+    const listings = [
+      makeListing('week-2-evening', '2026-06-09T19:00:00+02:00'),
+      makeListing('week-1-evening', '2026-06-04T19:00:00+02:00'),
+    ];
+    const { landing } = buildSchedule(listings, { range, time: TIME_PRESET_WINDOWS.evening });
+    expect(landing).toEqual({ day: '2026-06-04', occurrenceId: 'week-1-evening' });
+  });
+
   it('has no target when nothing matches the time window', () => {
     const listing = makeListing('morning', '2026-06-02T09:00:00+02:00');
     const { landing } = buildSchedule([listing], {

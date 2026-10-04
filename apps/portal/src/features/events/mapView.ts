@@ -1,4 +1,4 @@
-import type { OccurrenceId } from './types';
+import type { OccurrenceId } from '@events/contract/occurrences';
 
 export interface MapPoint {
   readonly occurrenceId: OccurrenceId;

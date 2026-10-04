@@ -88,7 +88,7 @@ describe('HTTP occurrence source', () => {
 
     await expect(
       listOccurrences({ from: firstMonday, to: firstMonday }),
-    ).rejects.toBeInstanceOf(OccurrenceSourceError);
+    ).rejects.toMatchObject({ cause: { status: 500 } });
   });
 
   it('wraps a malformed body in OccurrenceSourceError', async () => {

@@ -27,8 +27,11 @@ export const priceSchema = z.discriminatedUnion('kind', [
     .readonly(),
 ]);
 
-export const occurrenceIdSchema = z.string().brand<'OccurrenceId'>();
-export const eventIdSchema = z.string().brand<'EventId'>();
+// Ids end up in DOM ids and selectors, so only URL- and HTML-safe characters are allowed
+const ID_FORMAT = /^[A-Za-z0-9_-]+$/;
+
+export const occurrenceIdSchema = z.string().regex(ID_FORMAT).brand<'OccurrenceId'>();
+export const eventIdSchema = z.string().regex(ID_FORMAT).brand<'EventId'>();
 
 export type OccurrenceId = z.infer<typeof occurrenceIdSchema>;
 export type EventId = z.infer<typeof eventIdSchema>;
