@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { CATEGORY_LABELS } from '@events/contract/categories';
 import { formatLocalTime } from '@/lib/format';
 import { CARD_LABELS } from '../labels';
-import { cardAttributes } from '../scheduleDom';
+import { occurrenceDomId } from '../scheduleDom';
 import type { OccurrenceListing } from '../types';
 import { ShowOnMapButton } from './ShowOnMapButton';
 import styles from './OccurrenceCard.module.css';
@@ -18,7 +18,11 @@ export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) 
   const label = CATEGORY_LABELS[category];
 
   return (
-    <article className={styles.card} {...cardAttributes(muted)}>
+    <article
+      id={occurrenceDomId(occurrenceId)}
+      className={styles.card}
+      data-muted={muted}
+    >
       <div
         className={styles.image}
         style={{ backgroundColor: `var(--category-${category}, var(--color-bg-subtle))` }}

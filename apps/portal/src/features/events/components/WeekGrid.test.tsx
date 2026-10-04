@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { EventSelectionProvider } from '../EventSelectionProvider';
 import { buildSchedule } from '../schedule';
-import { SCHEDULE_DOM } from '../scheduleDom';
+import { SCHEDULE_SECTION_ID } from '../scheduleDom';
 import { SkipLink } from './SkipLink';
 import { WeekGrid } from './WeekGrid';
 
@@ -14,15 +14,15 @@ describe('skip link and schedule section', () => {
     render(
       <EventSelectionProvider>
         <SkipLink />
-        <WeekGrid range={RANGE} timeKey={null} schedule={schedule} />
+        <WeekGrid schedule={schedule} />
       </EventSelectionProvider>,
     );
 
     const link = screen.getByRole('link', { name: 'Przejdź do listy wydarzeń' });
     const section = screen.getByRole('region', { name: 'Program' });
 
-    expect(link).toHaveAttribute('href', `#${SCHEDULE_DOM.sectionId}`);
-    expect(section).toHaveAttribute('id', SCHEDULE_DOM.sectionId);
+    expect(link).toHaveAttribute('href', `#${SCHEDULE_SECTION_ID}`);
+    expect(section).toHaveAttribute('id', SCHEDULE_SECTION_ID);
 
     section.focus();
     expect(section).toHaveFocus();

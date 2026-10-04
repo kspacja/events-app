@@ -20,7 +20,6 @@ interface EventsSectionProps {
 export async function EventsSection({ range, time, sentence, notice }: EventsSectionProps) {
   const listings = await getOccurrenceSource().listOccurrences(scheduleSpan(range));
   const schedule = buildSchedule(listings, { range, time });
-  const timeKey = time ? `${time.from}-${time.to}` : null;
 
   return (
     <EventSelectionProvider>
@@ -39,7 +38,7 @@ export async function EventsSection({ range, time, sentence, notice }: EventsSec
           </>
         }
       />
-      <WeekGrid range={range} timeKey={timeKey} schedule={schedule} />
+      <WeekGrid schedule={schedule} />
     </EventSelectionProvider>
   );
 }

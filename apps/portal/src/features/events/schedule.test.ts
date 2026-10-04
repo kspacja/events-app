@@ -77,6 +77,58 @@ describe('buildSchedule active rule', () => {
   });
 });
 
+describe('buildSchedule landing', () => {
+  const WEEKEND: DateRange = { from: '2026-06-06', to: '2026-06-07' };
+  const MID_WEEK: DateRange = { from: '2026-06-03', to: '2026-06-10' };
+
+  it.each([
+    ['a week', WEEK, '2026-06-01'],
+    ['a weekend', WEEKEND, '2026-06-06'],
+    ['a custom range starting mid-week', MID_WEEK, '2026-06-03'],
+  ])('lands on the first in-range day of %s', (_name, range, day) => {
+    expect(buildSchedule([], { range, time: null }).landing.day).toBe(day);
+  });
+
+  it('has no occurrence target without a time window', () => {
+    const listing = makeListing('a', '2026-06-02T20:00:00+02:00');
+    expect(buildSchedule([listing], { range: WEEK, time: null }).landing.occurrenceId).toBeNull();
+  });
+
+  it('targets the active occurrence with the lowest index in its day', () => {
+    const listings = [
+      makeListing('tue-morning', '2026-06-02T09:00:00+02:00'),
+      makeListing('tue-evening', '2026-06-02T19:00:00+02:00'),
+      makeListing('wed-evening', '2026-06-03T19:00:00+02:00'),
+    ];
+    const { landing } = buildSchedule(listings, {
+      range: WEEK,
+      time: TIME_PRESET_WINDOWS.evening,
+    });
+    expect(landing.occurrenceId).toBe('wed-evening');
+  });
+
+  it('breaks an index tie by the earlier day', () => {
+    const listings = [
+      makeListing('thu-evening', '2026-06-04T19:00:00+02:00'),
+      makeListing('tue-evening', '2026-06-02T19:00:00+02:00'),
+    ];
+    const { landing } = buildSchedule(listings, {
+      range: WEEK,
+      time: TIME_PRESET_WINDOWS.evening,
+    });
+    expect(landing.occurrenceId).toBe('tue-evening');
+  });
+
+  it('has no target when nothing matches the time window', () => {
+    const listing = makeListing('morning', '2026-06-02T09:00:00+02:00');
+    const { landing } = buildSchedule([listing], {
+      range: WEEK,
+      time: TIME_PRESET_WINDOWS.evening,
+    });
+    expect(landing).toEqual({ day: '2026-06-01', occurrenceId: null });
+  });
+});
+
 describe('buildSchedule map points', () => {
   it('labels the popup with the event day, not the calendar date', () => {
     const lateNight = makeListing('late', '2026-10-04T01:30:00+02:00');

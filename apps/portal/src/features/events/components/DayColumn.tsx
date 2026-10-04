@@ -1,6 +1,6 @@
 import { DAY_NAMES, UI_LABELS } from '../labels';
 import type { ScheduleDay } from '../schedule';
-import { columnAttributes } from '../scheduleDom';
+import { dayDomId } from '../scheduleDom';
 import { OccurrenceCard } from './OccurrenceCard';
 import styles from './DayColumn.module.css';
 
@@ -14,7 +14,12 @@ export function DayColumn({
   const dayOfMonth = String(Number(day.slice(8)));
 
   return (
-    <li className={styles.day} {...columnAttributes(inRange, isWeekend)}>
+    <li
+      id={dayDomId(day)}
+      className={styles.day}
+      data-in-range={inRange}
+      data-weekend={isWeekend}
+    >
       <h2 className={styles.heading}>
         <span className={styles.name}>{DAY_NAMES[weekdayIndex]}</span>
         <time dateTime={day} className={styles.number}>

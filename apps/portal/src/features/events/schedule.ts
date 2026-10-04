@@ -12,6 +12,7 @@ import {
   weekdayIndex,
   type CalendarDay,
 } from '@events/time';
+import type { OccurrenceId } from '@events/contract/occurrences';
 import { formatCalendarDay, formatLocalTime } from '@/lib/format';
 import { COUNT_LABELS } from './labels';
 import type { MapPoint } from './mapView';
@@ -30,7 +31,14 @@ export interface ScheduleDay {
   readonly entries: readonly ScheduleEntry[];
 }
 
+export interface ScheduleLanding {
+  readonly day: CalendarDay;
+  /** Set only when a time window is selected and something matches it. */
+  readonly occurrenceId: OccurrenceId | null;
+}
+
 export interface Schedule {
+  readonly landing: ScheduleLanding;
   readonly weeks: readonly (readonly ScheduleDay[])[];
   readonly activeCount: number;
   readonly mapPoints: readonly MapPoint[];
@@ -76,6 +84,18 @@ function toMapPoint(
   };
 }
 
+function firstActiveOccurrence(weeks: readonly (readonly ScheduleDay[])[]): OccurrenceId | null {
+  let best: { index: number; occurrenceId: OccurrenceId } | null = null;
+  for (const { entries } of weeks.flat()) {
+    const index = entries.findIndex(({ active }) => active);
+    // Strict comparison keeps the earlier day on ties
+    if (index !== -1 && (best === null || index < best.index)) {
+      best = { index, occurrenceId: entries[index].listing.occurrenceId };
+    }
+  }
+  return best?.occurrenceId ?? null;
+}
+
 export function buildSchedule(
   listings: readonly OccurrenceListing[],
   { range, time }: ScheduleQuery,
@@ -109,7 +129,13 @@ export function buildSchedule(
   const mapPoints = entries.map(({ listing, active }) => toMapPoint(listing, active));
   const activePoints = mapPoints.filter((point) => point.active);
 
+  const landing: ScheduleLanding = {
+    day: weeks.flat().find(({ inRange }) => inRange)?.day ?? range.from,
+    occurrenceId: time ? firstActiveOccurrence(weeks) : null,
+  };
+
   return {
+    landing,
     weeks,
     activeCount: entries.filter(({ active }) => active).length,
     mapPoints,
