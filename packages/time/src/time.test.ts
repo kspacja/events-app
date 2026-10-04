@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   eventDayOf,
-  formatClock,
-  formatLocalTime,
   localDayOf,
+  localMinutesOf,
   mondayOf,
   toInstantIso,
 } from './time';
@@ -50,7 +49,7 @@ describe('toInstantIso', () => {
   it('round-trips through the local clock', () => {
     const iso = toInstantIso('2026-10-25', 240);
     expect(eventDayOf(iso)).toBe('2026-10-25');
-    expect(formatLocalTime(iso)).toBe('04:00');
+    expect(localMinutesOf(iso)).toBe(240);
   });
 });
 
@@ -62,20 +61,6 @@ describe('localDayOf', () => {
 
   it('stays on the same local day shortly after UTC midnight', () => {
     expect(localDayOf(new Date('2026-07-12T00:30:00Z'))).toBe('2026-07-12');
-  });
-});
-
-describe('formatLocalTime', () => {
-  it('shows local time in summer and winter', () => {
-    expect(formatLocalTime('2026-07-12T17:00:00Z')).toBe('19:00');
-    expect(formatLocalTime('2026-01-12T18:00:00Z')).toBe('19:00');
-  });
-});
-
-describe('formatClock', () => {
-  it('pads hours and minutes', () => {
-    expect(formatClock(9 * 60 + 5)).toBe('09:05');
-    expect(formatClock(0)).toBe('00:00');
   });
 });
 

@@ -1,20 +1,10 @@
 import { z } from 'zod';
-import { diffInDays, isCalendarDay } from './time';
+import { diffInDays, isCalendarDay } from '@events/time';
+import { CATEGORY_SLUGS } from './categories';
 
 export const MAX_DAYS_PER_REQUEST = 31;
 
-export const EVENT_CATEGORIES = [
-  'music',
-  'film',
-  'food',
-  'movement',
-  'workshops',
-  'art',
-  'meetups',
-  'comedy',
-] as const;
-
-export const eventCategorySchema = z.enum(EVENT_CATEGORIES);
+export const eventCategorySchema = z.enum(CATEGORY_SLUGS);
 
 export const venueSchema = z
   .object({

@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 import { EVENTS_API_URL } from '@/config/env';
-import { addDays, localDayOf, mondayOf } from '@events/contract/time';
+import { addDays, localDayOf, mondayOf } from '@events/time';
 import { server } from '@/mocks/node';
 import { EventsApiError, getEvents } from './api';
 

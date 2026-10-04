@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { EVENTS_API_URL } from '@/config/env';
 import { eventsQuerySchema } from '@events/contract/events';
-import { eventDayOf } from '@events/contract/time';
+import { eventDayOf } from '@events/time';
 import { generateEvents } from './data/events';
 
 function badRequest(error: string) {

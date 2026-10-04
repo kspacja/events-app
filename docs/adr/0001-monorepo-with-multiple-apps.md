@@ -13,7 +13,7 @@ Aplikacje:
 - `apps/moderation` (Next.js) — dla Moderatora; dostęp tylko z zaproszenia, osobna, niepubliczna domena
 - `apps/worker` (Node) — zadania w tle
 
-Pakiety: `packages/catalog`, `packages/recommendations`, `packages/identity`, `packages/contract` (schematy zod i typy), `packages/ui`.
+Pakiety: `packages/catalog`, `packages/recommendations`, `packages/identity`, `packages/contract` (schematy zod i typy), `packages/time`, `packages/ui`.
 
 ## Considered Options
 
@@ -24,4 +24,4 @@ Pakiety: `packages/catalog`, `packages/recommendations`, `packages/identity`, `p
 
 - Wybrane narzędzie do workspace'ów: pnpm workspaces + Turborepo.
 - Obecna aplikacja events-app została przeniesiona do `apps/portal`.
-- `packages/contract` zawiera na razie także reguły czasu lokalnego i doby wydarzeń (wspólny kernel). To stan tymczasowy: osobny krok wydzieli je z kontraktu.
+- Reguły czasu lokalnego i doby wydarzeń (Europe/Warsaw, granica 04:00) mieszkają w `packages/time`, a `packages/contract` trzyma tylko kształty danych (schematy zod i typy).

@@ -8,12 +8,11 @@ import {
   addDays,
   DAYS_IN_WEEK,
   eventDayOf,
-  formatCalendarDay,
-  formatLocalTime,
   mondayOf,
   weekdayIndex,
   type CalendarDay,
-} from '@events/contract/time';
+} from '@events/time';
+import { formatCalendarDay, formatLocalTime } from '@/features/format/format';
 import { COUNT_LABELS } from './labels';
 import type { MapPoint } from './mapView';
 import type { Event } from './types';

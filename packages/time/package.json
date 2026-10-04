@@ -1,0 +1,26 @@
+{
+  "name": "@events/time",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/time.ts"
+  },
+  "scripts": {
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@date-fns/tz": "^1.5.0",
+    "date-fns": "^4.4.0"
+  },
+  "devDependencies": {
+    "@events/eslint-config": "workspace:*",
+    "@events/typescript-config": "workspace:*",
+    "eslint": "^9.39.5",
+    "typescript": "^5",
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^5.0.3"
+  }
+}

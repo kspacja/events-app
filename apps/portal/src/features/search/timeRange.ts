@@ -1,9 +1,9 @@
 import {
   DAY_BOUNDARY_MINUTES,
-  formatClock,
   localMinutesOf,
   MINUTES_PER_HOUR,
-} from '@events/contract/time';
+} from '@events/time';
+import { formatClock } from '@/features/format/format';
 
 export const TIME_PRESETS = [
   'morning',

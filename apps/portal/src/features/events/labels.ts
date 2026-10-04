@@ -1,16 +1,3 @@
-import type { EventCategory } from './types';
-
-export const CATEGORY_LABELS: Record<EventCategory, string> = {
-  music: 'Muzyka',
-  film: 'Film',
-  food: 'Jedzenie',
-  movement: 'Ruch',
-  workshops: 'Warsztaty',
-  art: 'Sztuka',
-  meetups: 'Spotkania',
-  comedy: 'Komedia',
-};
-
 export const COUNT_LABELS = {
   zero: 'Brak wydarzeń w tym terminie',
   one: 'wydarzenie',

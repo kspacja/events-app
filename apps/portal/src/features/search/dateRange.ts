@@ -3,11 +3,11 @@ import {
   diffInDays,
   currentEventDay,
   DAYS_IN_WEEK,
-  formatDay,
   isCalendarDay,
   mondayOf,
   type CalendarDay,
-} from '@events/contract/time';
+} from '@events/time';
+import { formatDay } from '@/features/format/format';
 
 export const MAX_CUSTOM_RANGE_DAYS = 31;
 

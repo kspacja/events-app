@@ -5,7 +5,7 @@ import {
   eventsResponseSchema,
   MAX_DAYS_PER_REQUEST,
 } from './events';
-import { addDays } from './time';
+import { addDays } from '@events/time';
 
 const FROM = '2030-03-01';
 

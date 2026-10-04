@@ -2,7 +2,7 @@ import 'server-only';
 
 import { EVENTS_API_URL } from '@/config/env';
 import type { DateRange } from '@/features/search/dateRange';
-import { addDays } from '@events/contract/time';
+import { addDays } from '@events/time';
 import { logger } from '@/lib/logger';
 import { eventsResponseSchema, MAX_DAYS_PER_REQUEST } from '@events/contract/events';
 import type { Event } from './types';

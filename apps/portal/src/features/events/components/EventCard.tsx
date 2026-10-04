@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import { CATEGORY_TINTS } from '../categoryStyle';
-import { CARD_LABELS, CATEGORY_LABELS } from '../labels';
-import { formatLocalTime } from '@events/contract/time';
+import { getCategory } from '@events/contract/categories';
+import { formatLocalTime } from '@/features/format/format';
+import { CARD_LABELS } from '../labels';
 import { cardAttributes } from '../scheduleDom';
 import type { Event } from '../types';
 import { EventPinButton } from './EventPinButton';
@@ -14,12 +14,13 @@ interface EventCardProps {
 
 export function EventCard({ event, muted = false }: EventCardProps) {
   const { title, venue, category, imageUrl, startsAt } = event;
+  const { label, tint } = getCategory(category);
 
   return (
     <article className={styles.card} {...cardAttributes(muted)}>
       <div
         className={styles.image}
-        style={{ backgroundColor: CATEGORY_TINTS[category] }}
+        style={{ backgroundColor: tint }}
       >
         {imageUrl ? (
           <Image
@@ -34,7 +35,7 @@ export function EventCard({ event, muted = false }: EventCardProps) {
         <EventPinButton eventId={event.id} title={title} />
       </div>
       <p className={styles.meta}>
-        {formatLocalTime(startsAt)} · {CATEGORY_LABELS[category]}
+        {formatLocalTime(startsAt)} · {label}
       </p>
       <h3 className={styles.title}>
         {title}

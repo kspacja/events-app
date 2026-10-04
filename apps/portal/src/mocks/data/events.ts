@@ -4,7 +4,7 @@ import {
   localDayOf,
   mondayOf,
   toInstantIso,
-} from '@events/contract/time';
+} from '@events/time';
 
 interface EventTemplate {
   readonly id: string;

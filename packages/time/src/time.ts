@@ -1,4 +1,4 @@
-import { TZDate, tz } from '@date-fns/tz';
+import { TZDate } from '@date-fns/tz';
 import {
   addDays as addDaysToDate,
   differenceInCalendarDays,
@@ -6,7 +6,6 @@ import {
   getISODay,
   startOfISOWeek,
 } from 'date-fns';
-import { pl } from 'date-fns/locale';
 
 export const APP_TIME_ZONE = 'Europe/Warsaw';
 /** The event day ends at 04:00 local time, so late-night events belong to the evening before. */
@@ -20,14 +19,13 @@ export type CalendarDay = `${number}-${number}-${number}`;
 const DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const DAY_FORMAT = 'yyyy-MM-dd';
 const UTC = 'UTC';
-const warsaw = tz(APP_TIME_ZONE);
 
 function toCalendarDay(date: Date): CalendarDay {
   return format(date, DAY_FORMAT) as CalendarDay;
 }
 
 /** UTC-anchored, so calendar math never depends on the machine's timezone. */
-function toDate(day: CalendarDay): TZDate {
+export function toDate(day: CalendarDay): TZDate {
   const [year, month, date] = day.split('-').map(Number);
   return new TZDate(year, month - 1, date, UTC);
 }
@@ -80,27 +78,6 @@ export function eventDayOf(iso: string): CalendarDay {
 /** The event day "now" falls in; before 04:00 it is still the previous day. */
 export function currentEventDay(now: Date): CalendarDay {
   return eventDayOf(now.toISOString());
-}
-
-/** Formats a calendar day with a date-fns pattern in Polish. */
-export function formatDay(day: CalendarDay, pattern: string): string {
-  return format(toDate(day), pattern, { locale: pl });
-}
-
-/** e.g. `sobota, 3.10` */
-export function formatCalendarDay(day: CalendarDay): string {
-  return formatDay(day, 'EEEE, d.MM');
-}
-
-/** e.g. `19:00` */
-export function formatLocalTime(iso: string): string {
-  return format(new Date(iso), 'HH:mm', { in: warsaw });
-}
-
-/** Minutes after midnight as `HH:mm`. */
-export function formatClock(minutes: number): string {
-  const pad = (value: number) => String(value).padStart(2, '0');
-  return `${pad(Math.floor(minutes / MINUTES_PER_HOUR))}:${pad(minutes % MINUTES_PER_HOUR)}`;
 }
 
 /** ISO string for a local wall-clock time, with the UTC offset valid on that day. */

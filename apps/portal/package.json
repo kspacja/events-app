@@ -16,7 +16,9 @@
   },
   "dependencies": {
     "@events/contract": "workspace:*",
+    "@events/time": "workspace:*",
     "@events/ui": "workspace:*",
+    "date-fns": "^4.4.0",
     "maplibre-gl": "^6.11.2",
     "msw": "^3.0.1",
     "next": "16.3.8",
@@ -27,6 +29,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@events/eslint-config": "workspace:*",
     "@events/typescript-config": "workspace:*",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

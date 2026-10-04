@@ -11,6 +11,7 @@ import {
   Popup,
   Source,
   type LayerProps,
+  type MapEvent,
   type MapLayerMouseEvent,
   type MapRef,
 } from 'react-map-gl/maplibre';
@@ -29,53 +30,69 @@ const POINT_LAYER_ID = 'event-points';
 // One past clusterMaxZoom so a requested point is never inside a cluster
 const SELECTED_MIN_ZOOM = 15;
 
-// Layer paint can't read CSS variables; keep in sync with tokens.css
-const COLOR_ACCENT = '#C2410C';
-const COLOR_MUTED = '#B5B2AB';
-const COLOR_HALO = '#FFFFFF';
-
 const hasActive: maplibregl.ExpressionSpecification = ['>', ['get', 'activeCount'], 0];
 
-const clusterLayer: LayerProps = {
-  id: CLUSTER_LAYER_ID,
-  type: 'circle',
-  source: SOURCE_ID,
-  filter: ['has', 'point_count'],
-  paint: {
-    'circle-color': ['case', hasActive, COLOR_ACCENT, COLOR_MUTED],
-    'circle-radius': ['step', ['get', 'point_count'], 14, 10, 18, 30, 22],
-    'circle-stroke-width': 2,
-    'circle-stroke-color': COLOR_HALO,
-  },
-};
+interface Palette {
+  readonly accent: string;
+  readonly muted: string;
+  readonly halo: string;
+}
 
-const clusterCountLayer: LayerProps = {
-  id: 'event-cluster-count',
-  type: 'symbol',
-  source: SOURCE_ID,
-  filter: ['has', 'point_count'],
-  layout: {
-    'text-field': ['to-string', ['case', hasActive, ['get', 'activeCount'], ['get', 'point_count']]],
-    'text-font': ['Noto Sans Bold'],
-    'text-size': 12,
-    'text-allow-overlap': true,
-  },
-  paint: { 'text-color': COLOR_HALO },
-};
+// Layer paint can't read CSS variables, so resolve them from tokens.css once the map is up
+function readPalette(container: HTMLElement): Palette {
+  const styles = getComputedStyle(container);
+  const token = (name: string) => styles.getPropertyValue(name).trim();
+  return {
+    accent: token('--color-accent'),
+    muted: token('--color-text-disabled'),
+    halo: token('--color-bg'),
+  };
+}
 
-const pointLayer: LayerProps = {
-  id: POINT_LAYER_ID,
-  type: 'circle',
-  source: SOURCE_ID,
-  filter: ['!', ['has', 'point_count']],
-  layout: { 'circle-sort-key': ['case', ['get', 'active'], 1, 0] },
-  paint: {
-    'circle-color': ['case', ['get', 'active'], COLOR_ACCENT, COLOR_MUTED],
-    'circle-radius': ['case', ['get', 'active'], 7, 5],
-    'circle-stroke-width': 2,
-    'circle-stroke-color': COLOR_HALO,
-  },
-};
+function layersFor({ accent, muted, halo }: Palette) {
+  const clusterLayer: LayerProps = {
+    id: CLUSTER_LAYER_ID,
+    type: 'circle',
+    source: SOURCE_ID,
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': ['case', hasActive, accent, muted],
+      'circle-radius': ['step', ['get', 'point_count'], 14, 10, 18, 30, 22],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': halo,
+    },
+  };
+
+  const clusterCountLayer: LayerProps = {
+    id: 'event-cluster-count',
+    type: 'symbol',
+    source: SOURCE_ID,
+    filter: ['has', 'point_count'],
+    layout: {
+      'text-field': ['to-string', ['case', hasActive, ['get', 'activeCount'], ['get', 'point_count']]],
+      'text-font': ['Noto Sans Bold'],
+      'text-size': 12,
+      'text-allow-overlap': true,
+    },
+    paint: { 'text-color': halo },
+  };
+
+  const pointLayer: LayerProps = {
+    id: POINT_LAYER_ID,
+    type: 'circle',
+    source: SOURCE_ID,
+    filter: ['!', ['has', 'point_count']],
+    layout: { 'circle-sort-key': ['case', ['get', 'active'], 1, 0] },
+    paint: {
+      'circle-color': ['case', ['get', 'active'], accent, muted],
+      'circle-radius': ['case', ['get', 'active'], 7, 5],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': halo,
+    },
+  };
+
+  return { clusterLayer, clusterCountLayer, pointLayer };
+}
 
 interface EventsMapProps {
   readonly points: readonly MapPoint[];
@@ -86,6 +103,7 @@ export function EventsMap({ points, focus }: EventsMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [cursor, setCursor] = useState('');
   const [loaded, setLoaded] = useState(false);
+  const [palette, setPalette] = useState<Palette | null>(null);
   const flownSeq = useRef(0);
   const selectionStore = useEventSelectionStore();
   const selection = useEventSelection();
@@ -94,6 +112,7 @@ export function EventsMap({ points, focus }: EventsMapProps) {
   const selectedSource = selection?.source;
   const pointsKey = focus.map((p) => `${p.id}:${p.lat}:${p.lng}`).join('|');
   const data = useMemo(() => toFeatureCollection(points), [points]);
+  const layers = useMemo(() => (palette ? layersFor(palette) : null), [palette]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -128,6 +147,11 @@ export function EventsMap({ points, focus }: EventsMapProps) {
     document.addEventListener('keydown', closeOnEscape);
     return () => document.removeEventListener('keydown', closeOnEscape);
   }, [hasSelection, selectionStore]);
+
+  function handleLoad(event: MapEvent) {
+    setPalette(readPalette(event.target.getContainer()));
+    setLoaded(true);
+  }
 
   function handleClick(event: MapLayerMouseEvent) {
     const feature = event.features?.[0];
@@ -164,7 +188,7 @@ export function EventsMap({ points, focus }: EventsMapProps) {
       locale={MAP_CONTROL_LOCALE}
       interactiveLayerIds={[CLUSTER_LAYER_ID, POINT_LAYER_ID]}
       cursor={cursor}
-      onLoad={() => setLoaded(true)}
+      onLoad={handleLoad}
       onClick={handleClick}
       onMouseEnter={() => setCursor('pointer')}
       onMouseLeave={() => setCursor('')}
@@ -180,9 +204,13 @@ export function EventsMap({ points, focus }: EventsMapProps) {
         clusterMaxZoom={14}
         clusterProperties={{ activeCount: ['+', ['case', ['get', 'active'], 1, 0]] }}
       >
-        <Layer {...clusterLayer} />
-        <Layer {...clusterCountLayer} />
-        <Layer {...pointLayer} />
+        {layers ? (
+          <>
+            <Layer {...layers.clusterLayer} />
+            <Layer {...layers.clusterCountLayer} />
+            <Layer {...layers.pointLayer} />
+          </>
+        ) : null}
       </Source>
       {selected ? (
         <Popup
