@@ -3,22 +3,16 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "env": ["EVENTS_API_URL", "API_MOCKING"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "dev": {
       "cache": false,
-      "persistent": true,
-      "env": ["EVENTS_API_URL", "API_MOCKING"]
+      "persistent": true
     },
     "lint": {},
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
-    "test": {
-      "env": ["EVENTS_API_URL", "API_MOCKING"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"]
-    }
+    "test": {}
   }
 }

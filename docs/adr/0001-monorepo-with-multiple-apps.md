@@ -13,7 +13,7 @@ Aplikacje:
 - `apps/moderation` (Next.js) — dla Moderatora; dostęp tylko z zaproszenia, osobna, niepubliczna domena
 - `apps/worker` (Node) — zadania w tle
 
-Pakiety: `packages/catalog`, `packages/recommendations`, `packages/identity`, `packages/contract` (schematy zod i typy), `packages/time`, `packages/ui`.
+Pakiety: `packages/catalog`, `packages/recommendations`, `packages/identity`, `packages/contract` (schematy zod i typy), `packages/time`, `packages/ui`; stan docelowy i kolejność ich powstawania opisuje `docs/plans/architecture-roadmap.md`.
 
 ## Considered Options
 

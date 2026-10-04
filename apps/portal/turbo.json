@@ -1,0 +1,16 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["EVENTS_API_URL", "API_MOCKING"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
+    },
+    "dev": {
+      "env": ["EVENTS_API_URL", "API_MOCKING"]
+    },
+    "test": {
+      "env": ["EVENTS_API_URL"]
+    }
+  }
+}

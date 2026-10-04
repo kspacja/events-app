@@ -1,3 +1,5 @@
+import tseslint from 'typescript-eslint';
+
 const DEEP_IMPORT_PATTERNS = [
   {
     group: ['@events/*/src', '@events/*/src/**'],
@@ -41,4 +43,22 @@ export function importBoundaries({ isPackage }) {
       ],
     },
   };
+}
+
+/** Type-aware rules that code-quality-js.md requires; needs the TS project service. */
+export function typeAwareRules({ tsconfigRootDir }) {
+  return {
+    files: ['**/*.{ts,tsx,mts,cts}'],
+    languageOptions: {
+      parserOptions: { projectService: true, tsconfigRootDir },
+    },
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
+    },
+  };
+}
+
+/** Base config for TS packages: typescript-eslint recommended + type-aware rules. */
+export function tsPackageConfig({ tsconfigRootDir }) {
+  return [...tseslint.configs.recommended, typeAwareRules({ tsconfigRootDir })];
 }

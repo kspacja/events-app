@@ -1,9 +1,7 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import tseslint from "typescript-eslint";
-import { importBoundaries } from "@events/eslint-config";
+import { defineConfig } from "eslint/config";
+import { importBoundaries, tsPackageConfig } from "@events/eslint-config";
 
 export default defineConfig([
-  ...tseslint.configs.recommended,
+  ...tsPackageConfig({ tsconfigRootDir: import.meta.dirname }),
   importBoundaries({ isPackage: true }),
-  globalIgnores(["node_modules/**"]),
 ]);
