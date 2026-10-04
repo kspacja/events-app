@@ -1,4 +1,4 @@
-import { occurrenceIdSchema } from '@events/contract/occurrences';
+import { occurrenceIdSchema } from '@events/contract/listing';
 import { describe, expect, it } from 'vitest';
 import { dayDomId, occurrenceDomId } from './scheduleDom';
 

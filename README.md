@@ -75,7 +75,7 @@ Doba wydarzeń kończy się o 04:00: wydarzenie z niedzieli 01:30 należy do sob
 
 - `apps/portal` — aplikacja Next.js (`@events/portal`); dalsze aplikacje (studio, moderation, worker) dojdą w `apps/`
 - `packages/time` (`@events/time`) — czas lokalny (Europe/Warsaw): dzień kalendarzowy, doba wydarzeń kończąca się o 04:00, DST; źródła TS, bez builda
-- `packages/contract` (`@events/contract`) — wspólny kontrakt: schematy zod Wpisu programu (`/occurrences`) oraz lista kategorii (`/categories`, tymczasowo do Katalogu); źródła TS, bez builda
+- `packages/contract` (`@events/contract`) — wspólny kontrakt: model odczytu Wpisu programu (`/listing`), transport HTTP (`/occurrences-http`), interfejs źródła Terminów z błędem i kolejnością (`/source`) oraz wspólne testy zgodności adapterów (`/source/testing`); źródła TS, bez builda
 - `packages/ui` (`@events/ui`) — tokeny CSS (`@events/ui/tokens.css`); fonty zostają w layoucie portalu
 - `packages/typescript-config` — wspólne `tsconfig` (strict) i wariant dla Nexta
 - `packages/eslint-config` (`@events/eslint-config`) — wspólny ESLint: granice importów (bez importów w głąb `src` pakietu i bez ścieżek względnych między pakietami/aplikacjami; pakiety bez Reacta/Nexta i bez importu aplikacji) oraz reguły wymagające typów

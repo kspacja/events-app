@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { formatRangeLabel, type DateRange } from '@/features/search/dateRange';
+import type { DateRange } from '@events/time';
+import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatTimeWindow, type TimeWindow } from '@/features/search/timeRange';
 import { getOccurrenceSource } from '../source/getOccurrenceSource';
 import { buildSchedule, formatCount, scheduleSpan } from '../schedule';

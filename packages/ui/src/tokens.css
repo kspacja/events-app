@@ -24,6 +24,7 @@
   --category-art: #e6e3ee;
   --category-meetups: #efe6dc;
   --category-comedy: #f1e6d2;
+  --category-fallback: var(--color-bg-subtle);
 
   --radius-card: 12px;
   --radius-map: 18px;

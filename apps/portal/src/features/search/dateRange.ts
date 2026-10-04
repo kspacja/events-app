@@ -6,6 +6,7 @@ import {
   isCalendarDay,
   mondayOf,
   type CalendarDay,
+  type DateRange,
 } from '@events/time';
 import { formatDay } from '@/lib/format';
 
@@ -13,11 +14,6 @@ export const MAX_CUSTOM_RANGE_DAYS = 31;
 
 export const DATE_PRESETS = ['today', 'tomorrow', 'week', 'weekend'] as const;
 export type DatePreset = (typeof DATE_PRESETS)[number];
-
-export interface DateRange {
-  readonly from: CalendarDay;
-  readonly to: CalendarDay;
-}
 
 export type DateSearchError =
   | 'invalid-preset'
@@ -73,10 +69,6 @@ export function validateCustomRange(
   if (length < 0) return { error: 'invalid-order' };
   if (length + 1 > MAX_CUSTOM_RANGE_DAYS) return { error: 'range-too-long' };
   return { range: { from, to } };
-}
-
-export function isDayInRange(day: CalendarDay, range: DateRange): boolean {
-  return day >= range.from && day <= range.to;
 }
 
 /** Monday-Sunday weeks that overlap the range, each as a list of days. */

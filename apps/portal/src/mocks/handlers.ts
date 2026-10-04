@@ -1,15 +1,18 @@
 import { http, HttpResponse } from 'msw';
 import { EVENTS_API_URL } from '@/config/env';
-import { occurrencesQuerySchema } from '@events/contract/occurrences';
-import { eventDayOf } from '@events/time';
+import type { OccurrenceListing } from '@events/contract/listing';
+import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
+import { compareListings } from '@events/contract/source';
+import { eventDayOf, isDayInRange } from '@events/time';
 import { generateOccurrences } from './data/occurrences';
 
 function badRequest(error: string) {
   return HttpResponse.json({ error }, { status: 400 });
 }
 
-export const handlers = [
-  http.get(`${EVENTS_API_URL}/occurrences`, ({ request }) => {
+/** Serves the listings the way the real API must: event days in range, sorted. */
+export function occurrencesHandler(getListings: () => readonly OccurrenceListing[]) {
+  return http.get(`${EVENTS_API_URL}/occurrences`, ({ request }) => {
     const params = new URL(request.url).searchParams;
     const parsed = occurrencesQuerySchema.safeParse({
       from: params.get('from') ?? undefined,
@@ -18,13 +21,12 @@ export const handlers = [
     if (!parsed.success) return badRequest(parsed.error.issues[0].message);
     const range = parsed.data;
 
-    const occurrences = generateOccurrences()
-      .filter((occurrence) => {
-        const day = eventDayOf(occurrence.startsAt);
-        return day >= range.from && day <= range.to;
-      })
-      .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+    const occurrences = getListings()
+      .filter(({ startsAt }) => isDayInRange(eventDayOf(startsAt), range))
+      .sort(compareListings);
 
     return HttpResponse.json({ occurrences });
-  }),
-];
+  });
+}
+
+export const handlers = [occurrencesHandler(() => generateOccurrences())];

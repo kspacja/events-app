@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { occurrenceIdSchema } from '@events/contract/occurrences';
+import { occurrenceIdSchema } from '@events/contract/listing';
 import { createOccurrenceSelection } from './occurrenceSelection';
 
 const OCC_1 = occurrenceIdSchema.parse('e1-2026-06-06');

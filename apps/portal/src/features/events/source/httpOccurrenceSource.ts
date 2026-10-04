@@ -1,15 +1,14 @@
 import 'server-only';
 
 import { EVENTS_API_URL } from '@/config/env';
-import type { DateRange } from '@/features/search/dateRange';
-import { addDays } from '@events/time';
+import { addDays, type DateRange } from '@events/time';
 import { logger } from '@/lib/logger';
+import type { OccurrenceListing } from '@events/contract/listing';
 import {
   MAX_DAYS_PER_REQUEST,
   occurrencesResponseSchema,
-} from '@events/contract/occurrences';
-import type { OccurrenceListing } from '../types';
-import { OccurrenceSourceError, type OccurrenceSource } from './occurrenceSource';
+} from '@events/contract/occurrences-http';
+import { OccurrenceSourceError, type OccurrenceSource } from '@events/contract/source';
 
 const REQUEST_TIMEOUT_MS = 5000;
 const REVALIDATE_SECONDS = 300;

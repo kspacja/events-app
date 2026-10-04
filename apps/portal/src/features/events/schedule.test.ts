@@ -1,8 +1,11 @@
-import { eventIdSchema, occurrenceIdSchema } from '@events/contract/occurrences';
+import {
+  eventIdSchema,
+  occurrenceIdSchema,
+  type OccurrenceListing,
+} from '@events/contract/listing';
+import type { DateRange } from '@events/time';
 import { describe, expect, it } from 'vitest';
-import type { DateRange } from '@/features/search/dateRange';
 import { TIME_PRESET_WINDOWS } from '@/features/search/timeRange';
-import type { OccurrenceListing } from './types';
 import { buildSchedule, formatCount, scheduleSpan } from './schedule';
 
 function makeListing(
@@ -15,7 +18,7 @@ function makeListing(
     occurrenceId: occurrenceIdSchema.parse(occurrenceId),
     startsAt,
     price: null,
-    event: { id: eventIdSchema.parse(eventId), title: `Event ${eventId}`, category: 'music' },
+    event: { id: eventIdSchema.parse(eventId), title: `Event ${eventId}`, category: { slug: 'music', label: 'Muzyka' } },
     venue: { name: 'Venue', city: 'Warszawa', lat, lng: 21 },
   };
 }
@@ -187,11 +190,11 @@ describe('buildSchedule days and weeks', () => {
     ]);
   });
 
-  it('orders events chronologically within a day, with the 04:00 rule', () => {
+  it('keeps the source order within a day, with the 04:00 rule', () => {
     const listings = [
+      makeListing('a', '2026-06-06T09:00:00+02:00'),
       makeListing('b', '2026-06-06T20:00:00+02:00'),
       makeListing('night', '2026-06-07T02:00:00+02:00'),
-      makeListing('a', '2026-06-06T09:00:00+02:00'),
     ];
     const schedule = buildSchedule(listings, { range: SATURDAY, time: null });
     const saturday = schedule.weeks[0][5];
@@ -220,11 +223,11 @@ describe('buildSchedule counts and map', () => {
   const outside = makeListing('out', '2026-06-01T12:00:00+02:00', 54);
 
   it('counts active occurrences', () => {
-    expect(buildSchedule([inside, outside], { range: SATURDAY, time: null }).activeCount).toBe(1);
+    expect(buildSchedule([outside, inside], { range: SATURDAY, time: null }).activeCount).toBe(1);
   });
 
   it('flags map points as active and focuses on them', () => {
-    const { mapPoints, mapFocus } = buildSchedule([inside, outside], {
+    const { mapPoints, mapFocus } = buildSchedule([outside, inside], {
       range: SATURDAY,
       time: null,
     });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { occurrenceIdSchema } from '@events/contract/occurrences';
+import { occurrenceIdSchema } from '@events/contract/listing';
 import { viewFor, type MapPoint } from './mapView';
 
 function point(id: string, lat: number, lng: number): MapPoint {

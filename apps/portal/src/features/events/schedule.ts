@@ -1,22 +1,19 @@
-import {
-  isDayInRange,
-  weeksCovering,
-  type DateRange,
-} from '@/features/search/dateRange';
+import { weeksCovering } from '@/features/search/dateRange';
 import { matchesTimeWindow, type TimeWindow } from '@/features/search/timeRange';
 import {
   addDays,
   DAYS_IN_WEEK,
   eventDayOf,
+  isDayInRange,
   mondayOf,
   weekdayIndex,
   type CalendarDay,
+  type DateRange,
 } from '@events/time';
-import type { OccurrenceId } from '@events/contract/occurrences';
+import type { OccurrenceId, OccurrenceListing } from '@events/contract/listing';
 import { formatCalendarDay, formatLocalTime } from '@/lib/format';
 import { COUNT_LABELS } from './labels';
 import type { MapPoint } from './mapView';
-import type { OccurrenceListing } from './types';
 
 export interface ScheduleEntry {
   readonly listing: OccurrenceListing;
@@ -64,12 +61,6 @@ export function scheduleSpan(range: DateRange): DateRange {
   };
 }
 
-function compareListings(a: OccurrenceListing, b: OccurrenceListing): number {
-  const byTime = Date.parse(a.startsAt) - Date.parse(b.startsAt);
-  if (byTime !== 0) return byTime;
-  return a.occurrenceId < b.occurrenceId ? -1 : a.occurrenceId > b.occurrenceId ? 1 : 0;
-}
-
 function toMapPoint(
   { occurrenceId, event, venue, startsAt }: OccurrenceListing,
   active: boolean,
@@ -99,11 +90,12 @@ function firstActiveOccurrence(
   return best && { day: best.day, occurrenceId: best.occurrenceId };
 }
 
+/** Relies on the OccurrenceSource promise that listings arrive sorted. */
 export function buildSchedule(
   listings: readonly OccurrenceListing[],
   { range, time }: ScheduleQuery,
 ): Schedule {
-  const entries = [...listings].sort(compareListings).map((listing) => ({
+  const entries = listings.map((listing) => ({
     listing,
     active:
       isDayInRange(eventDayOf(listing.startsAt), range) &&

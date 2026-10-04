@@ -1,4 +1,4 @@
-import type { OccurrenceId } from '@events/contract/occurrences';
+import type { OccurrenceId } from '@events/contract/listing';
 import type { CalendarDay } from '@events/time';
 
 export const SCHEDULE_SECTION_ID = 'program';

@@ -5,7 +5,10 @@ import {
   localDayOf,
   localMinutesOf,
   mondayOf,
+  isDayInRange,
+  isWarsawIso,
   toInstantIso,
+  toWarsawIso,
 } from './time';
 
 describe('eventDayOf', () => {
@@ -90,5 +93,48 @@ describe('isCalendarDay', () => {
   it('rejects malformed strings', () => {
     expect(isCalendarDay('2026-7-12')).toBe(false);
     expect(isCalendarDay('12.07.2026')).toBe(false);
+  });
+});
+
+describe('toWarsawIso', () => {
+  it('renders a UTC instant with the summer offset', () => {
+    expect(toWarsawIso(new Date('2026-07-12T17:00:00Z'))).toBe('2026-07-12T19:00:00+02:00');
+  });
+
+  it('renders a UTC instant with the winter offset', () => {
+    expect(toWarsawIso(new Date('2026-01-12T18:00:00Z'))).toBe('2026-01-12T19:00:00+01:00');
+  });
+
+  it('normalizes an ISO string in another offset', () => {
+    expect(toWarsawIso('2026-07-12T17:00:00Z')).toBe('2026-07-12T19:00:00+02:00');
+  });
+});
+
+describe('isWarsawIso', () => {
+  it.each(['2026-07-12T19:00:00+02:00', '2026-01-12T19:00:00+01:00'])('accepts %s', (value) => {
+    expect(isWarsawIso(value)).toBe(true);
+  });
+
+  it.each([
+    '2026-07-12T17:00:00Z',
+    '2026-07-12T19:00:00+01:00',
+    '2026-07-12T19:00:00.500+02:00',
+    'not a date',
+  ])('rejects %s', (value) => {
+    expect(isWarsawIso(value)).toBe(false);
+  });
+});
+
+describe('isDayInRange', () => {
+  const range = { from: '2026-06-01', to: '2026-06-07' } as const;
+
+  it('includes both ends', () => {
+    expect(isDayInRange('2026-06-01', range)).toBe(true);
+    expect(isDayInRange('2026-06-07', range)).toBe(true);
+  });
+
+  it('excludes days outside', () => {
+    expect(isDayInRange('2026-05-31', range)).toBe(false);
+    expect(isDayInRange('2026-06-08', range)).toBe(false);
   });
 });

@@ -1,11 +1,11 @@
 import { z } from 'zod';
+import type { DateRange } from '@events/time';
 import { formatClock } from '@/lib/format';
 import {
   DATE_PRESETS,
   resolvePreset,
   validateCustomRange,
   type DatePreset,
-  type DateRange,
   type DateSearchError,
   type DateSearchResult,
 } from './dateRange';

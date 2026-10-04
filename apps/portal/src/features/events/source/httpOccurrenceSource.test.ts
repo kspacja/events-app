@@ -1,15 +1,14 @@
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
-import { EVENTS_API_URL } from '@/config/env';
+import { describeOccurrenceSourceConformance } from '@events/contract/source/testing';
+import { OccurrenceSourceError } from '@events/contract/source';
 import { addDays, localDayOf, mondayOf } from '@events/time';
-import type { DateRange } from '@/features/search/dateRange';
+import { EVENTS_API_URL } from '@/config/env';
+import { occurrencesHandler } from '@/mocks/handlers';
 import { server } from '@/mocks/node';
 import { createHttpOccurrenceSource } from './httpOccurrenceSource';
-import { OccurrenceSourceError } from './occurrenceSource';
 
 const OCCURRENCES_URL = `${EVENTS_API_URL}/occurrences`;
-const SIX_WEEKS_DAYS = 42;
-const MOCK_DATA_WEEKS = 5;
 
 const firstMonday = mondayOf(localDayOf(new Date()));
 
@@ -23,29 +22,21 @@ function countRequests() {
 }
 
 const httpSource = createHttpOccurrenceSource();
-const listOccurrences = (range: DateRange) => httpSource.listOccurrences(range);
+const listOccurrences = (range: { from: typeof firstMonday; to: typeof firstMonday }) =>
+  httpSource.listOccurrences(range);
+
+describeOccurrenceSourceConformance('HTTP occurrence source', () => ({
+  source: createHttpOccurrenceSource(),
+  seed: (listings) => {
+    server.use(occurrencesHandler(() => listings));
+  },
+  breakBackend: () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    server.use(http.get(OCCURRENCES_URL, () => new HttpResponse(null, { status: 503 })));
+  },
+}));
 
 describe('HTTP occurrence source', () => {
-  it('returns unique occurrences from every populated week of a six-week range', async () => {
-    const occurrences = await listOccurrences({
-      from: firstMonday,
-      to: addDays(firstMonday, SIX_WEEKS_DAYS - 1),
-    });
-
-    const ids = occurrences.map(({ occurrenceId }) => occurrenceId);
-    expect(new Set(ids).size).toBe(ids.length);
-
-    for (let week = 0; week < MOCK_DATA_WEEKS; week += 1) {
-      const weekStart = addDays(firstMonday, week * 7);
-      const weekEnd = addDays(weekStart, 6);
-      const inWeek = occurrences.filter((occurrence) => {
-        const day = localDayOf(occurrence.startsAt);
-        return day >= weekStart && day <= weekEnd;
-      });
-      expect(inWeek.length).toBeGreaterThan(0);
-    }
-  });
-
   it('uses a single request for a 31-day range', async () => {
     const urls = countRequests();
     await listOccurrences({ from: firstMonday, to: addDays(firstMonday, 30) });
@@ -67,7 +58,7 @@ describe('HTTP occurrence source', () => {
       occurrenceId: 'dup-2030-01-01',
       startsAt: '2030-01-01T18:00:00+01:00',
       price: null,
-      event: { id: 'dup', title: 'Duplicate', category: 'music' },
+      event: { id: 'dup', title: 'Duplicate', category: { slug: 'music', label: 'Muzyka' } },
       venue: { name: 'Hall', city: 'Warszawa', lat: 52, lng: 21 },
     };
     server.use(
@@ -82,7 +73,7 @@ describe('HTTP occurrence source', () => {
     expect(occurrences).toHaveLength(1);
   });
 
-  it('wraps a 500 response in OccurrenceSourceError', async () => {
+  it('wraps a 500 response in OccurrenceSourceError with the status as cause', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     server.use(http.get(OCCURRENCES_URL, () => new HttpResponse(null, { status: 500 })));
 
@@ -97,6 +88,15 @@ describe('HTTP occurrence source', () => {
     server.use(
       http.get(OCCURRENCES_URL, () => HttpResponse.json({ occurrences: [{ occurrenceId: 1 }] })),
     );
+
+    await expect(
+      listOccurrences({ from: firstMonday, to: firstMonday }),
+    ).rejects.toBeInstanceOf(OccurrenceSourceError);
+  });
+
+  it('wraps a network failure in OccurrenceSourceError', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    server.use(http.get(OCCURRENCES_URL, () => HttpResponse.error()));
 
     await expect(
       listOccurrences({ from: firstMonday, to: firstMonday }),

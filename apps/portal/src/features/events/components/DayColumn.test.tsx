@@ -1,8 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import type { ScheduleDay } from '../schedule';
-import { eventIdSchema, occurrenceIdSchema } from '@events/contract/occurrences';
-import type { OccurrenceListing } from '../types';
+import {
+  eventIdSchema,
+  occurrenceIdSchema,
+  type OccurrenceListing,
+} from '@events/contract/listing';
 import { OccurrenceSelectionProvider } from '../OccurrenceSelectionProvider';
 import { DayColumn } from './DayColumn';
 
@@ -10,7 +13,7 @@ const LISTING: OccurrenceListing = {
   occurrenceId: occurrenceIdSchema.parse('e1-2026-06-06'),
   startsAt: '2026-06-06T17:00:00Z',
   price: null,
-  event: { id: eventIdSchema.parse('e1'), title: 'Koncert jazzowy', category: 'music' },
+  event: { id: eventIdSchema.parse('e1'), title: 'Koncert jazzowy', category: { slug: 'music', label: 'Muzyka' } },
   venue: { name: 'Klub', city: 'Warszawa', lat: 52, lng: 21 },
 };
 

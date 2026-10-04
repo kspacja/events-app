@@ -16,6 +16,12 @@ export const MINUTES_PER_HOUR = 60;
 /** Calendar day as `YYYY-MM-DD`, independent of any timezone. */
 export type CalendarDay = `${number}-${number}-${number}`;
 
+/** Inclusive range of event days. */
+export interface DateRange {
+  readonly from: CalendarDay;
+  readonly to: CalendarDay;
+}
+
 const DAY_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const DAY_FORMAT = 'yyyy-MM-dd';
 const UTC = 'UTC';
@@ -59,6 +65,10 @@ export function mondayOf(day: CalendarDay): CalendarDay {
   return toCalendarDay(startOfISOWeek(calendarDayToDate(day)));
 }
 
+export function isDayInRange(day: CalendarDay, range: DateRange): boolean {
+  return day >= range.from && day <= range.to;
+}
+
 function inWarsaw(instant: Date | string): TZDate {
   return new TZDate(new Date(instant), APP_TIME_ZONE);
 }
@@ -87,6 +97,18 @@ export function currentEventDay(now: Date): CalendarDay {
   return eventDayOf(now.toISOString());
 }
 
+const WARSAW_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ssxxx";
+
+/** The one startsAt format: Europe/Warsaw wall clock with its UTC offset, second precision. */
+export function toWarsawIso(instant: Date | string): string {
+  return format(inWarsaw(instant), WARSAW_ISO_FORMAT);
+}
+
+export function isWarsawIso(value: string): boolean {
+  const instant = new Date(value);
+  return !Number.isNaN(instant.getTime()) && toWarsawIso(instant) === value;
+}
+
 /** ISO string for a local wall-clock time, with the UTC offset valid on that day. */
 export function toInstantIso(day: CalendarDay, minutes: number): string {
   const [year, month, date] = day.split('-').map(Number);
@@ -98,5 +120,5 @@ export function toInstantIso(day: CalendarDay, minutes: number): string {
     minutes % MINUTES_PER_HOUR,
     APP_TIME_ZONE,
   );
-  return format(local, "yyyy-MM-dd'T'HH:mm:ssxxx");
+  return format(local, WARSAW_ISO_FORMAT);
 }
