@@ -9,8 +9,20 @@ Coś, na co można pójść — koncert, spektakl, cykl jazzowych piątków; ma 
 _Avoid_: event, impreza, ogłoszenie
 
 **Termin** (`Occurrence`):
-Konkretne wystąpienie Wydarzenia w danym dniu i godzinie.
+Konkretne wystąpienie Wydarzenia w danym dniu, o danej godzinie i w danym Miejscu.
 _Avoid_: wystąpienie, occurrence, data
+
+**Miejsce** (`Venue`):
+Lokal lub przestrzeń, w której odbywa się Termin; należy do Organizatora, który je wprowadził.
+_Avoid_: lokalizacja, adres, organizator (w znaczeniu z PoC)
+
+**Kategoria** (`Category`):
+Pozycja z zarządzanej listy rodzajów Wydarzeń (np. muzyka, film), którą Organizator przypisuje Wydarzeniu; lista zmienia się w czasie.
+_Avoid_: typ, tag, Klaster tematyczny
+
+**Cena** (`Price`):
+Informacja o koszcie wstępu na Termin: bezpłatny albo kwota od–do; jej brak oznacza, że Organizator jej nie podał.
+_Avoid_: bilet, koszt
 
 ## Publikacja
 
