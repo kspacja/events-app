@@ -24,6 +24,7 @@
 - Testy integracyjne: Testcontainers czy baza z Docker Compose?
 - `Venue.organizerId` przed etapem 2 (Organizator jeszcze nie istnieje): kolumna dopuszczająca `null` czy Organizator techniczny dla danych przykładowych?
 - Kolory nowych Kategorii: tylko `--category-fallback`, czy kolor jako dana Kategorii?
+- Seed z `createSampleCatalog(now)` liczy daty względem dnia uruchomienia, więc po zapisie w bazie się starzeje: stała data, cykliczne ponowne seedowanie czy generowanie Terminów przy starcie dev?
 
 ## Kryterium ukończenia
 
