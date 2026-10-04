@@ -15,7 +15,7 @@ Realizacja ADR-0001…0007 etapami. Każdy etap kończy się działającą aplik
 | Etap | Zakres | Status |
 | --- | --- | --- |
 | 0. Monorepo | pnpm + Turborepo, `apps/portal`, `packages/contract`, `packages/ui`, `packages/typescript-config` | zrobione |
-| 0.5 Porządki po przeglądzie | poprawki z code review; rozdzielenie `contract`/`time` i jedno źródło Kategorii (zrobione), seam odczytu Terminów, cel przewinięcia z Programu, moduł wyboru Wydarzenia na mapie | w toku |
+| 0.5 Porządki po przeglądzie | poprawki z code review; `@events/time` oddzielone od `contract`, jedno źródło Kategorii, seam odczytu Terminów (`OccurrenceListing`, `OccurrenceSource`), cel przewinięcia z Programu, moduł wyboru Terminu na mapie | zrobione |
 | 1. Baza + Katalog | Postgres + pgvector (Docker lokalnie), Drizzle (ADR), schematy per kontekst, `packages/catalog` (`Event`, `Occurrence`, `Venue`, `Category`, `Price`, `Submission`), seed z mocka, portal czyta z bazy | — |
 | 2. Tożsamość | Better Auth: `Attendee` (magic link), `Organizer`, `Moderator` (zaproszenia), `Guest` | — |
 | 3. Studio | `apps/studio`: Wydarzenia, Terminy, Miejsca, zdjęcia (R2), Zgłoszenia, Zmiany drobne/istotne | — |
