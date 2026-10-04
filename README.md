@@ -37,7 +37,7 @@ Strona: [http://localhost:3000](http://localhost:3000).
 | `API_MOCKING` | `enabled` | włącza MSW. Bez tego strona próbuje pobrać dane z `EVENTS_API_URL` i pokazuje błąd. |
 | `EVENTS_API_URL` | `http://api.events.local` | adres API. Przy MSW to adres fikcyjny, przechwytywany przez mock. |
 
-Mock generuje wydarzenia względem bieżącego tygodnia (i 4 następnych), więc dane zawsze są „aktualne”.
+Mock serwuje przykładowy Katalog (`@events/catalog`: Kategorie, Miejsca, Wydarzenia i Terminy) względem bieżącego tygodnia (i 4 następnych), więc dane zawsze są „aktualne”. `@events/catalog` to domena Katalogu bez frameworka i bez bazy; w etapie 1 dostanie adapter Postgresa.
 
 ## Skrypty
 
@@ -53,6 +53,7 @@ Bramki (z korzenia, przez Turborepo): `pnpm typecheck`, `pnpm lint`, `pnpm test`
 | `pnpm test` | Vitest we wszystkich pakietach (portal: jsdom + MSW z tymi samymi handlerami co aplikacja) |
 | `pnpm --filter @events/contract test` | testy samego kontraktu |
 | `pnpm --filter @events/time test` | testy czasu lokalnego |
+| `pnpm --filter @events/catalog test` | testy Katalogu (przykładowe dane, projekcja, źródło w pamięci) |
 
 ## Adresy do sprawdzenia
 

@@ -1,19 +1,17 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
-import { generateOccurrences } from './occurrences';
+import { createSampleCatalog } from '@events/catalog';
 
 const tokensCss = readFileSync(
   createRequire(import.meta.url).resolve('@events/ui/tokens.css'),
   'utf8',
 );
 
-const usedSlugs = [
-  ...new Set(generateOccurrences().map(({ event }) => event.category.slug)),
-];
+const { categories } = createSampleCatalog(new Date());
 
 describe('category colour tokens', () => {
-  it.each(usedSlugs)('defines --category-%s for a category used by the mock data', (slug) => {
+  it.each(categories.map(({ slug }) => slug))('defines --category-%s for a Catalog category', (slug) => {
     expect(tokensCss).toMatch(new RegExp(`--category-${slug}\\s*:`));
   });
 

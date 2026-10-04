@@ -2,6 +2,8 @@ import { http, HttpResponse } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 import { describeOccurrenceSourceConformance } from '@events/contract/source/testing';
 import { OccurrenceSourceError } from '@events/contract/source';
+import { catalogFromListings } from '@events/catalog/testing';
+import { listOccurrences as projectCatalog } from '@events/catalog';
 import { addDays, localDayOf, mondayOf, type DateRange } from '@events/time';
 import { EVENTS_API_URL } from '@/config/env';
 import { occurrencesHandler } from '@/mocks/handlers';
@@ -28,7 +30,8 @@ const listOccurrences = (range: DateRange) =>
 describeOccurrenceSourceConformance('HTTP occurrence source', () => ({
   source: createHttpOccurrenceSource(),
   seed: (listings) => {
-    server.use(occurrencesHandler(() => listings));
+    const catalog = catalogFromListings(listings);
+    server.use(occurrencesHandler((range) => projectCatalog(catalog, range)));
   },
   breakBackend: () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);

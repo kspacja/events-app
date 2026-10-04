@@ -1,17 +1,16 @@
 import { http, HttpResponse } from 'msw';
 import { EVENTS_API_URL } from '@/config/env';
+import { createSampleCatalog, listOccurrences } from '@events/catalog';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
-import { compareListings } from '@events/contract/source';
-import { eventDayOf, isDayInRange } from '@events/time';
-import { generateOccurrences } from './data/occurrences';
+import type { DateRange } from '@events/time';
 
 function badRequest(error: string) {
   return HttpResponse.json({ error }, { status: 400 });
 }
 
-/** Serves the listings the way the real API must: event days in range, sorted. */
-export function occurrencesHandler(getListings: () => readonly OccurrenceListing[]) {
+/** Serves what `listForRange` returns for the validated range, in the HTTP transport shape. */
+export function occurrencesHandler(listForRange: (range: DateRange) => readonly OccurrenceListing[]) {
   return http.get(`${EVENTS_API_URL}/occurrences`, ({ request }) => {
     const params = new URL(request.url).searchParams;
     const parsed = occurrencesQuerySchema.safeParse({
@@ -19,14 +18,9 @@ export function occurrencesHandler(getListings: () => readonly OccurrenceListing
       to: params.get('to') ?? undefined,
     });
     if (!parsed.success) return badRequest(parsed.error.issues[0].message);
-    const range = parsed.data;
 
-    const occurrences = getListings()
-      .filter(({ startsAt }) => isDayInRange(eventDayOf(startsAt), range))
-      .sort(compareListings);
-
-    return HttpResponse.json({ occurrences });
+    return HttpResponse.json({ occurrences: listForRange(parsed.data) });
   });
 }
 
-export const handlers = [occurrencesHandler(() => generateOccurrences())];
+export const handlers = [occurrencesHandler((range) => listOccurrences(createSampleCatalog(new Date()), range))];
