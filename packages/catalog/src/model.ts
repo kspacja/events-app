@@ -86,9 +86,16 @@ function assertIntegrity(data: CatalogData): void {
   }
 }
 
-function freezeAll<T extends object>(items: readonly T[]): readonly T[] {
-  return Object.freeze(items.map((item) => Object.freeze({ ...item })));
+function freezeAll<T extends object>(items: readonly T[], copy: (item: T) => T = (item) => ({ ...item })): readonly T[] {
+  return Object.freeze(items.map((item) => Object.freeze(copy(item))));
 }
+
+const copyVenue = (venue: Venue): Venue => ({ ...venue, location: Object.freeze({ ...venue.location }) });
+
+const copyOccurrence = (occurrence: Occurrence): Occurrence => ({
+  ...occurrence,
+  price: occurrence.price && Object.freeze({ ...occurrence.price }),
+});
 
 /** Opaque: the brand makes the type nominal and index.ts exports it as a type only; build one with `createCatalog`. */
 export class Catalog implements CatalogData {
@@ -102,9 +109,9 @@ export class Catalog implements CatalogData {
   constructor(data: CatalogData) {
     assertIntegrity(data);
     this.categories = freezeAll(data.categories);
-    this.venues = freezeAll(data.venues);
+    this.venues = freezeAll(data.venues, copyVenue);
     this.events = freezeAll(data.events);
-    this.occurrences = freezeAll(data.occurrences);
+    this.occurrences = freezeAll(data.occurrences, copyOccurrence);
   }
 }
 

@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { createInMemoryOccurrenceSource, createSampleCatalog } from '@events/catalog';
+import { SAMPLE_OCCURRENCES_IN_FIRST_WEEK } from '@events/catalog/testing';
 import { addDays, currentEventDay, mondayOf } from '@events/time';
 import { formatCount } from '../schedule';
 import { EventsSection } from './EventsSection';
 
 vi.mock('./EventsMapLoader', () => ({ EventsMapLoader: () => null }));
 
-const CARDS_IN_CURRENT_WEEK = 22;
 const NOW = new Date('2026-10-07T12:00:00+02:00');
 
 describe('EventsSection', () => {
@@ -24,7 +24,7 @@ describe('EventsSection', () => {
     });
     const { container } = render(section);
 
-    expect(container.querySelectorAll('article')).toHaveLength(CARDS_IN_CURRENT_WEEK);
-    expect(screen.getByText(formatCount(CARDS_IN_CURRENT_WEEK))).toBeInTheDocument();
+    expect(container.querySelectorAll('article')).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
+    expect(screen.getByText(formatCount(SAMPLE_OCCURRENCES_IN_FIRST_WEEK))).toBeInTheDocument();
   });
 });

@@ -2,13 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { currentEventDay, eventDayOf, localMinutesOf, mondayOf, addDays } from '@events/time';
 import { createInMemoryOccurrenceSource } from './inMemoryOccurrenceSource';
 import { listOccurrences } from './listOccurrences';
-import { createSampleCatalog } from './sampleCatalog';
+import { createSampleCatalog, SAMPLE_OCCURRENCES_IN_FIRST_WEEK } from './sampleCatalog';
 
 // Wednesday noon, so the current week is Monday 2030-01-07 to Sunday 2030-01-13
 const NOW = new Date('2030-01-09T12:00:00Z');
 const FIRST_MONDAY = mondayOf('2030-01-09');
 const WEEK = { from: FIRST_MONDAY, to: addDays(FIRST_MONDAY, 6) };
-const CARDS_IN_FIRST_WEEK = 22;
 const WEEKS = 5;
 const OCCURRENCES_IN_FIVE_WEEKS = 88;
 
@@ -43,7 +42,7 @@ describe('createSampleCatalog', () => {
   it('lists every event in the current week, one occurrence each', () => {
     const week = listOccurrences(catalog, WEEK);
 
-    expect(week).toHaveLength(CARDS_IN_FIRST_WEEK);
+    expect(week).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
     expect(week[0].occurrenceId).toBe('wro-choir-2030-01-07');
   });
 
@@ -73,7 +72,7 @@ describe('createSampleCatalog', () => {
     const shownWeek = { from: shownMonday, to: addDays(shownMonday, 6) };
 
     expect(shownMonday).toBe(FIRST_MONDAY);
-    expect(listOccurrences(createSampleCatalog(mondayAfterMidnight), shownWeek)).toHaveLength(CARDS_IN_FIRST_WEEK);
-    expect(listOccurrences(createSampleCatalog(NOW), shownWeek)).toHaveLength(CARDS_IN_FIRST_WEEK);
+    expect(listOccurrences(createSampleCatalog(mondayAfterMidnight), shownWeek)).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
+    expect(listOccurrences(createSampleCatalog(NOW), shownWeek)).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
   });
 });

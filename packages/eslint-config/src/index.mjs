@@ -4,16 +4,12 @@ const NO_DEEP_IMPORT_MESSAGE = 'Import only what the package declares in "export
 const NO_RELATIVE_SEAM_MESSAGE = 'Reach packages by name (@events/...), not through relative paths.';
 const FRAMEWORK_FREE_MESSAGE = 'Packages must stay framework-free.';
 
-/**
- * Dependency map: the one place that says who may import whom (ADR-0002).
- * `mayImport` lists (besides the member itself) the `@events/*` packages a workspace member may use; `'*'` means every package.
- * `kernel` members must stay free of database drivers and server-only code.
- * A context's DB schema module must not appear in package "exports": only its repository functions do.
- */
+/** The one place that says who may import whom (ADR-0002); `mayImport` is '*' or the @events/* packages allowed besides itself. */
 export const DEPENDENCY_MAP = {
   time: { kind: 'package', kernel: true, mayImport: [] },
   contract: { kind: 'package', kernel: true, mayImport: ['time'] },
   catalog: { kind: 'package', kernel: false, mayImport: ['contract', 'time'] },
+  // ui is CSS-only for now: it has no eslint config, so this entry takes effect once it gains code
   ui: { kind: 'package', kernel: true, mayImport: [] },
   'eslint-config': { kind: 'tooling', kernel: false, mayImport: [] },
   portal: { kind: 'app', kernel: false, mayImport: '*' },
@@ -23,7 +19,7 @@ const DB_DRIVERS = ['pg', 'postgres', 'drizzle-orm', '@neondatabase/*', 'kysely'
 
 const KERNEL_PURITY_PATTERNS = [
   {
-    group: [...DB_DRIVERS.flatMap((name) => [name, `${name}/**`]), 'server-only'],
+    group: [...DB_DRIVERS.flatMap((name) => [`/${name}`, `/${name}/**`]), 'server-only'],
     message: 'Kernel packages (time, contract, ui) must not import database drivers, ORMs or server-only.',
   },
 ];
@@ -111,11 +107,7 @@ function restrictImports({ paths, patterns }, scope = {}) {
   return { ...scope, ignores: CONFIG_FILES, rules: { 'no-restricted-imports': ['error', { paths, patterns }] } };
 }
 
-/**
- * no-restricted-imports replaces (not merges) per file, so each layer restates the full list;
- * later layers win: everywhere, then the allowed files of each restricted entry point.
- * A nested `files` array ANDs its globs: the last layer is for files matching both a test and a transport glob.
- */
+/** no-restricted-imports replaces per file, so each layer restates the list; later layers win, and the last one is for files matching both a test and a transport glob. */
 function withEntryPointRules({ paths, patterns }) {
   const restrict = (extra, scope) => restrictImports({ paths, patterns: [...patterns, ...extra] }, scope);
   return [

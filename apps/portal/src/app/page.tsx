@@ -7,12 +7,13 @@ import styles from './page.module.css';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const params = await searchParams;
-  const { date, time, notice } = parseSearchQuery(params, new Date());
+  const now = new Date();
+  const { date, time, notice } = parseSearchQuery(params, now);
 
   return (
     <main className={styles.page}>
       <EventsSection
-        source={getOccurrenceSource()}
+        source={getOccurrenceSource(now)}
         range={date.range}
         time={time.window}
         sentence={<SearchSentence date={date} time={time} />}

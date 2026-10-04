@@ -117,6 +117,9 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'gdn-afterparty', title: 'Afterparty na Ołowiance', category: MUSIC, venue: OLOWIANKA, dayOffset: 5, time: '01:00' },
 ];
 
+/** Every template occurs in the first week, so this is the size of the sample catalog's first week. */
+export const SAMPLE_OCCURRENCES_IN_FIRST_WEEK = SAMPLE_EVENTS.length;
+
 const GENERATED_WEEKS = 5;
 const DAYS_IN_WEEK = 7;
 const MINUTES_PER_HOUR = 60;

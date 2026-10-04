@@ -21,4 +21,4 @@ W pierwszym roku skala jest mała (kilka miast, do ok. 10 tys. Wydarzeń miesię
 
 ## Aktualizacja 2026-10-05
 
-Mapa dozwolonych zależności między pakietami (`DEPENDENCY_MAP`) jest egzekwowana lintem w `packages/eslint-config/src/index.mjs`: nieznane importy `@events/*` są odrzucane, a pakiety jądra (`time`, `contract`, `ui`) nie importują sterowników bazy ani `server-only`. Schemat kontekstu (`@events/*/schema`, `@events/*/db`) jest prywatny — poza pakietem eksportujemy tylko funkcje repozytorium.
+Mapa dozwolonych zależności między pakietami (`DEPENDENCY_MAP`) jest egzekwowana lintem w `packages/eslint-config/src/index.mjs`: nieznane importy `@events/*` są odrzucane, a pakiety jądra (`time`, `contract`, `ui`) nie importują sterowników bazy ani `server-only` (`ui` to na razie same style CSS bez konfiguracji lintu, więc reguła zacznie działać, gdy pojawi się w nim kod). Schemat kontekstu (`@events/*/schema`, `@events/*/db`) jest prywatny — poza pakietem eksportujemy tylko funkcje repozytorium.
