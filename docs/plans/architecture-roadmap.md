@@ -1,27 +1,45 @@
 # Plan wdrożenia architektury
 
-Realizacja ADR-0001…0007 etapami. Każdy etap kończy się działającą aplikacją i zielonymi bramkami (`pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`).
+Realizacja ADR-0001…0007 etapami. Pojęcia: `CONTEXT-MAP.md`. Decyzje: `docs/adr/`.
 
-## Proces (obowiązuje każdy krok)
+**Bramki** = `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build` uruchomione z katalogu głównego.
 
-1. Krok = jeden logiczny commit (albo kilka, jeśli trzeba), bez pusha.
-2. **Po każdym kroku: code review w dwóch osiach** (`/code-review` — Standards + Spec, równolegle), punkt odniesienia = commit sprzed kroku. Spec = ten plan, ADR-y i ustalenia z rozmowy.
-3. Ustalenia z review poprawiamy przed rozpoczęciem następnego kroku (albo świadomie odkładamy z uzasadnieniem).
-4. **Po każdym etapie: przegląd architektury** (`/improve-codebase-architecture`) — kandydaci do pogłębienia modułów przed kolejnym etapem.
-5. Zmiany widoczne dla użytkownika sprawdzamy w przeglądarce.
+## Proces kroku
+
+Etap dzieli się na kroki. Każdy krok przechodzi te punkty po kolei:
+
+1. **Zakres** — zakres i decyzje kroku są zapisane w pliku etapu (`stages/`). Ustalenia z rozmowy trafiają tam przed implementacją.
+2. **Implementacja** — commit(y) bez pusha; bramki zielone, smoke test portalu (`API_MOCKING=enabled`) przechodzi.
+3. **Code review w dwóch osiach** (Standards + Spec, równolegle, punkt odniesienia = commit sprzed kroku; Spec = plik etapu + ADR-y) — każda uwaga poprawiona albo wpisana do „Odłożone” z powodem.
+4. **Przeglądarka** — zmiany widoczne dla użytkownika sprawdzone w Chrome; sprawdzone scenariusze wypisane w raporcie kroku.
+
+Koniec etapu: status w tabeli zaktualizowany, a użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać). Etap jest zamknięty, gdy każdy kandydat z przeglądu jest wdrożony, odłożony albo odrzucony.
 
 ## Etapy
 
-| Etap | Zakres | Status |
-| --- | --- | --- |
-| 0. Monorepo | pnpm + Turborepo, `apps/portal`, `packages/contract`, `packages/ui`, `packages/typescript-config` | zrobione |
-| 0.5 Porządki po przeglądzie | poprawki z code review; `@events/time` oddzielone od `contract`, jedno źródło Kategorii, seam odczytu Terminów (`OccurrenceListing`, `OccurrenceSource`), cel przewinięcia z Programu, moduł wyboru Terminu na mapie | zrobione |
-| 0.6 Gotowość do etapu 1 | interfejs źródła Terminów w pakiecie + wspólne testy zgodności adapterów; Wpis programu oddzielony od kontraktu HTTP (jednolita reprezentacja czasu); Kategoria jako dane; `packages/catalog` z przykładowym Katalogiem (źródło mocka i seeda); jedno miejsce składania portalu (zwalidowana konfiguracja, wybór źródła); granice kontekstów w lincie; zwężenie interfejsu wyboru Terminu | w toku |
-| 1. Baza + Katalog | Postgres + pgvector (Docker lokalnie), Drizzle (ADR), schematy per kontekst, `packages/catalog` (`Event`, `Occurrence`, `Venue`, `Category`, `Price`, `Submission`), seed z mocka, portal czyta z bazy | — |
-| 1.5 Obserwowalność (instrumentacja) | OpenTelemetry w `instrumentation.ts` aplikacji i w `worker` (ślady, metryki, logi), ustrukturyzowany logger zamiast obecnego, raportowanie błędów, korelacja żądań i przenoszenie kontekstu śladu przez outbox do workera, podstawowe dashboardy i alerty. Do decyzji (ADR): dostawca/backend telemetrii, raportowanie błędów, próbkowanie, retencja, RODO (bez danych osobowych w telemetrii) | — |
-| 2. Tożsamość | Better Auth: `Attendee` (magic link), `Organizer`, `Moderator` (zaproszenia), `Guest` | — |
-| 3. Studio | `apps/studio`: Wydarzenia, Terminy, Miejsca, zdjęcia (R2), Zgłoszenia, Zmiany drobne/istotne | — |
-| 4. Moderacja | `apps/moderation`: kolejka Zgłoszeń, decyzje | — |
-| 5. Rekomendacje | `packages/recommendations`, `apps/worker` (outbox, embeddingi, `TopicCluster`), Reakcje, `ColdStart`, scalanie i retencja Reakcji Gościa | — |
-| 6. Import i API | import CSV, publiczne API z kluczami w `studio` | — |
-| 7. Wdrożenie | Vercel, Neon, Railway/Fly, CI | — |
+| Etap | Cel | Status | Szczegóły |
+| --- | --- | --- | --- |
+| 0. Monorepo | pnpm + Turborepo, `apps/portal`, pakiety współdzielone | zrobione | historia gita |
+| 0.5 Porządki | czas lokalny, seam odczytu Terminów, wybór Terminu na mapie | zrobione | historia gita |
+| 0.6 Gotowość do etapu 1 | interfejs źródła Terminów w pakiecie, Kategoria jako dane, przykładowy Katalog | w toku | [stages/0.6-gotowosc-do-etapu-1.md](stages/0.6-gotowosc-do-etapu-1.md) |
+| 1. Baza + Katalog | portal czyta Terminy z Postgresa przez `packages/catalog` | — | [stages/1-baza-i-katalog.md](stages/1-baza-i-katalog.md) |
+| 1.5 Obserwowalność | ślady, metryki, logi i błędy z aplikacji i workera | — | [stages/1.5-obserwowalnosc.md](stages/1.5-obserwowalnosc.md) |
+| 2. Tożsamość | konta `Attendee`, `Organizer`, `Moderator`, `Guest` (ADR-0004, 0005) | — | — |
+| 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia | — | — |
+| 4. Moderacja | `apps/moderation`: kolejka Zgłoszeń i decyzje | — | — |
+| 5. Rekomendacje | `packages/recommendations`, `apps/worker`, Reakcje, `ColdStart` (ADR-0003, 0007) | — | — |
+| 6. Import i API | import CSV, publiczne API Organizatorów | — | — |
+| 7. Wdrożenie | Vercel, Neon, Railway/Fly, CI (ADR-0006) | — | — |
+
+Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryterium ukończenia.
+
+## Odłożone
+
+Świadomie odłożone ustalenia z przeglądów. Wracamy do nich, gdy zmienia się dany obszar.
+
+- Przewijanie do mapy po wyborze Terminu z karty działa też na desktopie — rdzeń wyboru nie wie, czy mapa jest rozwinięta.
+- Zapasowe kolory mapy w `EventsMap` dublują tokeny — siatka bezpieczeństwa.
+- Liniowe `points.find` przy kliknięciu w mapę — wystarcza przy tej skali.
+- `isCalendarDay` mapuje lata 0–99 przez `Date.UTC` — bez znaczenia dla domeny.
+- Lint nie blokuje względnych importów korzenia sąsiedniego pakietu (`../time` bez `/src`) — importy idą przez `@events/*`.
+- Fałszywe źródła w testach (źródło w pamięci w `contract`, handler MSW) dzielą mały kształt filtra i sortowania.

@@ -81,7 +81,7 @@ Doba wydarzeń kończy się o 04:00: wydarzenie z niedzieli 01:30 należy do sob
 - `packages/eslint-config` (`@events/eslint-config`) — wspólny ESLint: granice importów (bez importów w głąb `src` pakietu i bez ścieżek względnych między pakietami/aplikacjami; pakiety bez Reacta/Nexta i bez importu aplikacji) oraz reguły wymagające typów
 - `docs/adr`, `docs/contexts`, `CONTEXT-MAP.md` — decyzje i mapa kontekstów
 - `HANDOFF.md`, `*.dc.html` — referencja UI (nie kod produkcyjny)
-- `docs/plans` — plan implementacji
+- `docs/plans` — plan wdrożenia architektury (`architecture-roadmap.md`) i pliki etapów (`stages/`)
 
 ### Wnętrze `apps/portal`
 
