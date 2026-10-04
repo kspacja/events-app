@@ -66,14 +66,14 @@ describe('occurrenceSelection', () => {
   it('triggers again when the same occurrence is requested again', () => {
     const selection = createOccurrenceSelection();
     selection.selectFromCard(OCC_1, () => {});
-    const firstKey = selection.getInstructions().popup?.key;
+    const firstKey = selection.getInstructions().popup?.renderKey;
     selection.done('flyTo');
     selection.done('expandMap');
 
     selection.selectFromCard(OCC_1, () => {});
 
     expect(selection.getInstructions()).toMatchObject({ expandMap: true, flyTo: OCC_1 });
-    expect(selection.getInstructions().popup?.key).not.toBe(firstKey);
+    expect(selection.getInstructions().popup?.renderKey).not.toBe(firstKey);
   });
 
   it('replaces a pending fly target with the new selection', () => {

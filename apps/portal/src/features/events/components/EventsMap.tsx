@@ -213,7 +213,7 @@ export function EventsMap({ points, focus }: EventsMapProps) {
       </Source>
       {selected && popup ? (
         <Popup
-          key={popup.key}
+          key={popup.renderKey}
           longitude={selected.lng}
           latitude={selected.lat}
           anchor="bottom"
