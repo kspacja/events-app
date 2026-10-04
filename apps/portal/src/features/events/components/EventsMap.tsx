@@ -135,7 +135,7 @@ export function EventsMap({ points, focus }: EventsMapProps) {
         zoom: Math.max(map.getZoom(), SELECTED_MIN_ZOOM),
       });
     }
-    selection.flewTo();
+    selection.done('flyTo');
   }, [loaded, flyTo, flightTarget, selection]);
 
   const hasPopup = selected !== undefined;
@@ -220,7 +220,7 @@ export function EventsMap({ points, focus }: EventsMapProps) {
           offset={12}
           closeOnClick={false}
           focusAfterOpen={popup.takeFocus}
-          onClose={() => selection.close(popup.key)}
+          onClose={() => selection.close(popup)}
           className={styles.popup}
         >
           <div role="dialog" aria-label={selected.title}>

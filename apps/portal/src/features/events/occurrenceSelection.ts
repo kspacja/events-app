@@ -1,11 +1,9 @@
 import type { OccurrenceId } from '@events/contract/listing';
 
-type PopupKey = number;
-
 export interface OccurrenceSelectionPopup {
   readonly occurrenceId: OccurrenceId;
-  /** Opaque: changes on every selection so a repeated one remounts the popup. */
-  readonly key: PopupKey;
+  /** New on every selection so a repeated one remounts the popup. */
+  readonly key: number;
   /** Only a card request moves focus into the popup. */
   readonly takeFocus: boolean;
 }
@@ -13,9 +11,9 @@ export interface OccurrenceSelectionPopup {
 /** What the adapters must do now; each pending instruction stays until acknowledged. */
 export interface OccurrenceSelectionInstructions {
   readonly popup: OccurrenceSelectionPopup | null;
-  /** Card request: show the map and scroll it into view. Ack with `mapExpanded`. */
+  /** Card request: show the map and scroll it into view. Ack with `done('expandMap')`. */
   readonly expandMap: boolean;
-  /** Card request: fly to this occurrence. Ack with `flewTo`. */
+  /** Card request: fly to this occurrence. Ack with `done('flyTo')`. */
   readonly flyTo: OccurrenceId | null;
 }
 
@@ -24,19 +22,19 @@ export interface OccurrenceSelection {
   readonly getInstructions: () => OccurrenceSelectionInstructions;
   readonly selectFromCard: (occurrenceId: OccurrenceId, returnFocus: () => void) => void;
   readonly selectFromMap: (occurrenceId: OccurrenceId) => void;
-  /** Clears the selection and runs the card's `returnFocus` if the card opened it. */
-  readonly close: (popupKey?: PopupKey) => void;
-  readonly mapExpanded: () => void;
-  readonly flewTo: () => void;
+  /** Clears the selection and runs the card's `returnFocus` if the card opened it; a replaced `popup` is ignored. */
+  readonly close: (popup?: OccurrenceSelectionPopup) => void;
+  /** Acknowledges a pending instruction so it is not handed out again. */
+  readonly done: (instruction: 'expandMap' | 'flyTo') => void;
 }
 
-const IDLE: OccurrenceSelectionInstructions = { popup: null, expandMap: false, flyTo: null };
+export const IDLE_INSTRUCTIONS: OccurrenceSelectionInstructions = { popup: null, expandMap: false, flyTo: null };
 
 export function createOccurrenceSelection(): OccurrenceSelection {
   const listeners = new Set<() => void>();
-  let instructions = IDLE;
+  let instructions = IDLE_INSTRUCTIONS;
   let returnFocus: (() => void) | null = null;
-  let lastKey: PopupKey = 0;
+  let lastKey = 0;
 
   function update(next: OccurrenceSelectionInstructions, nextReturnFocus: (() => void) | null) {
     instructions = next;
@@ -63,18 +61,18 @@ export function createOccurrenceSelection(): OccurrenceSelection {
       lastKey += 1;
       update({ popup: { occurrenceId, key: lastKey, takeFocus: false }, expandMap: false, flyTo: null }, null);
     },
-    close(popupKey) {
-      const { popup } = instructions;
-      if (!popup || (popupKey !== undefined && popupKey !== popup.key)) return;
+    close(closing) {
+      if (!instructions.popup || (closing && closing !== instructions.popup)) return;
       const focusCard = returnFocus;
-      update(IDLE, null);
+      update(IDLE_INSTRUCTIONS, null);
       focusCard?.();
     },
-    mapExpanded() {
-      if (instructions.expandMap) update({ ...instructions, expandMap: false }, returnFocus);
-    },
-    flewTo() {
-      if (instructions.flyTo) update({ ...instructions, flyTo: null }, returnFocus);
+    done(instruction) {
+      if (instruction === 'expandMap') {
+        if (instructions.expandMap) update({ ...instructions, expandMap: false }, returnFocus);
+      } else if (instructions.flyTo) {
+        update({ ...instructions, flyTo: null }, returnFocus);
+      }
     },
   };
 }

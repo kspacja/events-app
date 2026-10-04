@@ -43,10 +43,10 @@ describe('occurrenceSelection', () => {
     const selection = createOccurrenceSelection();
     selection.selectFromCard(OCC_1, () => {});
 
-    selection.flewTo();
+    selection.done('flyTo');
     const listener = vi.fn();
     selection.subscribe(listener);
-    selection.flewTo();
+    selection.done('flyTo');
 
     expect(selection.getInstructions().flyTo).toBeNull();
     expect(selection.getInstructions().popup?.occurrenceId).toBe(OCC_1);
@@ -57,7 +57,7 @@ describe('occurrenceSelection', () => {
     const selection = createOccurrenceSelection();
     selection.selectFromCard(OCC_1, () => {});
 
-    selection.mapExpanded();
+    selection.done('expandMap');
 
     expect(selection.getInstructions().expandMap).toBe(false);
     expect(selection.getInstructions().flyTo).toBe(OCC_1);
@@ -67,8 +67,8 @@ describe('occurrenceSelection', () => {
     const selection = createOccurrenceSelection();
     selection.selectFromCard(OCC_1, () => {});
     const firstKey = selection.getInstructions().popup?.key;
-    selection.flewTo();
-    selection.mapExpanded();
+    selection.done('flyTo');
+    selection.done('expandMap');
 
     selection.selectFromCard(OCC_1, () => {});
 
@@ -124,10 +124,10 @@ describe('occurrenceSelection', () => {
   it('ignores a close from a popup that was already replaced', () => {
     const selection = createOccurrenceSelection();
     selection.selectFromCard(OCC_1, () => {});
-    const staleKey = selection.getInstructions().popup?.key;
+    const stalePopup = selection.getInstructions().popup ?? undefined;
     selection.selectFromCard(OCC_1, () => {});
 
-    selection.close(staleKey);
+    selection.close(stalePopup);
 
     expect(selection.getInstructions().popup).not.toBeNull();
   });

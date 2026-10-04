@@ -37,7 +37,7 @@ export function MapToggle({ children }: MapToggleProps) {
 
   useEffect(() => {
     if (!expandMap) return;
-    selection.mapExpanded();
+    selection.done('expandMap');
     // Wait for the collapsed panel to become visible before measuring it
     requestAnimationFrame(() => {
       figureRef.current?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
