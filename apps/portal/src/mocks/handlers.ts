@@ -1,5 +1,4 @@
 import { http, HttpResponse } from 'msw';
-import { EVENTS_API_URL } from '@/config/env';
 import { createSampleCatalog, listOccurrences } from '@events/catalog';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
@@ -10,8 +9,11 @@ function badRequest(error: string) {
 }
 
 /** Serves what `listForRange` returns for the validated range, in the HTTP transport shape. */
-export function occurrencesHandler(listForRange: (range: DateRange) => readonly OccurrenceListing[]) {
-  return http.get(`${EVENTS_API_URL}/occurrences`, ({ request }) => {
+export function occurrencesHandler(
+  eventsApiUrl: string,
+  listForRange: (range: DateRange) => readonly OccurrenceListing[],
+) {
+  return http.get(`${eventsApiUrl}/occurrences`, ({ request }) => {
     const params = new URL(request.url).searchParams;
     const parsed = occurrencesQuerySchema.safeParse({
       from: params.get('from') ?? undefined,
@@ -23,4 +25,6 @@ export function occurrencesHandler(listForRange: (range: DateRange) => readonly 
   });
 }
 
-export const handlers = [occurrencesHandler((range) => listOccurrences(createSampleCatalog(new Date()), range))];
+export function createHandlers(eventsApiUrl: string) {
+  return [occurrencesHandler(eventsApiUrl, (range) => listOccurrences(createSampleCatalog(new Date()), range))];
+}

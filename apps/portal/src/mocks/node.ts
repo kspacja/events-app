@@ -1,4 +1,6 @@
 import { setupServer } from 'msw/node';
-import { handlers } from './handlers';
+import { createHandlers } from './handlers';
 
-export const server = setupServer(...handlers);
+export function createMockServer(eventsApiUrl: string) {
+  return setupServer(...createHandlers(eventsApiUrl));
+}

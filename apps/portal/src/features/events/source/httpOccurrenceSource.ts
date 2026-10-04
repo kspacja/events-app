@@ -1,6 +1,5 @@
 import 'server-only';
 
-import { EVENTS_API_URL } from '@/config/env';
 import { addDays, type DateRange } from '@events/time';
 import { logger } from '@/lib/logger';
 import type { OccurrenceListing } from '@events/contract/listing';
@@ -58,8 +57,8 @@ async function readChunk(url: string, cache?: RequestCache) {
   return occurrencesResponseSchema.safeParse(body);
 }
 
-async function fetchChunk(range: DateRange): Promise<OccurrenceListing[]> {
-  const url = `${EVENTS_API_URL}/occurrences?${new URLSearchParams({
+async function fetchChunk(eventsApiUrl: string, range: DateRange): Promise<OccurrenceListing[]> {
+  const url = `${eventsApiUrl}/occurrences?${new URLSearchParams({
     from: range.from,
     to: range.to,
   })}`;
@@ -86,10 +85,10 @@ async function fetchChunk(range: DateRange): Promise<OccurrenceListing[]> {
   }
 }
 
-export function createHttpOccurrenceSource(): OccurrenceSource {
+export function createHttpOccurrenceSource(eventsApiUrl: string): OccurrenceSource {
   return {
     async listOccurrences(range) {
-      const chunks = await Promise.all(splitIntoChunks(range).map(fetchChunk));
+      const chunks = await Promise.all(splitIntoChunks(range).map((chunk) => fetchChunk(eventsApiUrl, chunk)));
       return dedupeByOccurrenceId(chunks.flat()).sort(compareListings);
     },
   };

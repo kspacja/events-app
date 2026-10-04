@@ -34,8 +34,13 @@ Strona: [http://localhost:3000](http://localhost:3000).
 
 | Zmienna | Wartość | Znaczenie |
 | --- | --- | --- |
-| `API_MOCKING` | `enabled` | włącza MSW. Bez tego strona próbuje pobrać dane z `EVENTS_API_URL` i pokazuje błąd. |
-| `EVENTS_API_URL` | `http://api.events.local` | adres API. Przy MSW to adres fikcyjny, przechwytywany przez mock. |
+| `OCCURRENCE_SOURCE` | `http` (domyślnie) lub `memory` | skąd portal bierze Terminy. `http` pobiera je z `EVENTS_API_URL`; `memory` serwuje przykładowy Katalog z pamięci procesu (etap 1 doda `catalog`). |
+| `EVENTS_API_URL` | `http://api.events.local` | adres API. Wymagany i musi być poprawnym adresem http(s) tylko przy `OCCURRENCE_SOURCE=http`; przy `memory` jest ignorowany. Brak wartości domyślnej. |
+| `API_MOCKING` | `enabled` | tylko przy `http`: uruchamia MSW, który w procesie odpowiada pod `EVENTS_API_URL`. Bez tego strona próbuje połączyć się z prawdziwym API i pokazuje błąd. Przy `memory` jest ignorowany. |
+
+Konfiguracja jest walidowana raz, przy starcie serwera (`apps/portal/src/config/runtimeConfig.ts`); błędna konfiguracja zatrzymuje start z komunikatem o zmiennej (bez jej wartości). Źródło składa jedno miejsce: `apps/portal/src/composition/occurrenceSource.ts`.
+
+`OCCURRENCE_SOURCE=memory` pozwala uruchomić portal bez MSW i bez adresu API; dane są te same co w mocku (ten sam przykładowy Katalog).
 
 Mock serwuje przykładowy Katalog (`@events/catalog`: Kategorie, Miejsca, Wydarzenia i Terminy) względem bieżącego tygodnia (i 4 następnych), więc dane zawsze są „aktualne”. `@events/catalog` to domena Katalogu bez frameworka i bez bazy; w etapie 1 dostanie adapter Postgresa.
 

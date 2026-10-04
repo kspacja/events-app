@@ -5,12 +5,11 @@ import { OccurrenceSourceError } from '@events/contract/source';
 import { catalogFromListings } from '@events/catalog/testing';
 import { listOccurrences as projectCatalog } from '@events/catalog';
 import { addDays, localDayOf, mondayOf, type DateRange } from '@events/time';
-import { EVENTS_API_URL } from '@/config/env';
 import { occurrencesHandler } from '@/mocks/handlers';
-import { server } from '@/mocks/node';
+import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
 import { createHttpOccurrenceSource } from './httpOccurrenceSource';
 
-const OCCURRENCES_URL = `${EVENTS_API_URL}/occurrences`;
+const OCCURRENCES_URL = `${TEST_EVENTS_API_URL}/occurrences`;
 
 const firstMonday = mondayOf(localDayOf(new Date()));
 
@@ -23,15 +22,15 @@ function countRequests() {
   return urls;
 }
 
-const httpSource = createHttpOccurrenceSource();
+const httpSource = createHttpOccurrenceSource(TEST_EVENTS_API_URL);
 const listOccurrences = (range: DateRange) =>
   httpSource.listOccurrences(range);
 
 describeOccurrenceSourceConformance('HTTP occurrence source', () => ({
-  source: createHttpOccurrenceSource(),
+  source: createHttpOccurrenceSource(TEST_EVENTS_API_URL),
   seed: (listings) => {
     const catalog = catalogFromListings(listings);
-    server.use(occurrencesHandler((range) => projectCatalog(catalog, range)));
+    server.use(occurrencesHandler(TEST_EVENTS_API_URL, (range) => projectCatalog(catalog, range)));
   },
   breakBackend: () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);

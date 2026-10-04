@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
-import { server } from '@/mocks/node';
+import { server } from '@/test/mockServer';
 
 // jsdom has no <dialog>, Popover API or matchMedia behaviour
 HTMLDialogElement.prototype.show = function show() {

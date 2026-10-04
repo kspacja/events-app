@@ -1,3 +1,4 @@
+import { getOccurrenceSource } from '@/composition/occurrenceSource';
 import { BackToTop } from '@/features/events/components/BackToTop';
 import { EventsSection } from '@/features/events/components/EventsSection';
 import { parseSearchQuery } from '@/features/search/searchQuery';
@@ -11,6 +12,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
   return (
     <main className={styles.page}>
       <EventsSection
+        source={getOccurrenceSource()}
         range={date.range}
         time={time.window}
         sentence={<SearchSentence date={date} time={time} />}
