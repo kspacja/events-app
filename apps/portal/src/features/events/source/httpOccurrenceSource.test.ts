@@ -86,9 +86,10 @@ describe('HTTP occurrence source', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
     server.use(http.get(OCCURRENCES_URL, () => new HttpResponse(null, { status: 500 })));
 
-    await expect(
-      listOccurrences({ from: firstMonday, to: firstMonday }),
-    ).rejects.toMatchObject({ cause: { status: 500 } });
+    const failure = listOccurrences({ from: firstMonday, to: firstMonday });
+
+    await expect(failure).rejects.toBeInstanceOf(OccurrenceSourceError);
+    await expect(failure).rejects.toMatchObject({ cause: { status: 500 } });
   });
 
   it('wraps a malformed body in OccurrenceSourceError', async () => {

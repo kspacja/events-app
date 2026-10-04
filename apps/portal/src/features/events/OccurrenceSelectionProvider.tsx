@@ -4,7 +4,7 @@ import { createContext, use, useState, useSyncExternalStore, type ReactNode } fr
 import {
   createOccurrenceSelection,
   type OccurrenceSelection,
-  type SelectionInstructions,
+  type OccurrenceSelectionInstructions,
 } from './occurrenceSelection';
 
 const OccurrenceSelectionContext = createContext<OccurrenceSelection | null>(null);
@@ -25,10 +25,10 @@ export function useOccurrenceSelection(): OccurrenceSelection {
   return selection;
 }
 
-const SERVER_INSTRUCTIONS: SelectionInstructions = { popup: null, expandMap: false, flyTo: null };
+const SERVER_INSTRUCTIONS: OccurrenceSelectionInstructions = { popup: null, expandMap: false, flyTo: null };
 const getServerInstructions = () => SERVER_INSTRUCTIONS;
 
-export function useSelectionInstructions(): SelectionInstructions {
+export function useOccurrenceSelectionInstructions(): OccurrenceSelectionInstructions {
   const { subscribe, getInstructions } = useOccurrenceSelection();
   return useSyncExternalStore(subscribe, getInstructions, getServerInstructions);
 }

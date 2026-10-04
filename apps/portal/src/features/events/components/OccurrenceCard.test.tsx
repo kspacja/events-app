@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { OccurrenceSelectionProvider, useSelectionInstructions } from '../OccurrenceSelectionProvider';
+import { OccurrenceSelectionProvider, useOccurrenceSelectionInstructions } from '../OccurrenceSelectionProvider';
 import { eventIdSchema, occurrenceIdSchema } from '@events/contract/occurrences';
 import type { OccurrenceListing } from '../types';
 import { OccurrenceCard } from './OccurrenceCard';
@@ -14,9 +14,12 @@ const LISTING: OccurrenceListing = {
   venue: { name: 'Klub', city: 'Warszawa', lat: 52, lng: 21 },
 };
 
+const CARD_SELECTION = JSON.stringify({ occurrenceId: LISTING.occurrenceId, takeFocus: true });
+
 function SelectionProbe() {
-  const { popup } = useSelectionInstructions();
-  return <output>{popup ? `${popup.takeFocus ? 'card' : 'map'}:${popup.occurrenceId}` : 'none'}</output>;
+  const { popup } = useOccurrenceSelectionInstructions();
+  const instruction = popup && { occurrenceId: popup.occurrenceId, takeFocus: popup.takeFocus };
+  return <output>{JSON.stringify(instruction)}</output>;
 }
 
 function renderCard(muted = false) {
@@ -51,7 +54,7 @@ describe('OccurrenceCard', () => {
 
     await user.click(screen.getByRole('button', { name: /Pokaż na mapie/ }));
 
-    expect(screen.getByRole('status')).toHaveTextContent('card:e1-2026-06-06');
+    expect(screen.getByRole('status')).toHaveTextContent(CARD_SELECTION);
   });
 
   it('selects the occurrence when the pin is activated from the keyboard', async () => {
@@ -61,7 +64,7 @@ describe('OccurrenceCard', () => {
     await user.tab();
     await user.keyboard('{Enter}');
 
-    expect(screen.getByRole('status')).toHaveTextContent('card:e1-2026-06-06');
+    expect(screen.getByRole('status')).toHaveTextContent(CARD_SELECTION);
   });
 
   it('tells screen readers that a muted event is outside the chosen period', () => {

@@ -3,7 +3,7 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
 import * as maplibregl from 'maplibre-gl';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useOccurrenceSelection, useSelectionInstructions } from '../OccurrenceSelectionProvider';
+import { useOccurrenceSelection, useOccurrenceSelectionInstructions } from '../OccurrenceSelectionProvider';
 import {
   Layer,
   Map,
@@ -113,7 +113,7 @@ export function EventsMap({ points, focus }: EventsMapProps) {
   const [layers, setLayers] = useState<MapLayers | null>(null);
   const loaded = layers !== null;
   const selection = useOccurrenceSelection();
-  const { popup, flyTo } = useSelectionInstructions();
+  const { popup, flyTo } = useOccurrenceSelectionInstructions();
   const selected = points.find((p) => p.occurrenceId === popup?.occurrenceId);
   const flightTarget = points.find((p) => p.occurrenceId === flyTo);
   const pointsKey = focus.map((p) => `${p.occurrenceId}:${p.lat}:${p.lng}`).join('|');
@@ -128,13 +128,15 @@ export function EventsMap({ points, focus }: EventsMapProps) {
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!loaded || !map || !flightTarget) return;
-    map.flyTo({
-      center: [flightTarget.lng, flightTarget.lat],
-      zoom: Math.max(map.getZoom(), SELECTED_MIN_ZOOM),
-    });
+    if (!loaded || !map || !flyTo) return;
+    if (flightTarget) {
+      map.flyTo({
+        center: [flightTarget.lng, flightTarget.lat],
+        zoom: Math.max(map.getZoom(), SELECTED_MIN_ZOOM),
+      });
+    }
     selection.flewTo();
-  }, [loaded, flightTarget, selection]);
+  }, [loaded, flyTo, flightTarget, selection]);
 
   const hasPopup = selected !== undefined;
   useEffect(() => {

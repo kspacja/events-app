@@ -1,8 +1,8 @@
 import type { OccurrenceId } from '@events/contract/occurrences';
 
-export type PopupKey = number;
+type PopupKey = number;
 
-export interface SelectionPopup {
+export interface OccurrenceSelectionPopup {
   readonly occurrenceId: OccurrenceId;
   /** Opaque: changes on every selection so a repeated one remounts the popup. */
   readonly key: PopupKey;
@@ -11,8 +11,8 @@ export interface SelectionPopup {
 }
 
 /** What the adapters must do now; each pending instruction stays until acknowledged. */
-export interface SelectionInstructions {
-  readonly popup: SelectionPopup | null;
+export interface OccurrenceSelectionInstructions {
+  readonly popup: OccurrenceSelectionPopup | null;
   /** Card request: show the map and scroll it into view. Ack with `mapExpanded`. */
   readonly expandMap: boolean;
   /** Card request: fly to this occurrence. Ack with `flewTo`. */
@@ -21,7 +21,7 @@ export interface SelectionInstructions {
 
 export interface OccurrenceSelection {
   readonly subscribe: (listener: () => void) => () => void;
-  readonly getInstructions: () => SelectionInstructions;
+  readonly getInstructions: () => OccurrenceSelectionInstructions;
   readonly selectFromCard: (occurrenceId: OccurrenceId, returnFocus: () => void) => void;
   readonly selectFromMap: (occurrenceId: OccurrenceId) => void;
   /** Clears the selection and runs the card's `returnFocus` if the card opened it. */
@@ -30,7 +30,7 @@ export interface OccurrenceSelection {
   readonly flewTo: () => void;
 }
 
-const IDLE: SelectionInstructions = { popup: null, expandMap: false, flyTo: null };
+const IDLE: OccurrenceSelectionInstructions = { popup: null, expandMap: false, flyTo: null };
 
 export function createOccurrenceSelection(): OccurrenceSelection {
   const listeners = new Set<() => void>();
@@ -38,7 +38,7 @@ export function createOccurrenceSelection(): OccurrenceSelection {
   let returnFocus: (() => void) | null = null;
   let lastKey: PopupKey = 0;
 
-  function update(next: SelectionInstructions, nextReturnFocus: (() => void) | null = returnFocus) {
+  function update(next: OccurrenceSelectionInstructions, nextReturnFocus: (() => void) | null) {
     instructions = next;
     returnFocus = nextReturnFocus;
     listeners.forEach((listener) => listener());
@@ -71,10 +71,10 @@ export function createOccurrenceSelection(): OccurrenceSelection {
       focusCard?.();
     },
     mapExpanded() {
-      if (instructions.expandMap) update({ ...instructions, expandMap: false });
+      if (instructions.expandMap) update({ ...instructions, expandMap: false }, returnFocus);
     },
     flewTo() {
-      if (instructions.flyTo) update({ ...instructions, flyTo: null });
+      if (instructions.flyTo) update({ ...instructions, flyTo: null }, returnFocus);
     },
   };
 }

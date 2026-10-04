@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
-import { useOccurrenceSelection } from '../OccurrenceSelectionProvider';
+import { useOccurrenceSelection, useOccurrenceSelectionInstructions } from '../OccurrenceSelectionProvider';
 import { MAP_LABELS } from '../labels';
 import styles from './MapToggle.module.css';
 
@@ -31,20 +31,18 @@ export function MapToggle({ children }: MapToggleProps) {
   const figureRef = useRef<HTMLElement>(null);
   const isDesktop = useSyncExternalStore(subscribe, getIsDesktop, getServerIsDesktop);
   const selection = useOccurrenceSelection();
+  const { expandMap } = useOccurrenceSelectionInstructions();
 
-  useEffect(
-    () =>
-      selection.subscribe(() => {
-        if (!selection.getInstructions().expandMap) return;
-        setExpanded(true);
-        selection.mapExpanded();
-        // Wait for the collapsed panel to become visible before measuring it
-        requestAnimationFrame(() => {
-          figureRef.current?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
-        });
-      }),
-    [selection],
-  );
+  if (expandMap && !expanded) setExpanded(true);
+
+  useEffect(() => {
+    if (!expandMap) return;
+    selection.mapExpanded();
+    // Wait for the collapsed panel to become visible before measuring it
+    requestAnimationFrame(() => {
+      figureRef.current?.scrollIntoView({ behavior: scrollBehavior(), block: 'center' });
+    });
+  }, [expandMap, selection]);
 
   return (
     <>

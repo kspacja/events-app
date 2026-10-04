@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { occurrenceIdSchema } from '@events/contract/occurrences';
 import { OccurrenceSelectionProvider, useOccurrenceSelection } from '../OccurrenceSelectionProvider';
 import { MapToggle } from './MapToggle';
@@ -29,6 +29,11 @@ function RequestButton() {
 }
 
 describe('MapToggle', () => {
+  afterEach(() => {
+    // jsdom has no scrollIntoView, so the stub is removed rather than restored
+    Reflect.deleteProperty(window.HTMLElement.prototype, 'scrollIntoView');
+  });
+
   it('exposes the toggle button by its accessible name', () => {
     renderToggle();
 
@@ -71,7 +76,11 @@ describe('MapToggle', () => {
 
   it('expands when an event card asks to be shown on the map', async () => {
     const user = userEvent.setup();
-    window.HTMLElement.prototype.scrollIntoView = () => {};
+    Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      writable: true,
+      value: () => {},
+    });
     renderToggle();
 
     await user.click(screen.getByRole('button', { name: 'request' }));
