@@ -54,7 +54,8 @@ async function readChunk(url: string, cache?: RequestCache) {
     });
     throw new OccurrenceSourceError({ cause: { status: response.status } });
   }
-  return occurrencesResponseSchema.safeParse(await response.json());
+  const body: unknown = await response.json().catch(() => undefined);
+  return occurrencesResponseSchema.safeParse(body);
 }
 
 async function fetchChunk(range: DateRange): Promise<OccurrenceListing[]> {
@@ -66,7 +67,8 @@ async function fetchChunk(range: DateRange): Promise<OccurrenceListing[]> {
   try {
     let parsed = await readChunk(url);
     if (!parsed.success) {
-      // A cached body may predate a contract change; bypass the cache once before giving up
+      // A cached body may predate a contract change; bypass the cache once before giving up.
+      // The no-store retry does not refresh the cached entry, so until revalidation each request costs two fetches.
       parsed = await readChunk(url, 'no-store');
     }
     if (!parsed.success) {

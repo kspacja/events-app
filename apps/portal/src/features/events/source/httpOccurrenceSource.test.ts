@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { describeOccurrenceSourceConformance } from '@events/contract/source/testing';
 import { OccurrenceSourceError } from '@events/contract/source';
 import { catalogFromListings } from '@events/catalog/testing';
@@ -40,10 +40,13 @@ describeOccurrenceSourceConformance('HTTP occurrence source', () => ({
 }));
 
 describe('HTTP occurrence source', () => {
+  afterEach(() => {
+    server.events.removeAllListeners();
+  });
+
   it('uses a single request for a 31-day range', async () => {
     const urls = countRequests();
     await listOccurrences({ from: firstMonday, to: addDays(firstMonday, 30) });
-    server.events.removeAllListeners();
 
     expect(urls).toHaveLength(1);
   });
@@ -51,7 +54,6 @@ describe('HTTP occurrence source', () => {
   it('splits a 32-day range into two requests', async () => {
     const urls = countRequests();
     await listOccurrences({ from: firstMonday, to: addDays(firstMonday, 31) });
-    server.events.removeAllListeners();
 
     expect(urls).toHaveLength(2);
   });
@@ -131,7 +133,25 @@ describe('HTTP occurrence source', () => {
     );
 
     const result = await listOccurrences({ from: firstMonday, to: firstMonday });
-    server.events.removeAllListeners();
+
+    expect(result).toEqual([]);
+    expect(urls).toHaveLength(2);
+  });
+
+  it('retries once when the first body is not valid JSON', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const urls = countRequests();
+    let calls = 0;
+    server.use(
+      http.get(OCCURRENCES_URL, () => {
+        calls += 1;
+        return calls === 1
+          ? new HttpResponse('<html>', { headers: { 'Content-Type': 'application/json' } })
+          : HttpResponse.json({ occurrences: [] });
+      }),
+    );
+
+    const result = await listOccurrences({ from: firstMonday, to: firstMonday });
 
     expect(result).toEqual([]);
     expect(urls).toHaveLength(2);
@@ -147,7 +167,6 @@ describe('HTTP occurrence source', () => {
     await expect(
       listOccurrences({ from: firstMonday, to: firstMonday }),
     ).rejects.toBeInstanceOf(OccurrenceSourceError);
-    server.events.removeAllListeners();
 
     expect(urls).toHaveLength(2);
   });

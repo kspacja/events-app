@@ -58,6 +58,7 @@ function restrictImports({ paths, patterns }, scope = {}) {
 /**
  * no-restricted-imports replaces (not merges) per file, so each layer restates the full list;
  * later layers win: everywhere, then the allowed files of each restricted entry point.
+ * A nested `files` array ANDs its globs: the last layer is for files matching both a test and a transport glob.
  */
 function withEntryPointRules({ paths, patterns }) {
   const restrict = (extra, scope) => restrictImports({ paths, patterns: [...patterns, ...extra] }, scope);

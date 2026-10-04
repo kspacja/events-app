@@ -21,7 +21,7 @@ export interface OccurrenceSourceFixture {
 const SATURDAY: CalendarDay = '2030-03-30';
 const SUNDAY = addDays(SATURDAY, 1);
 const SUMMER_DAY: CalendarDay = '2030-07-13';
-// A plain winter Sunday and its Saturday, no clock change nearby
+// A plain winter Saturday (its Sunday follows), no clock change nearby
 const WINTER_SATURDAY: CalendarDay = '2030-01-12';
 const AUTUMN_CHANGE_NIGHT: CalendarDay = '2030-10-27';
 const MINUTES = { oneThirty: 90, threeFiftyNine: 239, four: 240, evening: 19 * 60 };
