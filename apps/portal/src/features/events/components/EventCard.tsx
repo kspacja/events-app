@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { CATEGORY_TINTS } from '../categoryStyle';
 import { CARD_LABELS, CATEGORY_LABELS } from '../labels';
-import { formatLocalTime } from '@/features/time/localTime';
+import { formatLocalTime } from '@events/contract/time';
 import { cardAttributes } from '../scheduleDom';
 import type { Event } from '../types';
 import { EventPinButton } from './EventPinButton';

@@ -4,8 +4,8 @@ import {
   eventsQuerySchema,
   eventsResponseSchema,
   MAX_DAYS_PER_REQUEST,
-} from './contract';
-import { addDays } from '@/features/time/localTime';
+} from './events';
+import { addDays } from './time';
 
 const FROM = '2030-03-01';
 

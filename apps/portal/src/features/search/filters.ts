@@ -1,4 +1,4 @@
-import { addDays, formatClock, isCalendarDay } from '@/features/time/localTime';
+import { addDays, formatClock, isCalendarDay } from '@events/contract/time';
 import {
   DATE_PRESETS,
   MAX_CUSTOM_RANGE_DAYS,

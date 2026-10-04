@@ -7,7 +7,7 @@ import {
   isCalendarDay,
   mondayOf,
   type CalendarDay,
-} from '@/features/time/localTime';
+} from '@events/contract/time';
 
 export const MAX_CUSTOM_RANGE_DAYS = 31;
 

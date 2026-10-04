@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { formatClock } from '@/features/time/localTime';
+import { formatClock } from '@events/contract/time';
 import {
   DATE_PRESETS,
   resolvePreset,

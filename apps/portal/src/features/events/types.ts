@@ -3,7 +3,7 @@ import type {
   eventCategorySchema,
   eventSchema,
   venueSchema,
-} from './contract';
+} from '@events/contract/events';
 
 export type EventCategory = z.infer<typeof eventCategorySchema>;
 export type Venue = z.infer<typeof venueSchema>;

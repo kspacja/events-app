@@ -13,7 +13,7 @@ import {
   mondayOf,
   weekdayIndex,
   type CalendarDay,
-} from '@/features/time/localTime';
+} from '@events/contract/time';
 import { COUNT_LABELS } from './labels';
 import type { MapPoint } from './mapView';
 import type { Event } from './types';

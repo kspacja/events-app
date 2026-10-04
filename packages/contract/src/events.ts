@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { diffInDays, isCalendarDay } from '@/features/time/localTime';
+import { diffInDays, isCalendarDay } from './time';
 
 export const MAX_DAYS_PER_REQUEST = 31;
 

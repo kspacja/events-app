@@ -1,3 +1,7 @@
 packages:
   - apps/*
   - packages/*
+
+allowBuilds:
+  # native fallback of the eslint resolver; the prebuilt binary comes from optional deps
+  unrs-resolver: false

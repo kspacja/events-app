@@ -6,7 +6,7 @@ import {
   localDayOf,
   mondayOf,
   toInstantIso,
-} from './localTime';
+} from './time';
 
 describe('eventDayOf', () => {
   it('puts 03:59 local time on the previous day', () => {
