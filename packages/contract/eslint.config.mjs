@@ -3,5 +3,5 @@ import { packageBoundaries, tsPackageConfig } from "@events/eslint-config";
 
 export default defineConfig([
   ...tsPackageConfig({ tsconfigRootDir: import.meta.dirname }),
-  ...packageBoundaries,
+  ...packageBoundaries("contract"),
 ]);

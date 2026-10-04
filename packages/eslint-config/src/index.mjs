@@ -4,6 +4,60 @@ const NO_DEEP_IMPORT_MESSAGE = 'Import only what the package declares in "export
 const NO_RELATIVE_SEAM_MESSAGE = 'Reach packages by name (@events/...), not through relative paths.';
 const FRAMEWORK_FREE_MESSAGE = 'Packages must stay framework-free.';
 
+/**
+ * Dependency map: the one place that says who may import whom (ADR-0002).
+ * `mayImport` lists (besides the member itself) the `@events/*` packages a workspace member may use; `'*'` means every package.
+ * `kernel` members must stay free of database drivers and server-only code.
+ * A context's DB schema module must not appear in package "exports": only its repository functions do.
+ */
+export const DEPENDENCY_MAP = {
+  time: { kind: 'package', kernel: true, mayImport: [] },
+  contract: { kind: 'package', kernel: true, mayImport: ['time'] },
+  catalog: { kind: 'package', kernel: false, mayImport: ['contract', 'time'] },
+  ui: { kind: 'package', kernel: true, mayImport: [] },
+  'eslint-config': { kind: 'tooling', kernel: false, mayImport: [] },
+  portal: { kind: 'app', kernel: false, mayImport: '*' },
+};
+
+const DB_DRIVERS = ['pg', 'postgres', 'drizzle-orm', '@neondatabase/*', 'kysely', 'prisma', '@prisma/*'];
+
+const KERNEL_PURITY_PATTERNS = [
+  {
+    group: [...DB_DRIVERS.flatMap((name) => [name, `${name}/**`]), 'server-only'],
+    message: 'Kernel packages (time, contract, ui) must not import database drivers, ORMs or server-only.',
+  },
+];
+
+const SCHEMA_PRIVATE_PATTERN = {
+  group: ['@events/*/schema', '@events/*/schema/**', '@events/*/db', '@events/*/db/**'],
+  message: 'A context schema is private; use the context repository functions instead.',
+};
+
+function packageNames() {
+  return Object.entries(DEPENDENCY_MAP)
+    .filter(([, entry]) => entry.kind === 'package')
+    .map(([name]) => name);
+}
+
+function allowedPackages(name) {
+  const { mayImport } = DEPENDENCY_MAP[name];
+  return [name, ...(mayImport === '*' ? packageNames() : mayImport)];
+}
+
+function dependencyPattern(name) {
+  const allowed = allowedPackages(name).map((dep) => `!@events/${dep}`);
+  return {
+    // Gitignore-style: block every @events/* and re-allow the mapped ones (and so their subpaths)
+    group: ['@events/*', ...allowed],
+    message: `${name} may import only: ${allowedPackages(name).join(', ')} (see DEPENDENCY_MAP).`,
+  };
+}
+
+function entryFor(name) {
+  if (!DEPENDENCY_MAP[name]) throw new Error(`"${name}" is missing from DEPENDENCY_MAP.`);
+  return DEPENDENCY_MAP[name];
+}
+
 const DEEP_IMPORT_PATTERNS = [
   {
     group: ['@events/*/src', '@events/*/src/**'],
@@ -48,11 +102,13 @@ const HTTP_TRANSPORT_ONLY_PATTERN = {
   message: 'The HTTP transport is for the HTTP adapter and the mocks only.',
 };
 
+const CONFIG_FILES = ['**/eslint.config.mjs'];
 const TEST_FILES = ['**/*.test.*', '**/*.testing.*', '**/vitest.setup.*'];
 const HTTP_TRANSPORT_FILES = ['**/source/httpOccurrenceSource*', '**/mocks/**'];
 
 function restrictImports({ paths, patterns }, scope = {}) {
-  return { ...scope, rules: { 'no-restricted-imports': ['error', { paths, patterns }] } };
+  // The lint config itself imports @events/eslint-config, which the map does not cover
+  return { ...scope, ignores: CONFIG_FILES, rules: { 'no-restricted-imports': ['error', { paths, patterns }] } };
 }
 
 /**
@@ -72,18 +128,29 @@ function withEntryPointRules({ paths, patterns }) {
   ];
 }
 
-/**
- * Package/app seams: no deep imports into a package's src and no relative paths across
- * packages/apps, plus the entry-point rules of @events/contract. Context-to-context seams
- * (ADR-0002) arrive with packages/catalog.
- */
-export const appBoundaries = withEntryPointRules({ paths: [], patterns: DEEP_IMPORT_PATTERNS });
+/** Seams for an app: no deep imports, no relative paths across packages, mapped dependencies, private schemas. */
+export function appBoundaries(name) {
+  entryFor(name);
+  return withEntryPointRules({
+    paths: [],
+    patterns: [...DEEP_IMPORT_PATTERNS, SCHEMA_PRIVATE_PATTERN, dependencyPattern(name)],
+  });
+}
 
-/** Same as appBoundaries, plus: packages stay framework-free and must not import apps. */
-export const packageBoundaries = withEntryPointRules({
-  paths: PACKAGE_PATHS,
-  patterns: [...DEEP_IMPORT_PATTERNS, ...PACKAGE_PATTERNS],
-});
+/** Same as appBoundaries, plus: framework-free, no apps, and no database drivers in kernel packages. */
+export function packageBoundaries(name) {
+  const { kernel } = entryFor(name);
+  return withEntryPointRules({
+    paths: PACKAGE_PATHS,
+    patterns: [
+      ...DEEP_IMPORT_PATTERNS,
+      ...PACKAGE_PATTERNS,
+      SCHEMA_PRIVATE_PATTERN,
+      dependencyPattern(name),
+      ...(kernel ? KERNEL_PURITY_PATTERNS : []),
+    ],
+  });
+}
 
 /** Type-aware rules that code-quality-js.md requires; needs the TS project service. */
 export function typeAwareRules({ tsconfigRootDir }) {

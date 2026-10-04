@@ -18,3 +18,7 @@ W pierwszym roku skala jest mała (kilka miast, do ok. 10 tys. Wydarzeń miesię
 
 - To wymaga dyscypliny: poza interfejsem kontekstu nie ma joinów między schematami. Pilnujemy tego regułami lint/importów, bo wspólna baza sama tego nie wymusi.
 - Outbox w Postgresie zastępuje broker. Jeśli kiedyś wydzielimy kontekst do osobnej usługi, granice schematów i komunikacja przez identyfikatory już będą gotowe.
+
+## Aktualizacja 2026-10-05
+
+Mapa dozwolonych zależności między pakietami (`DEPENDENCY_MAP`) jest egzekwowana lintem w `packages/eslint-config/src/index.mjs`: nieznane importy `@events/*` są odrzucane, a pakiety jądra (`time`, `contract`, `ui`) nie importują sterowników bazy ani `server-only`. Schemat kontekstu (`@events/*/schema`, `@events/*/db`) jest prywatny — poza pakietem eksportujemy tylko funkcje repozytorium.
