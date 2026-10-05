@@ -17,3 +17,7 @@ Kluczowa zasada: worker komunikuje się z resztą systemu WYŁĄCZNIE przez Post
 - LISTEN/NOTIFY nie działa przez pooler połączeń Neona, więc worker odpytuje outbox cyklicznie (np. co 30–60 s) albo używa połączenia bezpośredniego.
 - Częste odpytywanie nie pozwala Neonowi skalować się do zera, więc interwał dobieramy z myślą o koszcie.
 - Koszty Vercela i Neona rosną wraz z ruchem.
+
+## Aktualizacja 2026-10-05 (ADR-0008)
+
+`apps/api` stoi na tym samym hoście co worker (Railway albo Fly.io); na Vercelu zostają tylko aplikacje Next.js. Zasada komunikacji workera wyłącznie przez Postgresa się nie zmienia.

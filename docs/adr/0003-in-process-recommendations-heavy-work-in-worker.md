@@ -18,3 +18,7 @@ Ranking dla Odbiorcy (mały model per Odbiorca, np. regresja logistyczna albo kN
 ## Consequences
 
 - Częstotliwość odświeżania Klastrów tematycznych ustala ADR-0007, a hosting workera ADR-0006.
+
+## Aktualizacja 2026-10-05 (ADR-0008)
+
+„W aplikacji” oznacza teraz w `apps/api`: ranking liczy backend w procesie, a klienci dostają go przez HTTP. Worker to ten sam kod backendu uruchomiony jako osobny proces.

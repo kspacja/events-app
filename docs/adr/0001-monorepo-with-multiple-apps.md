@@ -27,3 +27,5 @@ Pakiety: `packages/catalog`, `packages/recommendations`, `packages/identity`, `p
 - Reguły czasu lokalnego i doby wydarzeń (Europe/Warsaw, granica 04:00) mieszkają w `packages/time`, a `packages/contract` trzyma kształty danych (schematy zod i typy) oraz, tymczasowo do Katalogu (etap 1), listę referencyjną kategorii.
 
 Aktualizacja 2026-10-04: lista Kategorii nie jest już w `contract` — Kategoria przychodzi jako dane `{ slug, label }` we Wpisie programu.
+
+Aktualizacja 2026-10-05: dochodzi `apps/api` (Hono + Drizzle) — jedyny właściciel danych i logiki; aplikacje Next.js i `apps/worker` korzystają z niego zgodnie z ADR-0008.

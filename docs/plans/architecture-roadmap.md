@@ -1,6 +1,6 @@
 # Plan wdrożenia architektury
 
-Realizacja ADR-0001…0007 etapami. Pojęcia: `CONTEXT-MAP.md`. Decyzje: `docs/adr/`.
+Realizacja ADR-0001…0008 etapami. Pojęcia: `CONTEXT-MAP.md`. Decyzje: `docs/adr/`.
 
 **Bramki** = `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build` uruchomione z katalogu głównego.
 
@@ -22,7 +22,7 @@ Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz,
 | 0. Monorepo | pnpm + Turborepo, `apps/portal`, pakiety współdzielone | zrobione | historia gita |
 | 0.5 Porządki | czas lokalny, seam odczytu Terminów, wybór Terminu na mapie | zrobione | historia gita |
 | 0.6 Gotowość do etapu 1 | interfejs źródła Terminów w pakiecie, Kategoria jako dane, przykładowy Katalog | zrobione | [stages/0.6-gotowosc-do-etapu-1.md](stages/0.6-gotowosc-do-etapu-1.md) |
-| 1. Baza + Katalog | portal czyta Terminy z Postgresa przez `packages/catalog` | — | [stages/1-baza-i-katalog.md](stages/1-baza-i-katalog.md) |
+| 1. Backend + baza | `apps/api` (Hono + Drizzle) serwuje Terminy z Postgresa, portal czyta przez HTTP (ADR-0008) | — | [stages/1-baza-i-katalog.md](stages/1-baza-i-katalog.md) |
 | 1.5 Obserwowalność | ślady, metryki, logi i błędy z aplikacji i workera | — | [stages/1.5-obserwowalnosc.md](stages/1.5-obserwowalnosc.md) |
 | 2. Tożsamość | konta `Attendee`, `Organizer`, `Moderator`, `Guest` (ADR-0004, 0005) | — | — |
 | 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia | — | — |
