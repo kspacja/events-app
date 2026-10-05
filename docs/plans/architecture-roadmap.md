@@ -13,7 +13,7 @@ Etap dzieli się na kroki. Każdy krok przechodzi te punkty po kolei:
 3. **Code review w dwóch osiach** (Standards + Spec, równolegle, punkt odniesienia = commit sprzed kroku; Spec = plik etapu + ADR-y) — każda uwaga poprawiona albo wpisana do „Odłożone” z powodem.
 4. **Przeglądarka** — zmiany widoczne dla użytkownika sprawdzone w Chrome; sprawdzone scenariusze wypisane w raporcie kroku.
 
-Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz, po etapie z pełnym numerem (1, 2, …): użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a etap jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Etapy pośrednie (0.5, 0.6, 1.5) zamyka code review kroków — przegląd architektury obejmie je razem z następnym pełnym etapem.
+Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz, po etapie z pełnym numerem (1, 2, …): użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a etap jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Etapy pośrednie (0.5, 0.6, 1.5) zamyka samo code review kroków, bez żadnego przeglądu architektury (także wąskiego) — przegląd architektury obejmie je razem z następnym pełnym etapem.
 
 ## Etapy
 
@@ -21,7 +21,7 @@ Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz,
 | --- | --- | --- | --- |
 | 0. Monorepo | pnpm + Turborepo, `apps/portal`, pakiety współdzielone | zrobione | historia gita |
 | 0.5 Porządki | czas lokalny, seam odczytu Terminów, wybór Terminu na mapie | zrobione | historia gita |
-| 0.6 Gotowość do etapu 1 | interfejs źródła Terminów w pakiecie, Kategoria jako dane, przykładowy Katalog | zrobione (czeka na przegląd architektury) | [stages/0.6-gotowosc-do-etapu-1.md](stages/0.6-gotowosc-do-etapu-1.md) |
+| 0.6 Gotowość do etapu 1 | interfejs źródła Terminów w pakiecie, Kategoria jako dane, przykładowy Katalog | zrobione | [stages/0.6-gotowosc-do-etapu-1.md](stages/0.6-gotowosc-do-etapu-1.md) |
 | 1. Baza + Katalog | portal czyta Terminy z Postgresa przez `packages/catalog` | — | [stages/1-baza-i-katalog.md](stages/1-baza-i-katalog.md) |
 | 1.5 Obserwowalność | ślady, metryki, logi i błędy z aplikacji i workera | — | [stages/1.5-obserwowalnosc.md](stages/1.5-obserwowalnosc.md) |
 | 2. Tożsamość | konta `Attendee`, `Organizer`, `Moderator`, `Guest` (ADR-0004, 0005) | — | — |
