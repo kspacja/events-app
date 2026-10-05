@@ -13,7 +13,7 @@ Etap dzieli się na kroki. Każdy krok przechodzi te punkty po kolei:
 3. **Code review w dwóch osiach** (Standards + Spec, równolegle, punkt odniesienia = commit sprzed kroku; Spec = plik etapu + ADR-y) — każda uwaga poprawiona albo wpisana do „Odłożone” z powodem.
 4. **Przeglądarka** — zmiany widoczne dla użytkownika sprawdzone w Chrome; sprawdzone scenariusze wypisane w raporcie kroku.
 
-Koniec etapu: status w tabeli zaktualizowany, a użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać). Etap jest zamknięty, gdy każdy kandydat z przeglądu jest wdrożony, odłożony albo odrzucony.
+Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz, po etapie z pełnym numerem (1, 2, …): użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a etap jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Etapy pośrednie (0.5, 0.6, 1.5) zamyka code review kroków — przegląd architektury obejmie je razem z następnym pełnym etapem.
 
 ## Etapy
 
