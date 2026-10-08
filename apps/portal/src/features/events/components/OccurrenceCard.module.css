@@ -16,7 +16,7 @@
 }
 
 .card[data-muted='true'] {
-  opacity: 0.35;
+  display: none;
 }
 
 .card[data-muted='true'] .image {

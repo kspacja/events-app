@@ -34,4 +34,4 @@
 
 ## Kryterium ukończenia
 
-Portal na danych z Postgresa przez `apps/api` wygląda i działa jak na mocku (smoke + Chrome); nowa Kategoria dodana w bazie pojawia się bez zmian w kodzie; front nadal uruchamia się bez bazy, na MSW.
+Portal na danych z Postgresa przez `apps/api` wygląda i działa jak na mocku; nowa Kategoria dodana w bazie pojawia się bez zmian w kodzie; front nadal uruchamia się bez bazy, na MSW.

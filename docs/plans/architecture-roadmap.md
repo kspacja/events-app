@@ -11,7 +11,6 @@ Etap dzieli się na kroki. Każdy krok przechodzi te punkty po kolei:
 1. **Zakres** — zakres i decyzje kroku są zapisane w pliku etapu (`stages/`). Ustalenia z rozmowy trafiają tam przed implementacją.
 2. **Implementacja** — commit(y) bez pusha; bramki zielone, smoke test portalu (`API_MOCKING=enabled`) przechodzi.
 3. **Code review w dwóch osiach** (Standards + Spec, równolegle, punkt odniesienia = commit sprzed kroku; Spec = plik etapu + ADR-y) — każda uwaga poprawiona albo wpisana do „Odłożone” z powodem.
-4. **Przeglądarka** — zmiany widoczne dla użytkownika sprawdzone w Chrome; sprawdzone scenariusze wypisane w raporcie kroku.
 
 Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz, po etapie z pełnym numerem (1, 2, …): użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a etap jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Etapy pośrednie (0.5, 0.6, 1.5) zamyka samo code review kroków, bez żadnego przeglądu architektury (także wąskiego) — przegląd architektury obejmie je razem z następnym pełnym etapem.
 
@@ -44,3 +43,7 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Lint nie blokuje względnych importów korzenia sąsiedniego pakietu (`../time` bez `/src`) — importy idą przez `@events/*`.
 - Fałszywe źródła w testach (źródło w pamięci w `contract`, handler MSW) dzielą mały kształt filtra i sortowania.
 - Brak testu `EventsMap`: lot do Terminu bez punktu jest potwierdzany tylko w kodzie adaptera, sprawdzony w Chrome — wymaga osobnego zestawu testów mapy.
+
+## Testowanie
+
+MCP Chroma użyj tylko na samym końcu - po realizowaniu całego planu.
