@@ -8,7 +8,7 @@
 - Drizzle ORM jako narzędzie do bazy — do zapisania jako ADR-0009 na starcie etapu.
 - Lokalnie Postgres z pgvector w Docker Compose (obraz `pgvector/pgvector`); potrzebny tylko do pracy nad backendem — front działa na MSW.
 - Osobny schemat Postgresa na kontekst (ADR-0002) w `apps/api`.
-- Model Wydarzeń wg słownika (`docs/contexts/catalog/CONTEXT.md`): `Event`, `Occurrence`, `Venue` (należy do Organizatora), `Category` (lista zarządzana), `Price` (przy Terminie, opcjonalna), `Submission`.
+- Model Wydarzeń wg słownika (`docs/contexts/events/CONTEXT.md`): `Event`, `Occurrence`, `Venue` (należy do Organizatora), `Category` (lista zarządzana), `Price` (przy Terminie, opcjonalna), `Submission`.
 - Pakiet `@events/catalog` zmienia nazwę na `@events/repo` (`packages/repo`).
 - Kontekst w słowniku nazywa się „Wydarzenia” (`events`), nie „Katalog”: `docs/contexts/events/`. ADR-y zostają bez zmian jako zapis historyczny.
 - `@events/contract` zostaje osobnym pakietem: schematy Wpisu programu i API (zod). Bez zestawu testów zgodności i bez formalnych „obietnic” portu.

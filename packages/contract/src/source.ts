@@ -13,7 +13,6 @@ export class OccurrenceSourceError extends Error {
   }
 }
 
-/** By startsAt, then occurrenceId. */
 export function compareListings(a: OccurrenceListing, b: OccurrenceListing): number {
   const byTime = Date.parse(a.startsAt) - Date.parse(b.startsAt);
   if (byTime !== 0) return byTime;

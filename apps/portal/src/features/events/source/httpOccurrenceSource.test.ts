@@ -163,35 +163,3 @@ describe('HTTP occurrence source', () => {
     ).rejects.toBeInstanceOf(OccurrenceSourceError);
   });
 });
-
-describe('mock occurrences handler contract', () => {
-  async function call(query: string) {
-    const response = await fetch(`${OCCURRENCES_URL}${query}`);
-    return { status: response.status, body: (await response.json()) as unknown };
-  }
-
-  it('rejects a 32-day range', async () => {
-    const result = await call(
-      `?from=${firstMonday}&to=${addDays(firstMonday, 31)}`,
-    );
-    expect(result.status).toBe(400);
-    expect(result.body).toEqual({ error: 'The range must not exceed 31 days.' });
-  });
-
-  it('accepts a 31-day range', async () => {
-    const result = await call(
-      `?from=${firstMonday}&to=${addDays(firstMonday, 30)}`,
-    );
-    expect(result.status).toBe(200);
-  });
-
-  it.each([
-    ['', 'Query parameters "from" and "to" are required.'],
-    ['?from=2030-02-30&to=2030-03-01', 'Parameters "from" and "to" must be YYYY-MM-DD dates.'],
-    ['?from=2030-03-02&to=2030-03-01', '"from" must not be after "to".'],
-  ])('rejects %s with a clear error', async (query, error) => {
-    const result = await call(query);
-    expect(result.status).toBe(400);
-    expect(result.body).toEqual({ error });
-  });
-});

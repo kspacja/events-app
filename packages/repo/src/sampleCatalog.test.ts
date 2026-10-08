@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { currentEventDay, eventDayOf, isDayInRange, localMinutesOf, mondayOf, addDays } from '@events/time';
-import type { DateRange } from '@events/time';
+import { currentEventDay, eventDayOf, isDayInRange, localMinutesOf, mondayOf, addDays, type DateRange } from '@events/time';
 import type { Catalog } from './model';
 import { toListings } from './listings';
 import { createSampleCatalog, SAMPLE_OCCURRENCES_IN_FIRST_WEEK } from './sampleCatalog';

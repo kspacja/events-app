@@ -9,7 +9,7 @@ function badRequest(error: string) {
 }
 
 /** Serves the listings whose event day is in the validated range; ordering is left to the adapter. */
-export function occurrencesHandler(eventsApiUrl: string, listings: () => readonly OccurrenceListing[]) {
+export function occurrencesHandler(eventsApiUrl: string, getListings: () => readonly OccurrenceListing[]) {
   return http.get(`${eventsApiUrl}/occurrences`, ({ request }) => {
     const params = new URL(request.url).searchParams;
     const parsed = occurrencesQuerySchema.safeParse({
@@ -20,7 +20,7 @@ export function occurrencesHandler(eventsApiUrl: string, listings: () => readonl
 
     const range = parsed.data;
     return HttpResponse.json({
-      occurrences: listings().filter(({ startsAt }) => isDayInRange(eventDayOf(startsAt), range)),
+      occurrences: getListings().filter(({ startsAt }) => isDayInRange(eventDayOf(startsAt), range)),
     });
   });
 }

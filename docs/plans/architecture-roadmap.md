@@ -42,7 +42,8 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Liniowe `points.find` przy kliknięciu w mapę — wystarcza przy tej skali.
 - `isCalendarDay` mapuje lata 0–99 przez `Date.UTC` — bez znaczenia dla domeny.
 - Lint nie blokuje względnych importów korzenia sąsiedniego pakietu (`../time` bez `/src`) — importy idą przez `@events/*`.
-- Fałszywe źródła w testach (źródło w pamięci w `contract`, handler MSW) dzielą mały kształt filtra i sortowania.
+- Filtr Doby wydarzeń jest dwa razy: w handlerze MSW i w pomocniczej funkcji `sampleCatalog.test.ts` — jedna linia, a backend liczy go w SQL.
+- Nazwy w `@events/repo` (`Catalog`, `createCatalog`, `CatalogIntegrityError`, `createSampleCatalog`) nie pasują do nazwy pakietu ani kontekstu „Wydarzenia” — zmieniamy razem ze schematem Drizzle w kroku 2 etapu 1, żeby nie zmieniać nazw dwa razy.
 - Brak testu `EventsMap`: lot do Terminu bez punktu jest potwierdzany tylko w kodzie adaptera, sprawdzony w Chrome — wymaga osobnego zestawu testów mapy.
 - Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.
 
