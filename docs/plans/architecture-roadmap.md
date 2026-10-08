@@ -12,7 +12,7 @@ Etap dzieli się na kroki. Każdy krok przechodzi te punkty po kolei:
 2. **Implementacja** — commit(y) bez pusha; bramki zielone, smoke test portalu (`API_MOCKING=enabled`) przechodzi.
 3. **Code review w dwóch osiach** (Standards + Spec, równolegle, punkt odniesienia = commit sprzed kroku; Spec = plik etapu + ADR-y) — każda uwaga poprawiona albo wpisana do „Odłożone” z powodem.
 
-Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz, po etapie z pełnym numerem (1, 2, …): użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a etap jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Etapy pośrednie (0.5, 0.6, 1.5, 3.5) zamyka samo code review kroków, bez żadnego przeglądu architektury (także wąskiego) — przegląd architektury obejmie je razem z następnym pełnym etapem.
+Koniec etapu: status w tabeli zaktualizowany; etap zamyka code review kroków. Przegląd architektury robimy raz, na samym końcu, po ostatnim etapie: użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a plan jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Po etapach — także tych z pełnym numerem — nie robimy żadnego przeglądu architektury, nawet wąskiego.
 
 ## Etapy
 
