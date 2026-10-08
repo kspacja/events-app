@@ -39,5 +39,21 @@ Zmiana opublikowanego Wydarzenia, która wymaga Zgłoszenia (np. tytuł, opis, z
 _Avoid_: duża zmiana, edycja
 
 **Import** (`Import`):
-Dodanie wielu Wydarzeń naraz przez Organizatora — z pliku albo przez API; każde importowane Wydarzenie przechodzi przez Zgłoszenie tak samo jak z formularza.
+Dodanie wielu Wydarzeń naraz przez Organizatora — z pliku; każde importowane Wydarzenie przechodzi przez Zgłoszenie tak samo jak z formularza.
 _Avoid_: upload, synchronizacja, scraping
+
+**Kanał** (`Feed`):
+Adres JSON z Wydarzeniami Zaufanego Organizatora, który portal pobiera cyklicznie albo na webhook; Wydarzenia z Kanału publikują się bez Zgłoszenia, a Moderator może je ukryć lub wstrzymać Kanał.
+_Avoid_: synchronizacja, scraping, API, feed
+
+**Zaufany Organizator** (`TrustedOrganizer`):
+Organizator, któremu Moderator pozwolił używać Kanału.
+_Avoid_: partner, zweryfikowany
+
+**Przypięte pole** (`PinnedField`):
+Pole Wydarzenia z Kanału poprawione przez Organizatora w Studio, którego kolejne pobranie Kanału nie nadpisuje.
+_Avoid_: nadpisanie, override
+
+**Oznaczenie szkolne** (`SchoolSuitability`):
+Cecha Wydarzenia „dla grup szkolnych”, ustawiana przez Organizatora; szczegóły (wiek, klasy) czekają na research.
+_Avoid_: kategoria szkolna, tag

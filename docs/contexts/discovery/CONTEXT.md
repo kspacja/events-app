@@ -18,3 +18,11 @@ _Avoid_: klaster
 
 **Wpis programu** (`OccurrenceListing`):
 Termin razem z jego Wydarzeniem i Miejscem, w kształcie, w jakim pokazuje go portal.
+
+**Kalendarz miesiąca** (`MonthCalendar`):
+Siatka miesiąca na stronie dla szkół, w której Odbiorca wybiera tydzień pokazany na afiszu; bieżący tydzień jest oznaczony.
+_Avoid_: datepicker, kalendarz (dla afisza)
+
+**Znacznik dnia** (`DayMarker`):
+Kropki pod numerem dnia w Kalendarzu miesiąca: jedna na Wydarzenie przy 1–4, przy 5+ trzy kropki i licznik reszty; liczony po filtrach.
+_Avoid_: badge, licznik

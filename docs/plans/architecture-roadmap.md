@@ -12,7 +12,7 @@ Etap dzieli się na kroki. Każdy krok przechodzi te punkty po kolei:
 2. **Implementacja** — commit(y) bez pusha; bramki zielone, smoke test portalu (`API_MOCKING=enabled`) przechodzi.
 3. **Code review w dwóch osiach** (Standards + Spec, równolegle, punkt odniesienia = commit sprzed kroku; Spec = plik etapu + ADR-y) — każda uwaga poprawiona albo wpisana do „Odłożone” z powodem.
 
-Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz, po etapie z pełnym numerem (1, 2, …): użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a etap jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Etapy pośrednie (0.5, 0.6, 1.5) zamyka samo code review kroków, bez żadnego przeglądu architektury (także wąskiego) — przegląd architektury obejmie je razem z następnym pełnym etapem.
+Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz, po etapie z pełnym numerem (1, 2, …): użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a etap jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Etapy pośrednie (0.5, 0.6, 1.5, 3.5) zamyka samo code review kroków, bez żadnego przeglądu architektury (także wąskiego) — przegląd architektury obejmie je razem z następnym pełnym etapem.
 
 ## Etapy
 
@@ -25,9 +25,10 @@ Koniec etapu: status w tabeli zaktualizowany. Przegląd architektury robimy raz,
 | 1.5 Obserwowalność | ślady, metryki, logi i błędy z aplikacji i workera | — | [stages/1.5-obserwowalnosc.md](stages/1.5-obserwowalnosc.md) |
 | 2. Tożsamość | konta `Attendee`, `Organizer`, `Moderator`, `Guest` (ADR-0004, 0005) | — | — |
 | 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia | — | — |
+| 3.5 Strona dla szkół | podstrona portalu: Kalendarz miesiąca zamiast Zapytania, afisz wybranego tygodnia, tylko Wydarzenia z Oznaczeniem szkolnym | — | [stages/3.5-strona-dla-szkol.md](stages/3.5-strona-dla-szkol.md) |
 | 4. Moderacja | `apps/moderation`: kolejka Zgłoszeń i decyzje | — | — |
 | 5. Rekomendacje | `packages/recommendations`, `apps/worker`, Reakcje, `ColdStart` (ADR-0003, 0007) | — | — |
-| 6. Import i API | import CSV, publiczne API Organizatorów | — | — |
+| 6. Import i Kanały | import CSV, Kanał JSON Zaufanego Organizatora (cyklicznie i na webhook) | — | [stages/6-import-i-kanaly.md](stages/6-import-i-kanaly.md) |
 | 7. Wdrożenie | Vercel, Neon, Railway/Fly, CI (ADR-0006) | — | — |
 
 Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryterium ukończenia.
@@ -43,6 +44,7 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Lint nie blokuje względnych importów korzenia sąsiedniego pakietu (`../time` bez `/src`) — importy idą przez `@events/*`.
 - Fałszywe źródła w testach (źródło w pamięci w `contract`, handler MSW) dzielą mały kształt filtra i sortowania.
 - Brak testu `EventsMap`: lot do Terminu bez punktu jest potwierdzany tylko w kodzie adaptera, sprawdzony w Chrome — wymaga osobnego zestawu testów mapy.
+- Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.
 
 ## Testowanie
 
