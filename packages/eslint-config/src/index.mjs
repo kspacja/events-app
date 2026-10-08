@@ -13,6 +13,7 @@ export const DEPENDENCY_MAP = {
   ui: { kind: 'package', kernel: true, mayImport: [] },
   'eslint-config': { kind: 'tooling', kernel: false, mayImport: [] },
   portal: { kind: 'app', kernel: false, mayImport: '*' },
+  api: { kind: 'app', kernel: false, mayImport: '*' },
 };
 
 const DB_DRIVERS = ['pg', 'postgres', 'drizzle-orm', '@neondatabase/*', 'kysely', 'prisma', '@prisma/*'];
@@ -83,7 +84,7 @@ const PACKAGE_PATTERNS = [
   },
   {
     // Future apps: add their name here
-    group: ['@events/portal', '@events/portal/**'],
+    group: ['@events/portal', '@events/portal/**', '@events/api', '@events/api/**'],
     message: 'Packages must not import apps.',
   },
 ];

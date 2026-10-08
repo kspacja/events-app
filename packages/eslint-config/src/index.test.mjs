@@ -40,6 +40,10 @@ describe('dependency map', () => {
     for (const [name] of packages) expect(messagesFor(portal, importing(`@events/${name}`))).toEqual([]);
   });
 
+  it.each(['@events/portal', '@events/api'])('keeps the app %s out of packages', (app) => {
+    expect(messagesFor(repo, importing(app))).toContainEqual(expect.stringContaining('must not import apps'));
+  });
+
   it('fails an unmapped member', () => {
     expect(() => packageBoundaries('nope')).toThrow('missing from DEPENDENCY_MAP');
   });

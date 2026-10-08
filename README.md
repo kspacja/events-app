@@ -1,12 +1,13 @@
 # Portal wydarzeń
 
 Strona startowa portalu z wydarzeniami: widok tygodnia, wyszukiwanie zdaniem („Pokaż mi …”) i mapa z pinami.
-Next.js (App Router), React, TypeScript, CSS Modules, MapLibre (OpenFreeMap), MSW jako backend.
+Next.js (App Router), React, TypeScript, CSS Modules, MapLibre (OpenFreeMap); w dev portal działa na MSW. Backend `apps/api` (Hono) powstaje w etapie 1.
 
 ## Wymagania
 
 - Node.js 22+
 - pnpm 11 (`corepack enable` wystarczy, wersja jest w `packageManager`)
+- Docker — tylko do pracy nad backendem (Postgres z pgvector)
 
 ## Uruchomienie lokalne
 
@@ -19,6 +20,21 @@ pnpm dev
 Repozytorium to monorepo (pnpm workspaces + Turborepo). `pnpm dev` z korzenia uruchamia wszystkie aplikacje; samą stronę: `pnpm --filter @events/portal dev`.
 
 Strona: [http://localhost:3000](http://localhost:3000).
+
+### Backend (`apps/api`)
+
+```bash
+docker compose up -d --wait db
+cp apps/api/.env.example apps/api/.env
+pnpm --filter @events/api dev
+```
+
+API: [http://localhost:3001/health](http://localhost:3001/health). Bez `apps/api/.env` API wypisuje błąd konfiguracji i czeka na zmiany; `pnpm dev` z korzenia nadal uruchamia portal na MSW.
+
+| Zmienna (`apps/api/.env`) | Wartość | Znaczenie |
+| --- | --- | --- |
+| `DATABASE_URL` | `postgres://events:events@localhost:5432/events` | baza z `docker-compose.yml`; wymagany adres `postgres://` (komunikat błędu nie pokazuje wartości) |
+| `PORT` | `3001` (domyślnie) | port API |
 
 ### Co dzieje się po drodze
 
@@ -79,6 +95,7 @@ Doba wydarzeń kończy się o 04:00: wydarzenie z niedzieli 01:30 należy do sob
 ## Struktura
 
 - `apps/portal` — aplikacja Next.js (`@events/portal`); dalsze aplikacje (studio, moderation, worker) dojdą w `apps/`
+- `apps/api` — backend HTTP (`@events/api`, Hono, ADR-0008); `docker-compose.yml` w korzeniu daje mu Postgresa z pgvector
 - `packages/time` (`@events/time`) — czas lokalny (Europe/Warsaw): dzień kalendarzowy, doba wydarzeń kończąca się o 04:00, DST; źródła TS, bez builda
 - `packages/contract` (`@events/contract`) — wspólny kontrakt: model odczytu Wpisu programu (`/listing`), transport HTTP (`/occurrences-http`), interfejs źródła Terminów z błędem i kolejnością (`/source`); źródła TS, bez builda
 - `packages/repo` (`@events/repo`) — model Wydarzeń (Kategorie, Miejsca, Wydarzenia, Terminy) i przykładowe dane dla mocka; źródła TS, bez builda

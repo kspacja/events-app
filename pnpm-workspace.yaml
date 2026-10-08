@@ -5,3 +5,5 @@ packages:
 allowBuilds:
   # native fallback of the eslint resolver; the prebuilt binary comes from optional deps
   unrs-resolver: false
+  # tsx's esbuild ships its binary as an optional platform package
+  esbuild: false

@@ -25,7 +25,12 @@
    - Portal: bez `composition/`, `OCCURRENCE_SOURCE` i wariantu `memory`; strona tworzy źródło HTTP z `EVENTS_API_URL`. Handler MSW zwraca przykładowe Terminy z Dób wydarzeń w zakresie, bez sortowania. Test adaptera HTTP sprawdza sam adapter.
    - Lint: reguła wejść testowych bez `@events/contract/source/testing`.
    - Słownik: kontekst „Katalog” → „Wydarzenia” (`docs/contexts/events/`, `CONTEXT-MAP.md`).
-1. ADR-0009 Drizzle; `docker-compose.yml` z Postgresem i pgvector; szkielet `apps/api` (Hono) z walidowaną konfiguracją (`DATABASE_URL`) i wpisem w `turbo.json`.
+1. Szkielet backendu — zakres:
+   - ADR-0009 Drizzle ORM (opcje: Drizzle, Kysely, Prisma).
+   - `docker-compose.yml` w korzeniu: usługa `db` na `pgvector/pgvector:0.8.7-pg17`, port 5432, wolumen, healthcheck.
+   - `apps/api` (`@events/api`): Hono na `@hono/node-server`, dev przez `tsx watch`; konfiguracja walidowana zod przy starcie (`DATABASE_URL` wymagany, tylko kształt adresu; `PORT` z domyślną wartością; komunikaty bez wartości zmiennych); `GET /health`; testy konfiguracji i `/health` przez `app.request`; `.env.example`.
+   - `turbo.json` z `DATABASE_URL` w `env`; lint: `api` jako aplikacja w `DEPENDENCY_MAP` i na liście aplikacji niedostępnych dla pakietów; README.
+   - Poza zakresem: Drizzle, schemat, połączenie z bazą (krok 2). Wybór sposobu testów integracyjnych odłożony.
 2. Schemat Drizzle Wydarzeń + migracje.
 3. Seed z przykładowych danych.
 4. `GET /occurrences` w `apps/api` zgodny ze schematem z `@events/contract` (Doba wydarzeń 04:00, sortowanie) + testy integracyjne na prawdziwej bazie.
