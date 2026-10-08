@@ -1,5 +1,4 @@
-export { createInMemoryOccurrenceSource } from './inMemoryOccurrenceSource';
-export { listOccurrences } from './listOccurrences';
+export { toListings } from './listings';
 export {
   CatalogIntegrityError,
   createCatalog,

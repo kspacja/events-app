@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { currentEventDay, eventDayOf, localMinutesOf, mondayOf, addDays } from '@events/time';
-import { createInMemoryOccurrenceSource } from './inMemoryOccurrenceSource';
-import { listOccurrences } from './listOccurrences';
+import { currentEventDay, eventDayOf, isDayInRange, localMinutesOf, mondayOf, addDays } from '@events/time';
+import type { DateRange } from '@events/time';
+import type { Catalog } from './model';
+import { toListings } from './listings';
 import { createSampleCatalog, SAMPLE_OCCURRENCES_IN_FIRST_WEEK } from './sampleCatalog';
 
 // Wednesday noon, so the current week is Monday 2030-01-07 to Sunday 2030-01-13
@@ -10,6 +11,9 @@ const FIRST_MONDAY = mondayOf('2030-01-09');
 const WEEK = { from: FIRST_MONDAY, to: addDays(FIRST_MONDAY, 6) };
 const WEEKS = 5;
 const OCCURRENCES_IN_FIVE_WEEKS = 88;
+
+const listingsIn = (catalog: Catalog, range: DateRange) =>
+  toListings(catalog).filter(({ startsAt }) => isDayInRange(eventDayOf(startsAt), range));
 
 describe('createSampleCatalog', () => {
   const catalog = createSampleCatalog(NOW);
@@ -36,34 +40,28 @@ describe('createSampleCatalog', () => {
   });
 
   it('is consistent: every reference resolves', () => {
-    expect(() => listOccurrences(catalog, { from: FIRST_MONDAY, to: addDays(FIRST_MONDAY, 40) })).not.toThrow();
+    expect(() => toListings(catalog)).not.toThrow();
   });
 
   it('lists every event in the current week, one occurrence each', () => {
-    const week = listOccurrences(catalog, WEEK);
+    const week = listingsIn(catalog, WEEK);
 
     expect(week).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
-    expect(week[0].occurrenceId).toBe('wro-choir-2030-01-07');
+    expect(new Set(week.map(({ event }) => event.id)).size).toBe(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
   });
 
   it('skips some occurrences in later weeks across the 5 generated weeks', () => {
-    const all = listOccurrences(catalog, { from: FIRST_MONDAY, to: addDays(FIRST_MONDAY, WEEKS * 7 - 1) });
+    const all = listingsIn(catalog, { from: FIRST_MONDAY, to: addDays(FIRST_MONDAY, WEEKS * 7 - 1) });
 
     expect(all).toHaveLength(OCCURRENCES_IN_FIVE_WEEKS);
   });
 
   it('puts the Sunday 01:30 stand-up on Saturday', () => {
-    const night = listOccurrences(catalog, WEEK).find(({ event }) => event.id === 'krk-latenight');
+    const night = listingsIn(catalog, WEEK).find(({ event }) => event.id === 'krk-latenight');
 
     if (!night) throw new Error('late-night stand-up missing from the week');
     expect(localMinutesOf(night.startsAt)).toBe(90);
     expect(eventDayOf(night.startsAt)).toBe('2030-01-12');
-  });
-
-  it('is served through the in-memory source unchanged', async () => {
-    const listed = await createInMemoryOccurrenceSource(catalog).listOccurrences(WEEK);
-
-    expect(listed).toEqual(listOccurrences(catalog, WEEK));
   });
 
   it('includes the week shown by the portal on Monday 00:30 Warsaw', () => {
@@ -72,7 +70,7 @@ describe('createSampleCatalog', () => {
     const shownWeek = { from: shownMonday, to: addDays(shownMonday, 6) };
 
     expect(shownMonday).toBe(FIRST_MONDAY);
-    expect(listOccurrences(createSampleCatalog(mondayAfterMidnight), shownWeek)).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
-    expect(listOccurrences(createSampleCatalog(NOW), shownWeek)).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
+    expect(listingsIn(createSampleCatalog(mondayAfterMidnight), shownWeek)).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
+    expect(listingsIn(createSampleCatalog(NOW), shownWeek)).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
   });
 });

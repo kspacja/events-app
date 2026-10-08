@@ -1,4 +1,4 @@
-# Katalog
+# Wydarzenia
 
 Źródło prawdy o Wydarzeniach: co się dzieje, gdzie i kiedy.
 

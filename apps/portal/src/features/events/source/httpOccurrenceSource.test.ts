@@ -1,11 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { describeOccurrenceSourceConformance } from '@events/contract/source/testing';
 import { OccurrenceSourceError } from '@events/contract/source';
-import { catalogFromListings } from '@events/catalog/testing';
-import { listOccurrences as projectCatalog } from '@events/catalog';
 import { addDays, localDayOf, mondayOf, type DateRange } from '@events/time';
-import { occurrencesHandler } from '@/mocks/handlers';
 import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
 import { createHttpOccurrenceSource } from './httpOccurrenceSource';
 
@@ -25,18 +21,6 @@ function countRequests() {
 const httpSource = createHttpOccurrenceSource(TEST_EVENTS_API_URL);
 const listOccurrences = (range: DateRange) =>
   httpSource.listOccurrences(range);
-
-describeOccurrenceSourceConformance('HTTP occurrence source', () => ({
-  source: createHttpOccurrenceSource(TEST_EVENTS_API_URL),
-  seed: (listings) => {
-    const catalog = catalogFromListings(listings);
-    server.use(occurrencesHandler(TEST_EVENTS_API_URL, (range) => projectCatalog(catalog, range)));
-  },
-  breakBackend: () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    server.use(http.get(OCCURRENCES_URL, () => new HttpResponse(null, { status: 503 })));
-  },
-}));
 
 describe('HTTP occurrence source', () => {
   afterEach(() => {

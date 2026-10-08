@@ -34,17 +34,14 @@ Strona: [http://localhost:3000](http://localhost:3000).
 
 | Zmienna | Wartość | Znaczenie |
 | --- | --- | --- |
-| `OCCURRENCE_SOURCE` | `http` (domyślnie) lub `memory` | skąd portal bierze Terminy. `http` pobiera je z `EVENTS_API_URL`; `memory` serwuje przykładowy Katalog z pamięci procesu (etap 1 doda `catalog`). |
-| `EVENTS_API_URL` | `http://api.events.local` | adres API. Wymagany i musi być poprawnym adresem http(s) tylko przy `OCCURRENCE_SOURCE=http`; przy `memory` jest ignorowany. Brak wartości domyślnej. |
-| `API_MOCKING` | `enabled` | tylko przy `http`: uruchamia MSW, który w procesie odpowiada pod `EVENTS_API_URL`. Bez tego strona próbuje połączyć się z prawdziwym API i pokazuje błąd. Przy `memory` jest ignorowany. |
+| `EVENTS_API_URL` | `http://api.events.local` | adres API, z którego portal pobiera Terminy. Wymagany, musi być poprawnym adresem http(s). Brak wartości domyślnej. |
+| `API_MOCKING` | `enabled` | uruchamia MSW, który w procesie odpowiada pod `EVENTS_API_URL`. Bez tego strona próbuje połączyć się z prawdziwym API i pokazuje błąd. |
 
-Konfiguracja jest walidowana przy starcie serwera, w hooku instrumentacji (`apps/portal/src/config/runtimeConfig.ts`). Błędna konfiguracja nie zatrzymuje serwera (Next 16): serwer działa dalej i odpowiada 500, a w logu jest czytelny komunikat z nazwami zmiennych (bez ich wartości). Na Vercel błąd ujawni się więc w czasie działania (po deployu), nie podczas builda. Źródło składa jedno miejsce: `apps/portal/src/composition/occurrenceSource.ts`.
+Konfiguracja jest walidowana przy starcie serwera, w hooku instrumentacji (`apps/portal/src/config/runtimeConfig.ts`). Błędna konfiguracja nie zatrzymuje serwera (Next 16): serwer działa dalej i odpowiada 500, a w logu jest czytelny komunikat z nazwami zmiennych (bez ich wartości). Na Vercel błąd ujawni się więc w czasie działania (po deployu), nie podczas builda.
 
-Reguła produkcyjna: gdy `VERCEL_ENV=production`, wartości `OCCURRENCE_SOURCE=memory` i `API_MOCKING=enabled` są odrzucane (500 z komunikatem), żeby błędny deploy nie serwował po cichu przykładowych danych. Reguła nie opiera się na `NODE_ENV`, bo lokalny `next start` też jest „produkcyjny”.
+Reguła produkcyjna: gdy `VERCEL_ENV=production`, wartość `API_MOCKING=enabled` jest odrzucana (500 z komunikatem), żeby błędny deploy nie serwował po cichu przykładowych danych. Reguła nie opiera się na `NODE_ENV`, bo lokalny `next start` też jest „produkcyjny”.
 
-`OCCURRENCE_SOURCE=memory` pozwala uruchomić portal bez MSW i bez adresu API; dane są te same co w mocku (ten sam przykładowy Katalog).
-
-Mock serwuje przykładowy Katalog (`@events/catalog`: Kategorie, Miejsca, Wydarzenia i Terminy) względem bieżącego tygodnia (i 4 następnych), więc dane zawsze są „aktualne”. `@events/catalog` to domena Katalogu bez frameworka i bez bazy; w etapie 1 dostanie adapter Postgresa.
+Mock serwuje przykładowe dane (`@events/repo`: Kategorie, Miejsca, Wydarzenia i Terminy) względem bieżącego tygodnia (i 4 następnych), więc dane zawsze są „aktualne”. Mock tylko wybiera Terminy z Dób wydarzeń w zakresie; nie odtwarza logiki backendu. `@events/repo` to model Wydarzeń bez frameworka; w etapie 1 dostanie adapter Postgresa.
 
 ## Skrypty
 
@@ -60,7 +57,7 @@ Bramki (z korzenia, przez Turborepo): `pnpm typecheck`, `pnpm lint`, `pnpm test`
 | `pnpm test` | Vitest we wszystkich pakietach (portal: jsdom + MSW z tymi samymi handlerami co aplikacja) |
 | `pnpm --filter @events/contract test` | testy samego kontraktu |
 | `pnpm --filter @events/time test` | testy czasu lokalnego |
-| `pnpm --filter @events/catalog test` | testy Katalogu (przykładowe dane, projekcja, źródło w pamięci) |
+| `pnpm --filter @events/repo test` | testy modelu Wydarzeń (przykładowe dane, złączenie we Wpisy programu) |
 
 ## Adresy do sprawdzenia
 
@@ -83,7 +80,8 @@ Doba wydarzeń kończy się o 04:00: wydarzenie z niedzieli 01:30 należy do sob
 
 - `apps/portal` — aplikacja Next.js (`@events/portal`); dalsze aplikacje (studio, moderation, worker) dojdą w `apps/`
 - `packages/time` (`@events/time`) — czas lokalny (Europe/Warsaw): dzień kalendarzowy, doba wydarzeń kończąca się o 04:00, DST; źródła TS, bez builda
-- `packages/contract` (`@events/contract`) — wspólny kontrakt: model odczytu Wpisu programu (`/listing`), transport HTTP (`/occurrences-http`), interfejs źródła Terminów z błędem i kolejnością (`/source`) oraz wspólne testy zgodności adapterów (`/source/testing`); źródła TS, bez builda
+- `packages/contract` (`@events/contract`) — wspólny kontrakt: model odczytu Wpisu programu (`/listing`), transport HTTP (`/occurrences-http`), interfejs źródła Terminów z błędem i kolejnością (`/source`); źródła TS, bez builda
+- `packages/repo` (`@events/repo`) — model Wydarzeń (Kategorie, Miejsca, Wydarzenia, Terminy) i przykładowe dane dla mocka; źródła TS, bez builda
 - `packages/ui` (`@events/ui`) — tokeny CSS (`@events/ui/tokens.css`); fonty zostają w layoucie portalu
 - `packages/typescript-config` — wspólne `tsconfig` (strict) i wariant dla Nexta
 - `packages/eslint-config` (`@events/eslint-config`) — wspólny ESLint: granice importów (bez importów w głąb `src` pakietu i bez ścieżek względnych między pakietami/aplikacjami; pakiety bez Reacta/Nexta i bez importu aplikacji) oraz reguły wymagające typów

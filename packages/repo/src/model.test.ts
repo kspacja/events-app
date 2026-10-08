@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { eventIdSchema, occurrenceIdSchema } from '@events/contract/listing';
-import { listOccurrences } from './listOccurrences';
+import { toListings } from './listings';
 import { Catalog, CatalogIntegrityError, createCatalog, venueId, type CatalogData } from './model';
 
 const MUSIC = { slug: 'music', label: 'Muzyka' };
@@ -61,11 +61,10 @@ describe('createCatalog', () => {
   it('is unaffected by later mutation of the input arrays', () => {
     const input = { categories: [MUSIC], venues: [VENUE], events: [EVENT], occurrences: [OCCURRENCE] };
     const catalog = createCatalog(input);
-    const range = { from: '2030-01-01', to: '2030-01-31' } as const;
-    const before = listOccurrences(catalog, range);
+    const before = toListings(catalog);
     input.occurrences.length = 0;
     input.events.length = 0;
-    expect(listOccurrences(catalog, range)).toEqual(before);
+    expect(toListings(catalog)).toEqual(before);
     expect(before).toHaveLength(1);
     expect(Object.isFrozen(catalog.occurrences)).toBe(true);
   });
@@ -78,13 +77,12 @@ describe('createCatalog', () => {
       occurrences: [{ ...OCCURRENCE, price: { kind: 'paid' as const, from: 10, to: null, currency: 'PLN' as const } }],
     };
     const catalog = createCatalog(input);
-    const range = { from: '2030-01-01', to: '2030-01-31' } as const;
-    const before = listOccurrences(catalog, range);
+    const before = toListings(catalog);
 
     input.venues[0].location.lat = 0;
     input.occurrences[0].price.from = 999;
 
-    expect(listOccurrences(catalog, range)).toEqual(before);
+    expect(toListings(catalog)).toEqual(before);
     expect(Object.isFrozen(catalog.venues[0].location)).toBe(true);
     expect(Object.isFrozen(catalog.occurrences[0].price)).toBe(true);
   });

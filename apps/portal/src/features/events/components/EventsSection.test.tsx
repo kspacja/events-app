@@ -1,8 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { createInMemoryOccurrenceSource, createSampleCatalog } from '@events/catalog';
-import { SAMPLE_OCCURRENCES_IN_FIRST_WEEK } from '@events/catalog/testing';
+import { createSampleCatalog, toListings } from '@events/repo';
+import { SAMPLE_OCCURRENCES_IN_FIRST_WEEK } from '@events/repo/testing';
 import { addDays, currentEventDay, mondayOf } from '@events/time';
+import { occurrencesHandler } from '@/mocks/handlers';
+import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
+import { createHttpOccurrenceSource } from '../source/httpOccurrenceSource';
 import { formatCount } from '../schedule';
 import { EventsSection } from './EventsSection';
 
@@ -11,9 +14,10 @@ vi.mock('./EventsMapLoader', () => ({ EventsMapLoader: () => null }));
 const NOW = new Date('2026-10-07T12:00:00+02:00');
 
 describe('EventsSection', () => {
-  it('renders the week from the injected source', async () => {
+  it('renders the week served by the API', async () => {
     const monday = mondayOf(currentEventDay(NOW));
-    const source = createInMemoryOccurrenceSource(createSampleCatalog(NOW));
+    server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => toListings(createSampleCatalog(NOW))));
+    const source = createHttpOccurrenceSource(TEST_EVENTS_API_URL);
 
     // Async server components are awaited as plain functions, then the returned element is rendered
     const section = await EventsSection({

@@ -15,8 +15,8 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@events/catalog": "workspace:*",
     "@events/contract": "workspace:*",
+    "@events/repo": "workspace:*",
     "@events/time": "workspace:*",
     "@events/ui": "workspace:*",
     "date-fns": "^4.4.0",

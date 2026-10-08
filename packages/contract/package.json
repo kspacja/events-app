@@ -6,8 +6,7 @@
   "exports": {
     "./listing": "./src/listing.ts",
     "./occurrences-http": "./src/occurrencesHttp.ts",
-    "./source": "./src/source.ts",
-    "./source/testing": "./src/sourceConformance.ts"
+    "./source": "./src/source.ts"
   },
   "scripts": {
     "lint": "eslint",
@@ -24,13 +23,5 @@
     "eslint": "^9",
     "typescript": "^5",
     "vitest": "^5.0.3"
-  },
-  "peerDependencies": {
-    "vitest": "^5.0.3"
-  },
-  "peerDependenciesMeta": {
-    "vitest": {
-      "optional": true
-    }
   }
 }

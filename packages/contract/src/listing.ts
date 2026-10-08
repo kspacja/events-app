@@ -38,7 +38,7 @@ export const priceSchema = z.discriminatedUnion('kind', [
     .readonly(),
 ]);
 
-/** A managed list in the Catalog, so a new category must not break parsing. */
+/** A managed list, so a new category must not break parsing. */
 export const categorySchema = z
   .object({
     slug: z.string().regex(CATEGORY_SLUG_FORMAT),

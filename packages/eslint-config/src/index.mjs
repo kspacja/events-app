@@ -8,7 +8,7 @@ const FRAMEWORK_FREE_MESSAGE = 'Packages must stay framework-free.';
 export const DEPENDENCY_MAP = {
   time: { kind: 'package', kernel: true, mayImport: [] },
   contract: { kind: 'package', kernel: true, mayImport: ['time'] },
-  catalog: { kind: 'package', kernel: false, mayImport: ['contract', 'time'] },
+  repo: { kind: 'package', kernel: false, mayImport: ['contract', 'time'] },
   // ui is CSS-only for now: it has no eslint config, so this entry takes effect once it gains code
   ui: { kind: 'package', kernel: true, mayImport: [] },
   'eslint-config': { kind: 'tooling', kernel: false, mayImport: [] },
@@ -89,7 +89,7 @@ const PACKAGE_PATTERNS = [
 ];
 
 const TESTING_ONLY_PATTERN = {
-  group: ['@events/contract/source/testing', '@events/catalog/testing', '**/*.testing', '**/*.testing.*'],
+  group: ['@events/repo/testing', '**/*.testing', '**/*.testing.*'],
   message: 'Testing entry points may only be imported from test files.',
 };
 

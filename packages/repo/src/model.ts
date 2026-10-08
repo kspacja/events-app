@@ -10,7 +10,7 @@ import { isWarsawIso } from '@events/time';
 export type { Category, EventId, OccurrenceId, Price };
 
 export const venueIdSchema = brandedIdSchema<'VenueId'>();
-export type VenueId = ReturnType<typeof venueIdSchema.parse>; // catalog has no direct zod dependency, so no z.infer
+export type VenueId = ReturnType<typeof venueIdSchema.parse>; // repo has no direct zod dependency, so no z.infer
 
 export const venueId = (value: string): VenueId => venueIdSchema.parse(value);
 

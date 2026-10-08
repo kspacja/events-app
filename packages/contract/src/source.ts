@@ -1,15 +1,7 @@
 import type { DateRange } from '@events/time';
 import type { OccurrenceListing } from './listing';
 
-/**
- * Where the portal reads the programme from. Every adapter (HTTP, Catalog) promises:
- * (a) every occurrence whose event day (04:00 Europe/Warsaw boundary) lies in the inclusive range;
- * (b) sorted by startsAt, then occurrenceId;
- * (c) no duplicate occurrenceIds;
- * (d) any failure rejects with OccurrenceSourceError.
- * `startsAt` must be canonical Warsaw ISO (strict schema): adapters normalise with `toWarsawIso`.
- * `describeOccurrenceSourceConformance` (`@events/contract/source/testing`) checks all four.
- */
+/** Where the portal reads the programme from: occurrences whose event day lies in the range, sorted by `compareListings`. */
 export interface OccurrenceSource {
   listOccurrences(range: DateRange): Promise<OccurrenceListing[]>;
 }
@@ -21,7 +13,7 @@ export class OccurrenceSourceError extends Error {
   }
 }
 
-/** The ordering of promise (b), for adapters that have to sort. */
+/** By startsAt, then occurrenceId. */
 export function compareListings(a: OccurrenceListing, b: OccurrenceListing): number {
   const byTime = Date.parse(a.startsAt) - Date.parse(b.startsAt);
   if (byTime !== 0) return byTime;

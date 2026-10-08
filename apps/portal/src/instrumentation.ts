@@ -7,7 +7,7 @@ export async function register() {
 
   const { getRuntimeConfig } = await import('./config/runtimeConfig');
   const config = getRuntimeConfig();
-  if (config.source !== 'http' || !config.mocking) return;
+  if (!config.mocking) return;
 
   const scope = globalThis as MockingGlobal;
   // register() can run again on HMR; listening twice would double-patch fetch

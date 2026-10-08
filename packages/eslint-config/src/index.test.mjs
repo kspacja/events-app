@@ -9,18 +9,18 @@ function messagesFor(configs, code, filename = 'src/file.js') {
 }
 
 const importing = (source) => `import x from '${source}';\nexport { x };\n`;
-const catalog = packageBoundaries('catalog');
+const repo = packageBoundaries('repo');
 const time = packageBoundaries('time');
 const portal = appBoundaries('portal');
 
 describe('dependency map', () => {
   it('lets a package import what the map allows', () => {
-    expect(messagesFor(catalog, importing('@events/contract'))).toEqual([]);
-    expect(messagesFor(catalog, importing('@events/time'))).toEqual([]);
+    expect(messagesFor(repo, importing('@events/contract'))).toEqual([]);
+    expect(messagesFor(repo, importing('@events/time'))).toEqual([]);
   });
 
   it('keeps the subpaths of an allowed package allowed', () => {
-    expect(messagesFor(catalog, importing('@events/contract/listing'))).toEqual([]);
+    expect(messagesFor(repo, importing('@events/contract/listing'))).toEqual([]);
   });
 
   it('rejects a mapped package that is not allowed', () => {
@@ -30,7 +30,7 @@ describe('dependency map', () => {
   });
 
   it('rejects an unknown @events package', () => {
-    expect(messagesFor(catalog, importing('@events/unknown'))).toHaveLength(1);
+    expect(messagesFor(repo, importing('@events/unknown'))).toHaveLength(1);
     expect(messagesFor(portal, importing('@events/unknown'))).toHaveLength(1);
   });
 
@@ -47,13 +47,13 @@ describe('dependency map', () => {
 
 describe('private schemas', () => {
   it.each([
-    ['catalog', catalog],
+    ['repo', repo],
     ['portal', portal],
   ])('rejects @events/*/schema in %s', (_, configs) => {
-    expect(messagesFor(configs, importing('@events/catalog/schema'))).toEqual([
+    expect(messagesFor(configs, importing('@events/repo/schema'))).toEqual([
       expect.stringContaining('schema is private'),
     ]);
-    expect(messagesFor(configs, importing('@events/catalog/schema/tables'))).toHaveLength(1);
+    expect(messagesFor(configs, importing('@events/repo/schema/tables'))).toHaveLength(1);
   });
 });
 
@@ -70,21 +70,21 @@ describe('kernel purity', () => {
   });
 
   it('leaves non-kernel packages free to use drivers', () => {
-    expect(messagesFor(catalog, importing('pg'))).toEqual([]);
+    expect(messagesFor(repo, importing('pg'))).toEqual([]);
   });
 });
 
 describe('testing entry points', () => {
-  const testingImport = importing('@events/catalog/testing');
+  const testingImport = importing('@events/repo/testing');
 
   it('rejects them in production code', () => {
     expect(messagesFor(portal, testingImport)).toEqual([expect.stringContaining('test files')]);
-    expect(messagesFor(portal, importing('./brokenCatalog.testing'))).toHaveLength(1);
+    expect(messagesFor(portal, importing('./fixtures.testing'))).toHaveLength(1);
   });
 
   it('allows them in test files', () => {
     expect(messagesFor(portal, testingImport, 'src/file.test.js')).toEqual([]);
-    expect(messagesFor(portal, importing('@events/contract/source/testing'), 'src/file.test.js')).toEqual([]);
+    expect(messagesFor(portal, importing('./fixtures.testing'), 'src/file.test.js')).toEqual([]);
   });
 });
 
@@ -109,6 +109,6 @@ describe('transport-only entry points', () => {
   });
 
   it('still keeps testing entry points out of the adapter', () => {
-    expect(messagesFor(portal, importing('@events/catalog/testing'), 'src/mocks/handlers.js')).toHaveLength(1);
+    expect(messagesFor(portal, importing('@events/repo/testing'), 'src/mocks/handlers.js')).toHaveLength(1);
   });
 });
