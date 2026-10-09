@@ -4,12 +4,12 @@ import type { CalendarMonth } from './monthCalendar';
 export const SCHOOLS_PATH = '/dla-szkol';
 
 interface SchoolsState {
-  readonly week: CalendarDay;
+  readonly day: CalendarDay;
   readonly month: CalendarMonth;
 }
 
-/** The schools page for a week and a shown month, optionally scrolled to an element. */
-export function schoolsHref({ week, month }: SchoolsState, anchor?: string): string {
-  const query = new URLSearchParams({ week, month });
+/** The schools page for a picked day (its week is shown) and a shown month, optionally scrolled to an element. */
+export function schoolsHref({ day, month }: SchoolsState, anchor?: string): string {
+  const query = new URLSearchParams({ day, month });
   return `${SCHOOLS_PATH}?${query}${anchor ? `#${anchor}` : ''}`;
 }

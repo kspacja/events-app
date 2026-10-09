@@ -1,3 +1,10 @@
+export const SCHOOLS_LABELS = {
+  title: 'Wydarzenia dla grup szkolnych',
+  pageTitle: 'Wydarzenia dla szkół',
+  pastDayNotice: 'Ten dzień już minął — pokazujemy bieżący tydzień.',
+  invalidDayNotice: 'Nie rozpoznaliśmy daty — pokazujemy bieżący tydzień.',
+} as const;
+
 export const CALENDAR_LABELS = {
   region: 'Kalendarz miesiąca',
   previousMonth: 'Poprzedni miesiąc',

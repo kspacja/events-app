@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import type { CalendarDay } from '@events/time';
-import { mondayOf } from '@events/time';
 import { formatDay } from '@/lib/format';
 import { formatCount } from '@/features/events/schedule';
 import { dayDomId } from '@/features/events/scheduleDom';
@@ -11,7 +10,7 @@ import styles from './MonthCalendar.module.css';
 
 interface MonthCalendarProps {
   readonly calendar: MonthView;
-  readonly selectedWeek: CalendarDay;
+  readonly selectedDay: CalendarDay;
   readonly today: CalendarDay;
 }
 
@@ -44,7 +43,7 @@ function DayCell({ cell }: { readonly cell: CalendarCell }) {
   }
   return (
     <Link
-      href={schoolsHref({ week: mondayOf(cell.day), month: monthOf(cell.day) }, dayDomId(cell.day))}
+      href={schoolsHref({ day: cell.day, month: monthOf(cell.day) }, dayDomId(cell.day))}
       className={className}
       aria-label={label}
       aria-current={cell.isToday ? 'date' : undefined}
@@ -56,7 +55,7 @@ function DayCell({ cell }: { readonly cell: CalendarCell }) {
 }
 
 /** Kalendarz miesiąca: picking a day shows its week below; arrows change only the shown month. */
-export function MonthCalendar({ calendar, selectedWeek, today }: MonthCalendarProps) {
+export function MonthCalendar({ calendar, selectedDay, today }: MonthCalendarProps) {
   const { month, weeks, previous, next } = calendar;
   const title = formatDay(firstDayOf(month), 'LLLL yyyy');
 
@@ -67,7 +66,7 @@ export function MonthCalendar({ calendar, selectedWeek, today }: MonthCalendarPr
         <div className={styles.navigation}>
           {previous ? (
             <Link
-              href={schoolsHref({ week: selectedWeek, month: previous })}
+              href={schoolsHref({ day: selectedDay, month: previous })}
               className={styles.arrow}
               aria-label={CALENDAR_LABELS.previousMonth}
             >
@@ -78,11 +77,11 @@ export function MonthCalendar({ calendar, selectedWeek, today }: MonthCalendarPr
               ‹
             </span>
           )}
-          <Link href={schoolsHref({ week: mondayOf(today), month: monthOf(today) })} className={styles.todayLink}>
+          <Link href={schoolsHref({ day: today, month: monthOf(today) })} className={styles.todayLink}>
             {CALENDAR_LABELS.today}
           </Link>
           <Link
-            href={schoolsHref({ week: selectedWeek, month: next })}
+            href={schoolsHref({ day: selectedDay, month: next })}
             className={styles.arrow}
             aria-label={CALENDAR_LABELS.nextMonth}
           >

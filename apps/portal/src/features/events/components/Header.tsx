@@ -5,6 +5,8 @@ import styles from './Header.module.css';
 
 interface HeaderProps {
   readonly sentence: ReactNode;
+  /** Shown under the heading, outside the <h1>, e.g. a calendar. */
+  readonly controls?: ReactNode;
   readonly notice?: ReactNode;
   readonly rangeLabel: string;
   readonly timeLabel?: string;
@@ -14,6 +16,7 @@ interface HeaderProps {
 
 export function Header({
   sentence,
+  controls,
   notice,
   rangeLabel,
   timeLabel,
@@ -30,6 +33,7 @@ export function Header({
           </span>
         </Link>
         <h1 className={styles.sentence}>{sentence}</h1>
+        {controls}
         {notice ? <p className={styles.notice}>{notice}</p> : null}
         <p className={styles.summary}>
           <span className={styles.range}>{rangeLabel}</span>

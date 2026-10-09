@@ -5,19 +5,19 @@ import { buildMonthCalendar } from '../monthCalendar';
 import { MonthCalendar } from './MonthCalendar';
 
 const TODAY: CalendarDay = '2026-10-14';
-const SELECTED: CalendarDay = '2026-10-19';
+const SELECTED: CalendarDay = '2026-10-20';
 
 function renderCalendar(month: '2026-10' | '2026-11' = '2026-10') {
   const calendar = buildMonthCalendar({
     month,
     today: TODAY,
-    selectedWeek: SELECTED,
+    selectedDay: SELECTED,
     counts: new Map([
       ['2026-10-14', 2],
       ['2026-10-21', 6],
     ]),
   });
-  return render(<MonthCalendar calendar={calendar} selectedWeek={SELECTED} today={TODAY} />);
+  return render(<MonthCalendar calendar={calendar} selectedDay={SELECTED} today={TODAY} />);
 }
 
 describe('MonthCalendar', () => {
@@ -27,12 +27,12 @@ describe('MonthCalendar', () => {
     expect(screen.getByRole('heading', { name: 'październik 2026' })).toBeInTheDocument();
   });
 
-  it('links a day to its week and month, scrolled to the day', () => {
+  it('links a day to itself and its month, scrolled to its column', () => {
     renderCalendar();
 
     expect(screen.getByRole('link', { name: 'środa, 21 października, 6 wydarzeń' })).toHaveAttribute(
       'href',
-      '/dla-szkol?week=2026-10-19&month=2026-10#day-2026-10-21',
+      '/dla-szkol?day=2026-10-21&month=2026-10#day-2026-10-21',
     );
   });
 
@@ -41,7 +41,7 @@ describe('MonthCalendar', () => {
 
     expect(screen.getByRole('link', { name: 'niedziela, 1 listopada, brak wydarzeń' })).toHaveAttribute(
       'href',
-      '/dla-szkol?week=2026-10-26&month=2026-11#day-2026-11-01',
+      '/dla-szkol?day=2026-11-01&month=2026-11#day-2026-11-01',
     );
   });
 
@@ -73,19 +73,19 @@ describe('MonthCalendar', () => {
     expect(screen.queryByRole('link', { name: 'Poprzedni miesiąc' })).not.toBeInTheDocument();
   });
 
-  it('keeps the selected week when changing months', () => {
+  it('keeps the selected day when changing months', () => {
     renderCalendar();
 
     expect(screen.getByRole('link', { name: 'Następny miesiąc' })).toHaveAttribute(
       'href',
-      '/dla-szkol?week=2026-10-19&month=2026-11',
+      '/dla-szkol?day=2026-10-20&month=2026-11',
     );
   });
 
   it('goes back to the current week and month with "Dziś"', () => {
     renderCalendar('2026-11');
 
-    expect(screen.getByRole('link', { name: 'Dziś' })).toHaveAttribute('href', '/dla-szkol?week=2026-10-12&month=2026-10');
+    expect(screen.getByRole('link', { name: 'Dziś' })).toHaveAttribute('href', '/dla-szkol?day=2026-10-14&month=2026-10');
   });
 
   it('goes back a month once ahead of the current one', () => {
@@ -93,7 +93,7 @@ describe('MonthCalendar', () => {
 
     expect(screen.getByRole('link', { name: 'Poprzedni miesiąc' })).toHaveAttribute(
       'href',
-      '/dla-szkol?week=2026-10-19&month=2026-10',
+      '/dla-szkol?day=2026-10-20&month=2026-10',
     );
   });
 });

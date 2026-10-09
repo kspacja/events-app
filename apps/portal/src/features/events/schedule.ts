@@ -29,7 +29,7 @@ export interface ScheduleDay {
 }
 
 export interface ScheduleLanding {
-  /** The target card's day when there is one, otherwise the first in-range day. */
+  /** The target card's day when there is one, otherwise the landing day or the first in-range day. */
   readonly day: CalendarDay;
   /** Set only when a time window is selected and something matches it. */
   readonly occurrenceId: OccurrenceId | null;
@@ -47,6 +47,8 @@ export interface Schedule {
 export interface ScheduleQuery {
   readonly range: DateRange;
   readonly time: TimeWindow | null;
+  /** The day the week strip scrolls to; the first day of the range when not given. */
+  readonly landingDay?: CalendarDay;
 }
 
 const WEEKEND_START_INDEX = 5;
@@ -93,7 +95,7 @@ function firstActiveOccurrence(
 /** Relies on the OccurrenceSource promise that listings arrive sorted. */
 export function buildSchedule(
   listings: readonly OccurrenceListing[],
-  { range, time }: ScheduleQuery,
+  { range, time, landingDay }: ScheduleQuery,
 ): Schedule {
   const entries = listings.map((listing) => ({
     listing,
@@ -126,7 +128,7 @@ export function buildSchedule(
 
   const target = time ? firstActiveOccurrence(weeks) : null;
   const landing: ScheduleLanding = target ?? {
-    day: range.from,
+    day: landingDay ?? range.from,
     occurrenceId: null,
   };
 
