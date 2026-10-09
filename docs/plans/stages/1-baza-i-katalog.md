@@ -15,6 +15,8 @@
 - Portal czyta tylko przez HTTP; w dev i testach MSW `setupServer`. Źródło w pamięci i `OCCURRENCE_SOURCE` znikają.
 - Mock MSW jest prosty: zwraca przykładowe dane dla zakresu, bez odtwarzania całej logiki backendu. Ryzyko rozjazdu mocka z backendem łapią testy integracyjne `apps/api` na prawdziwej bazie.
 - Seed z przykładowych danych z etapu 0.6.
+- `Venue.organizerId` dochodzi dopiero w etapie 2, razem z tabelą Organizatorów (najpierw `null`, potem uzupełnienie i `NOT NULL`); bez Organizatora technicznego.
+- Kategoria nie ma koloru w bazie: nowa Kategoria dostaje `--category-fallback`, własny kolor przez token CSS w `@events/ui`.
 
 ## Kroki (szkic)
 
@@ -31,7 +33,13 @@
    - `apps/api` (`@events/api`): Hono na `@hono/node-server`, dev przez `tsx watch`; konfiguracja walidowana zod przy starcie (`DATABASE_URL` wymagany, tylko kształt adresu; `PORT` z domyślną wartością; komunikaty bez wartości zmiennych); `GET /health`; testy konfiguracji i `/health` przez `app.request`; `.env.example`.
    - `turbo.json` z `DATABASE_URL` w `env`; lint: `api` jako aplikacja w `DEPENDENCY_MAP` i na liście aplikacji niedostępnych dla pakietów; README.
    - Poza zakresem: Drizzle, schemat, połączenie z bazą (krok 2). Wybór sposobu testów integracyjnych odłożony.
-2. Schemat Drizzle Wydarzeń + migracje.
+2. Schemat Drizzle Wydarzeń + migracje — zakres:
+   - `apps/api`: `drizzle-orm`, `pg`, `drizzle-kit`; schemat w `src/contexts/events/schema.ts` w schemacie Postgresa `events`: `categories` (`slug`, `label`), `venues` (`id`, `name`, `city`, `lat`, `lng`), `events` (`id`, `title`, `category_slug`, `image_url`), `occurrences` (`id`, `event_id`, `venue_id`, `starts_at timestamptz`, cena w kolumnach `price_kind`/`price_from`/`price_to`/`price_currency` z CHECK); indeks na `starts_at`.
+   - `src/db.ts` z `createDb(databaseUrl)`, `drizzle.config.ts`, migracje SQL w `apps/api/drizzle/`, skrypty `db:generate` i `db:migrate`.
+   - `@events/repo`: `Catalog` → `EventsData`, `CatalogData` → `EventsDataInput`, `createCatalog` → `createEventsData`, `CatalogIntegrityError` → `EventsIntegrityError`, `createSampleCatalog` → `createSampleEvents`, `sampleCatalog.ts` → `sampleEvents.ts`.
+   - Lint: sterowniki bazy i ORM zablokowane w aplikacjach Next.js (ADR-0008).
+   - Weryfikacja: bramki + migracja na bazie z Docker Compose, tabele sprawdzone w `psql`.
+   - Poza zakresem: `Submission` (etap 3), migracja `CREATE EXTENSION vector` (z pierwszą kolumną `vector`, etap 5), Organizator (etap 2).
 3. Seed z przykładowych danych.
 4. `GET /occurrences` w `apps/api` zgodny ze schematem z `@events/contract` (Doba wydarzeń 04:00, sortowanie) + testy integracyjne na prawdziwej bazie.
 5. Portal w dev z `EVENTS_API_URL` na lokalne `apps/api` i bez `API_MOCKING`; Kategorie z bazy.
@@ -39,8 +47,6 @@
 ## Otwarte pytania
 
 - Testy integracyjne `apps/api`: Testcontainers czy baza z Docker Compose?
-- `Venue.organizerId` przed etapem 2 (Organizator jeszcze nie istnieje): kolumna dopuszczająca `null` czy Organizator techniczny dla danych przykładowych?
-- Kolory nowych Kategorii: tylko `--category-fallback`, czy kolor jako dana Kategorii?
 - Seed z `createSampleCatalog(now)` liczy daty względem dnia uruchomienia, więc po zapisie w bazie się starzeje: stała data, cykliczne ponowne seedowanie czy generowanie Terminów przy starcie dev?
 
 ## Kryterium ukończenia

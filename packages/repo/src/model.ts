@@ -38,17 +38,17 @@ export interface Occurrence {
 }
 
 // Venue.organizerId and Submission arrive with stages 1-2 (see docs/plans/stages/1-baza-i-katalog.md)
-export interface CatalogData {
+export interface EventsDataInput {
   readonly categories: readonly Category[];
   readonly venues: readonly Venue[];
   readonly events: readonly Event[];
   readonly occurrences: readonly Occurrence[];
 }
 
-export class CatalogIntegrityError extends Error {
+export class EventsIntegrityError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'CatalogIntegrityError';
+    this.name = 'EventsIntegrityError';
   }
 }
 
@@ -60,16 +60,16 @@ export function indexBy<T>(items: readonly T[], keyOf: (item: T) => string): Rea
 /** Package-internal: not re-exported from index.ts. */
 export function lookup<T>(index: ReadonlyMap<string, T>, key: string, what: string): T {
   const found = index.get(key);
-  if (!found) throw new CatalogIntegrityError(`Unknown ${what}: ${key}`);
+  if (!found) throw new EventsIntegrityError(`Unknown ${what}: ${key}`);
   return found;
 }
 
 function assertUnique(kind: string, ids: readonly string[]): void {
   const duplicate = ids.find((id, index) => ids.indexOf(id) !== index);
-  if (duplicate !== undefined) throw new CatalogIntegrityError(`Duplicate ${kind} id: ${duplicate}`);
+  if (duplicate !== undefined) throw new EventsIntegrityError(`Duplicate ${kind} id: ${duplicate}`);
 }
 
-function assertIntegrity(data: CatalogData): void {
+function assertIntegrity(data: EventsDataInput): void {
   assertUnique('category', data.categories.map(({ slug }) => slug));
   assertUnique('venue', data.venues.map(({ id }) => id));
   assertUnique('event', data.events.map(({ id }) => id));
@@ -82,7 +82,7 @@ function assertIntegrity(data: CatalogData): void {
   for (const { id, eventId, venueId, startsAt } of data.occurrences) {
     lookup(events, eventId, `event of occurrence ${id}`);
     lookup(venues, venueId, `venue of occurrence ${id}`);
-    if (!isWarsawIso(startsAt)) throw new CatalogIntegrityError(`Invalid startsAt of occurrence ${id}: ${startsAt}`);
+    if (!isWarsawIso(startsAt)) throw new EventsIntegrityError(`Invalid startsAt of occurrence ${id}: ${startsAt}`);
   }
 }
 
@@ -97,8 +97,8 @@ const copyOccurrence = (occurrence: Occurrence): Occurrence => ({
   price: occurrence.price && Object.freeze({ ...occurrence.price }),
 });
 
-/** Opaque: the brand makes the type nominal and index.ts exports it as a type only; build one with `createCatalog`. */
-export class Catalog implements CatalogData {
+/** Opaque: the brand makes the type nominal and index.ts exports it as a type only; build one with `createEventsData`. */
+export class EventsData implements EventsDataInput {
   // A private member makes the type nominal: a spread or literal copy is not assignable
   declare private readonly brand: true;
   readonly categories: readonly Category[];
@@ -106,7 +106,7 @@ export class Catalog implements CatalogData {
   readonly events: readonly Event[];
   readonly occurrences: readonly Occurrence[];
 
-  constructor(data: CatalogData) {
+  constructor(data: EventsDataInput) {
     assertIntegrity(data);
     this.categories = freezeAll(data.categories);
     this.venues = freezeAll(data.venues, copyVenue);
@@ -115,7 +115,7 @@ export class Catalog implements CatalogData {
   }
 }
 
-/** Unique ids, resolving references and Warsaw ISO start times; throws CatalogIntegrityError otherwise. */
-export function createCatalog(data: CatalogData): Catalog {
-  return new Catalog(data);
+/** Unique ids, resolving references and Warsaw ISO start times; throws EventsIntegrityError otherwise. */
+export function createEventsData(data: EventsDataInput): EventsData {
+  return new EventsData(data);
 }

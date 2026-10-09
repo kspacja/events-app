@@ -43,14 +43,12 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - `isCalendarDay` mapuje lata 0–99 przez `Date.UTC` — bez znaczenia dla domeny.
 - Lint nie blokuje względnych importów korzenia sąsiedniego pakietu (`../time` bez `/src`) — importy idą przez `@events/*`.
 - Filtr Doby wydarzeń jest dwa razy: w handlerze MSW i w pomocniczej funkcji `sampleCatalog.test.ts` — jedna linia, a backend liczy go w SQL.
-- Nazwy w `@events/repo` (`Catalog`, `createCatalog`, `CatalogIntegrityError`, `createSampleCatalog`) nie pasują do nazwy pakietu ani kontekstu „Wydarzenia” — zmieniamy razem ze schematem Drizzle w kroku 2 etapu 1, żeby nie zmieniać nazw dwa razy.
 - Brak testu `EventsMap`: lot do Terminu bez punktu jest potwierdzany tylko w kodzie adaptera, sprawdzony w Chrome — wymaga osobnego zestawu testów mapy.
 - Lista aplikacji niedostępnych dla pakietów w lincie jest wpisana ręcznie obok `DEPENDENCY_MAP` — przy nowej aplikacji trzeba dopisać ją w dwóch miejscach.
 - `apps/api/src/config.ts` składa komunikaty inline zamiast nazwanej `problemsOf` jak w portalu — kosmetyka.
 - Postgres z `docker-compose.yml` nasłuchuje na wszystkich interfejsach (`5432:5432`), nie tylko `127.0.0.1` — lokalne hasło deweloperskie.
 - Wspólny kod konfiguracji (klasa błędu, `blankAsUnset`, komunikaty bez wartości) jest w portalu i w API — wydzielamy przy trzeciej aplikacji.
 - `console.info` przy starcie API — zastąpi go logger w etapie 1.5.
-- Lint nie blokuje sterowników bazy w aplikacjach Next.js (ADR-0008) — dodajemy razem z pierwszym sterownikiem w kroku 2 etapu 1.
 - Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.
 
 ## Testowanie

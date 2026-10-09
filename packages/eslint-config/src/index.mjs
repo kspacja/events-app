@@ -12,8 +12,9 @@ export const DEPENDENCY_MAP = {
   // ui is CSS-only for now: it has no eslint config, so this entry takes effect once it gains code
   ui: { kind: 'package', kernel: true, mayImport: [] },
   'eslint-config': { kind: 'tooling', kernel: false, mayImport: [] },
-  portal: { kind: 'app', kernel: false, mayImport: '*' },
-  api: { kind: 'app', kernel: false, mayImport: '*' },
+  // Only the backend reaches the database; Next.js apps go through HTTP (ADR-0008)
+  portal: { kind: 'app', kernel: false, mayImport: '*', database: false },
+  api: { kind: 'app', kernel: false, mayImport: '*', database: true },
 };
 
 const DB_DRIVERS = ['pg', 'postgres', 'drizzle-orm', '@neondatabase/*', 'kysely', 'prisma', '@prisma/*'];
@@ -22,6 +23,13 @@ const KERNEL_PURITY_PATTERNS = [
   {
     group: [...DB_DRIVERS.flatMap((name) => [`/${name}`, `/${name}/**`]), 'server-only'],
     message: 'Kernel packages (time, contract, ui) must not import database drivers, ORMs or server-only.',
+  },
+];
+
+const NO_DATABASE_PATTERNS = [
+  {
+    group: DB_DRIVERS.flatMap((name) => [`/${name}`, `/${name}/**`]),
+    message: 'Only apps/api talks to the database; Next.js apps read it over HTTP (ADR-0008).',
   },
 ];
 
@@ -121,12 +129,17 @@ function withEntryPointRules({ paths, patterns }) {
   ];
 }
 
-/** Seams for an app: no deep imports, no relative paths across packages, mapped dependencies, private schemas. */
+/** Seams for an app: no deep imports, no relative paths across packages, mapped dependencies, private schemas, and no database drivers unless the map says `database: true`. */
 export function appBoundaries(name) {
-  entryFor(name);
+  const { database } = entryFor(name);
   return withEntryPointRules({
     paths: [],
-    patterns: [...DEEP_IMPORT_PATTERNS, SCHEMA_PRIVATE_PATTERN, dependencyPattern(name)],
+    patterns: [
+      ...DEEP_IMPORT_PATTERNS,
+      SCHEMA_PRIVATE_PATTERN,
+      dependencyPattern(name),
+      ...(database ? [] : NO_DATABASE_PATTERNS),
+    ],
   });
 }
 

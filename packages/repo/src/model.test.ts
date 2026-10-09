@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { eventIdSchema, occurrenceIdSchema } from '@events/contract/listing';
 import { toListings } from './listings';
-import { Catalog, CatalogIntegrityError, createCatalog, venueId, type CatalogData } from './model';
+import { EventsData, EventsIntegrityError, createEventsData, venueId, type EventsDataInput } from './model';
 
 const MUSIC = { slug: 'music', label: 'Muzyka' };
 const VENUE = { id: venueId('hall'), name: 'Hala', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
@@ -13,7 +13,7 @@ const OCCURRENCE = {
   startsAt: '2030-01-01T19:00:00+01:00',
   price: null,
 };
-const VALID: CatalogData = {
+const VALID: EventsDataInput = {
   categories: [MUSIC],
   venues: [VENUE],
   events: [EVENT],
@@ -27,9 +27,9 @@ describe('venueId', () => {
   });
 });
 
-describe('createCatalog', () => {
-  it('returns a catalog holding the given data', () => {
-    expect(createCatalog(VALID)).toMatchObject(VALID);
+describe('createEventsData', () => {
+  it('holds the given data', () => {
+    expect(createEventsData(VALID)).toMatchObject(VALID);
   });
 
   it.each([
@@ -37,36 +37,36 @@ describe('createCatalog', () => {
     ['event', { ...VALID, events: [EVENT, EVENT] }],
     ['venue', { ...VALID, venues: [VENUE, VENUE] }],
     ['category', { ...VALID, categories: [MUSIC, MUSIC] }],
-  ])('rejects a duplicate %s id', (kind, catalog) => {
-    expect(() => createCatalog(catalog)).toThrow(`Duplicate ${kind} id`);
+  ])('rejects a duplicate %s id', (kind, data) => {
+    expect(() => createEventsData(data)).toThrow(`Duplicate ${kind} id`);
   });
 
   it('rejects an event with an unknown category', () => {
-    const catalog = { ...VALID, events: [{ ...EVENT, categorySlug: 'opera' }] };
-    expect(() => createCatalog(catalog)).toThrow(CatalogIntegrityError);
+    const data = { ...VALID, events: [{ ...EVENT, categorySlug: 'opera' }] };
+    expect(() => createEventsData(data)).toThrow(EventsIntegrityError);
   });
 
   it('rejects an occurrence with an unknown event or venue', () => {
     const unknownEvent = { ...VALID, occurrences: [{ ...OCCURRENCE, eventId: eventIdSchema.parse('x') }] };
     const unknownVenue = { ...VALID, occurrences: [{ ...OCCURRENCE, venueId: venueId('x') }] };
-    expect(() => createCatalog(unknownEvent)).toThrow(CatalogIntegrityError);
-    expect(() => createCatalog(unknownVenue)).toThrow(CatalogIntegrityError);
+    expect(() => createEventsData(unknownEvent)).toThrow(EventsIntegrityError);
+    expect(() => createEventsData(unknownVenue)).toThrow(EventsIntegrityError);
   });
 
   it('rejects an occurrence whose startsAt is not canonical Warsaw ISO', () => {
     const utc = { ...VALID, occurrences: [{ ...OCCURRENCE, startsAt: '2030-01-01T18:00:00Z' }] };
-    expect(() => createCatalog(utc)).toThrow(CatalogIntegrityError);
+    expect(() => createEventsData(utc)).toThrow(EventsIntegrityError);
   });
 
   it('is unaffected by later mutation of the input arrays', () => {
     const input = { categories: [MUSIC], venues: [VENUE], events: [EVENT], occurrences: [OCCURRENCE] };
-    const catalog = createCatalog(input);
-    const before = toListings(catalog);
+    const data = createEventsData(input);
+    const before = toListings(data);
     input.occurrences.length = 0;
     input.events.length = 0;
-    expect(toListings(catalog)).toEqual(before);
+    expect(toListings(data)).toEqual(before);
     expect(before).toHaveLength(1);
-    expect(Object.isFrozen(catalog.occurrences)).toBe(true);
+    expect(Object.isFrozen(data.occurrences)).toBe(true);
   });
 
   it('is unaffected by later mutation of nested input values', () => {
@@ -76,24 +76,24 @@ describe('createCatalog', () => {
       events: [EVENT],
       occurrences: [{ ...OCCURRENCE, price: { kind: 'paid' as const, from: 10, to: null, currency: 'PLN' as const } }],
     };
-    const catalog = createCatalog(input);
-    const before = toListings(catalog);
+    const data = createEventsData(input);
+    const before = toListings(data);
 
     input.venues[0].location.lat = 0;
     input.occurrences[0].price.from = 999;
 
-    expect(toListings(catalog)).toEqual(before);
-    expect(Object.isFrozen(catalog.venues[0].location)).toBe(true);
-    expect(Object.isFrozen(catalog.occurrences[0].price)).toBe(true);
+    expect(toListings(data)).toEqual(before);
+    expect(Object.isFrozen(data.venues[0].location)).toBe(true);
+    expect(Object.isFrozen(data.occurrences[0].price)).toBe(true);
   });
 
-  it('is opaque: a plain object or spread copy is not a Catalog', () => {
-    const catalog = createCatalog(VALID);
+  it('is opaque: a plain object or spread copy is not a EventsData', () => {
+    const data = createEventsData(VALID);
     // @ts-expect-error a literal lacks the private brand
-    const fromLiteral: Catalog = { ...VALID };
+    const fromLiteral: EventsData = { ...VALID };
     // @ts-expect-error a spread copy loses the brand
-    const fromSpread: Catalog = { ...catalog };
-    expect(fromLiteral).not.toBeInstanceOf(Catalog);
-    expect(fromSpread).not.toBeInstanceOf(Catalog);
+    const fromSpread: EventsData = { ...data };
+    expect(fromLiteral).not.toBeInstanceOf(EventsData);
+    expect(fromSpread).not.toBeInstanceOf(EventsData);
   });
 });

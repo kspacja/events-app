@@ -78,6 +78,16 @@ describe('kernel purity', () => {
   });
 });
 
+describe('database access', () => {
+  it.each(['pg', 'drizzle-orm', 'drizzle-orm/node-postgres'])('rejects %s in the portal', (source) => {
+    expect(messagesFor(portal, importing(source))).toEqual([expect.stringContaining('Only apps/api')]);
+  });
+
+  it('lets the api use database drivers', () => {
+    expect(messagesFor(appBoundaries('api'), importing('drizzle-orm/node-postgres'))).toEqual([]);
+  });
+});
+
 describe('testing entry points', () => {
   const testingImport = importing('@events/repo/testing');
 

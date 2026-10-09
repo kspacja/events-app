@@ -26,8 +26,11 @@ Strona: [http://localhost:3000](http://localhost:3000).
 ```bash
 docker compose up -d --wait db
 cp apps/api/.env.example apps/api/.env
+pnpm --filter @events/api db:migrate
 pnpm --filter @events/api dev
 ```
+
+Schemat tabel: `apps/api/src/contexts/<kontekst>/schema.ts` (Drizzle, ADR-0009). Po zmianie schematu `pnpm --filter @events/api db:generate --name <opis>` tworzy migrację SQL w `apps/api/drizzle/` — przejrzyj ją przed commitem.
 
 API: [http://localhost:3001/health](http://localhost:3001/health). Bez `apps/api/.env` API wypisuje błąd konfiguracji i czeka na zmiany; `pnpm dev` z korzenia nadal uruchamia portal na MSW.
 
@@ -57,7 +60,7 @@ Konfiguracja jest walidowana przy starcie serwera, w hooku instrumentacji (`apps
 
 Reguła produkcyjna: gdy `VERCEL_ENV=production`, wartość `API_MOCKING=enabled` jest odrzucana (500 z komunikatem), żeby błędny deploy nie serwował po cichu przykładowych danych. Reguła nie opiera się na `NODE_ENV`, bo lokalny `next start` też jest „produkcyjny”.
 
-Mock serwuje przykładowe dane (`@events/repo`: Kategorie, Miejsca, Wydarzenia i Terminy) względem bieżącego tygodnia (i 4 następnych), więc dane zawsze są „aktualne”. Mock tylko wybiera Terminy z Dób wydarzeń w zakresie; nie odtwarza logiki backendu. `@events/repo` to model Wydarzeń bez frameworka; w etapie 1 dostanie adapter Postgresa.
+Mock serwuje przykładowe dane (`@events/repo`: Kategorie, Miejsca, Wydarzenia i Terminy) względem bieżącego tygodnia (i 4 następnych), więc dane zawsze są „aktualne”. Mock tylko wybiera Terminy z Dób wydarzeń w zakresie; nie odtwarza logiki backendu. `@events/repo` to model Wydarzeń bez frameworka i bez bazy; tabele są w `apps/api` (schemat Postgresa `events`).
 
 ## Skrypty
 

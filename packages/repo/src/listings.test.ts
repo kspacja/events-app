@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { eventIdSchema, occurrenceIdSchema, occurrenceListingSchema } from '@events/contract/listing';
-import { createCatalog, venueId } from './model';
+import { createEventsData, venueId } from './model';
 import { toListings } from './listings';
 
 const VENUE = { id: venueId('hall'), name: 'Hala', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
@@ -11,7 +11,7 @@ const EVENT = {
   imageUrl: '/jazz.jpg',
 };
 
-const catalog = createCatalog({
+const data = createEventsData({
   categories: [{ slug: 'music', label: 'Muzyka' }],
   venues: [VENUE],
   events: [EVENT],
@@ -35,7 +35,7 @@ const catalog = createCatalog({
 
 describe('toListings', () => {
   it('joins event, category and venue into a schema-valid listing', () => {
-    const [, listing] = toListings(catalog);
+    const [, listing] = toListings(data);
 
     expect(listing).toEqual({
       occurrenceId: 'early',
@@ -47,7 +47,7 @@ describe('toListings', () => {
     expect(occurrenceListingSchema.safeParse(listing).success).toBe(true);
   });
 
-  it('lists every occurrence in catalog order', () => {
-    expect(toListings(catalog).map(({ occurrenceId }) => occurrenceId)).toEqual(['late', 'early']);
+  it('lists every occurrence in input order', () => {
+    expect(toListings(data).map(({ occurrenceId }) => occurrenceId)).toEqual(['late', 'early']);
   });
 });

@@ -1,14 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
-import { createSampleCatalog } from '@events/repo';
+import { createSampleEvents } from '@events/repo';
 
 const tokensCss = readFileSync(
   createRequire(import.meta.url).resolve('@events/ui/tokens.css'),
   'utf8',
 );
 
-const { categories } = createSampleCatalog(new Date());
+const { categories } = createSampleEvents(new Date());
 
 describe('category colour tokens', () => {
   it.each(categories.map(({ slug }) => slug))('defines --category-%s for a sample category', (slug) => {

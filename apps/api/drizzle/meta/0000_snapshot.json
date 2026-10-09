@@ -1,0 +1,262 @@
+{
+  "id": "755ad9a7-8bb1-44d0-b79b-2bfa2e8ac683",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "events.categories": {
+      "name": "categories",
+      "schema": "events",
+      "columns": {
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "events.events": {
+      "name": "events",
+      "schema": "events",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_slug": {
+          "name": "category_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "events_category_slug_categories_slug_fk": {
+          "name": "events_category_slug_categories_slug_fk",
+          "tableFrom": "events",
+          "tableTo": "categories",
+          "schemaTo": "events",
+          "columnsFrom": [
+            "category_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "events.occurrences": {
+      "name": "occurrences",
+      "schema": "events",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "venue_id": {
+          "name": "venue_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "starts_at": {
+          "name": "starts_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price_kind": {
+          "name": "price_kind",
+          "type": "price_kind",
+          "typeSchema": "events",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "price_from": {
+          "name": "price_from",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "price_to": {
+          "name": "price_to",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "price_currency": {
+          "name": "price_currency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "occurrences_starts_at_idx": {
+          "name": "occurrences_starts_at_idx",
+          "columns": [
+            {
+              "expression": "starts_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "occurrences_event_id_events_id_fk": {
+          "name": "occurrences_event_id_events_id_fk",
+          "tableFrom": "occurrences",
+          "tableTo": "events",
+          "schemaTo": "events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "occurrences_venue_id_venues_id_fk": {
+          "name": "occurrences_venue_id_venues_id_fk",
+          "tableFrom": "occurrences",
+          "tableTo": "venues",
+          "schemaTo": "events",
+          "columnsFrom": [
+            "venue_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "occurrences_price_valid": {
+          "name": "occurrences_price_valid",
+          "value": "(\"events\".\"occurrences\".\"price_kind\" IS DISTINCT FROM 'paid'\n          AND \"events\".\"occurrences\".\"price_from\" IS NULL AND \"events\".\"occurrences\".\"price_to\" IS NULL AND \"events\".\"occurrences\".\"price_currency\" IS NULL)\n        OR (\"events\".\"occurrences\".\"price_kind\" = 'paid'\n          AND \"events\".\"occurrences\".\"price_from\" IS NOT NULL AND \"events\".\"occurrences\".\"price_from\" >= 0 AND \"events\".\"occurrences\".\"price_currency\" IS NOT DISTINCT FROM 'PLN'\n          AND (\"events\".\"occurrences\".\"price_to\" IS NULL OR \"events\".\"occurrences\".\"price_to\" >= \"events\".\"occurrences\".\"price_from\"))"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "events.venues": {
+      "name": "venues",
+      "schema": "events",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city": {
+          "name": "city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lat": {
+          "name": "lat",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lng": {
+          "name": "lng",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "events.price_kind": {
+      "name": "price_kind",
+      "schema": "events",
+      "values": [
+        "free",
+        "paid"
+      ]
+    }
+  },
+  "schemas": {
+    "events": "events"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

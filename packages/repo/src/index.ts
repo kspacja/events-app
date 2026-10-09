@@ -1,10 +1,10 @@
 export { toListings } from './listings';
 export {
-  CatalogIntegrityError,
-  createCatalog,
+  EventsIntegrityError,
+  createEventsData,
   venueId,
-  type Catalog,
-  type CatalogData,
+  type EventsData,
+  type EventsDataInput,
   type Category,
   type Event,
   type EventId,
@@ -14,4 +14,4 @@ export {
   type Venue,
   type VenueId,
 } from './model';
-export { createSampleCatalog } from './sampleCatalog';
+export { createSampleEvents } from './sampleEvents';

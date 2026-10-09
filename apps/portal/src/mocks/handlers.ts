@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { createSampleCatalog, toListings } from '@events/repo';
+import { createSampleEvents, toListings } from '@events/repo';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
 import { eventDayOf, isDayInRange } from '@events/time';
@@ -26,5 +26,5 @@ export function occurrencesHandler(eventsApiUrl: string, getListings: () => read
 }
 
 export function createHandlers(eventsApiUrl: string) {
-  return [occurrencesHandler(eventsApiUrl, () => toListings(createSampleCatalog(new Date())))];
+  return [occurrencesHandler(eventsApiUrl, () => toListings(createSampleEvents(new Date())))];
 }

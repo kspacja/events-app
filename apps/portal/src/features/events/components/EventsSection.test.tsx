@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { createSampleCatalog, toListings } from '@events/repo';
+import { createSampleEvents, toListings } from '@events/repo';
 import { SAMPLE_OCCURRENCES_IN_FIRST_WEEK } from '@events/repo/testing';
 import { addDays, currentEventDay, mondayOf } from '@events/time';
 import { occurrencesHandler } from '@/mocks/handlers';
@@ -16,7 +16,7 @@ const NOW = new Date('2026-10-07T12:00:00+02:00');
 describe('EventsSection', () => {
   it('renders the week served by the API', async () => {
     const monday = mondayOf(currentEventDay(NOW));
-    server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => toListings(createSampleCatalog(NOW))));
+    server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => toListings(createSampleEvents(NOW))));
     const source = createHttpOccurrenceSource(TEST_EVENTS_API_URL);
 
     // Async server components are awaited as plain functions, then the returned element is rendered

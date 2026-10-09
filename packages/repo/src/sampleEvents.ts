@@ -1,6 +1,6 @@
 import { eventIdSchema, occurrenceIdSchema, type Category, type Price } from '@events/contract/listing';
 import { addDays, currentEventDay, mondayOf, warsawIsoAt } from '@events/time';
-import { createCatalog, venueId, type Catalog, type Event, type Occurrence, type Venue } from './model';
+import { createEventsData, venueId, type EventsData, type Event, type Occurrence, type Venue } from './model';
 
 const WROCLAW = 'Wrocław';
 
@@ -117,7 +117,7 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'gdn-afterparty', title: 'Afterparty na Ołowiance', category: MUSIC, venue: OLOWIANKA, dayOffset: 5, time: '01:00' },
 ];
 
-/** Every template occurs in the first week, so this is the size of the sample catalog's first week. */
+/** Every template occurs in the first week, so this is the size of the sample data's first week. */
 export const SAMPLE_OCCURRENCES_IN_FIRST_WEEK = SAMPLE_EVENTS.length;
 
 const GENERATED_WEEKS = 5;
@@ -136,7 +136,7 @@ function isSkipped(weekIndex: number, templateIndex: number): boolean {
 }
 
 /** Sample data for the current event-day week and the 4 after it, so it never goes stale. */
-export function createSampleCatalog(now: Date): Catalog {
+export function createSampleEvents(now: Date): EventsData {
   const firstMonday = mondayOf(currentEventDay(now));
 
   const events: Event[] = SAMPLE_EVENTS.map(({ id, title, category }) => ({
@@ -161,5 +161,5 @@ export function createSampleCatalog(now: Date): Catalog {
     }),
   ).flat();
 
-  return createCatalog({ categories: SAMPLE_CATEGORIES, venues: SAMPLE_VENUES, events, occurrences });
+  return createEventsData({ categories: SAMPLE_CATEGORIES, venues: SAMPLE_VENUES, events, occurrences });
 }
