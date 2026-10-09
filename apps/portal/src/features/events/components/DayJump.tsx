@@ -4,7 +4,6 @@ import Link from 'next/link';
 import type { MouseEvent, ReactNode } from 'react';
 import { addDays, type CalendarDay } from '@events/time';
 import { scrollStripToDay } from './DayStrip';
-import { LinkPending } from './LinkPending';
 
 interface DayJumpProps {
   readonly day: CalendarDay;
@@ -33,7 +32,6 @@ export function DayJump({ day, shownWeek, href, children, ...props }: DayJumpPro
   return (
     <Link href={href} scroll={false} onClick={handleClick} {...props}>
       {children}
-      <LinkPending channels={['week']} showDot={false} />
     </Link>
   );
 }

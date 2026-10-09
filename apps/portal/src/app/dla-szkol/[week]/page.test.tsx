@@ -1,17 +1,13 @@
 import { render, screen, within } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
-import type { ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createSampleEvents, toListings } from '@events/repo';
 import { SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK } from '@events/repo/testing';
 import { addDays, currentEventDay, mondayOf } from '@events/time';
-import { countByDay } from '@/features/schools/monthCalendar';
-import { EventsSection } from '@/features/events/components/EventsSection';
 import { SCHOOLS_LABELS } from '@/features/schools/labels';
-import { monthOfWeek } from '@/features/schools/monthCalendar';
+import { countByDay } from '@/features/schools/monthCalendar';
 import { occurrencesHandler } from '@/mocks/handlers';
 import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
-import { settle } from '@/test/settle';
 
 vi.mock('@/features/events/components/EventsMapLoader', () => ({ EventsMapLoader: () => null }));
 vi.stubEnv('EVENTS_API_URL', TEST_EVENTS_API_URL);
@@ -22,18 +18,21 @@ const TODAY = currentEventDay(NOW);
 const WEDNESDAY = addDays(mondayOf(TODAY), 2);
 const WEEK = mondayOf(WEDNESDAY);
 
-async function renderSchoolsPage(params: Record<string, string>) {
+// The route's own pieces: the layout with the map slot and the week page, awaited like Next awaits them
+async function renderWeek(week: string) {
   const listings = toListings(createSampleEvents(NOW));
   server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => listings));
   const schoolCounts = Object.fromEntries(countByDay(listings.filter(({ event }) => event.forSchools)));
   server.use(http.get('*/api/school-counts', () => HttpResponse.json(schoolCounts)));
-  const { default: SchoolsPage } = await import('./page');
-  const page = await SchoolsPage({ params: Promise.resolve({}), searchParams: Promise.resolve(params) });
-  const [section] = (page as ReactElement<{ children: ReactElement[] }>).props.children;
-  render(await settle(EventsSection(section.props as Parameters<typeof EventsSection>[0])));
+
+  const params = Promise.resolve({ week });
+  const { default: Layout } = await import('./layout');
+  const { default: Page } = await import('./page');
+  const { default: Map } = await import('./@map/page');
+  render(await Layout({ params, map: await Map({ params }), children: await Page({ params }) }));
 }
 
-describe('/dla-szkol', () => {
+describe('/dla-szkol/[week]', () => {
   beforeEach(() => {
     vi.useFakeTimers({ now: NOW, toFake: ['Date'] });
   });
@@ -43,7 +42,7 @@ describe('/dla-szkol', () => {
   });
 
   it('shows only the events for schools in the shown week', async () => {
-    await renderSchoolsPage({});
+    await renderWeek(WEEK);
 
     expect(screen.getAllByRole('article')).toHaveLength(SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK);
     expect(screen.getByText('Koncert edukacyjny')).toBeInTheDocument();
@@ -51,40 +50,34 @@ describe('/dla-szkol', () => {
   });
 
   it('puts the heading in the <h1> and the calendar under it', async () => {
-    await renderSchoolsPage({});
+    await renderWeek(WEEK);
 
     expect(screen.getByRole('heading', { level: 1, name: SCHOOLS_LABELS.heading })).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: 'Kalendarz miesiąca' })).toBeInTheDocument();
   });
 
   it('marks calendar days with the number of school events', async () => {
-    await renderSchoolsPage({});
+    await renderWeek(WEEK);
     const calendar = screen.getByRole('navigation', { name: 'Kalendarz miesiąca' });
 
     expect(await within(calendar).findByRole('link', { name: /5 wydarzeń/ })).toHaveAttribute(
       'href',
-      `/dla-szkol?week=${WEEK}&preview-month=${monthOfWeek(WEEK)}#day-${WEDNESDAY}`,
+      `/dla-szkol/${WEEK}#day-${WEDNESDAY}`,
     );
   });
 
   it('moves the shown week a week forward and back', async () => {
-    await renderSchoolsPage({ week: WEEK });
+    await renderWeek(WEEK);
     const previous = addDays(WEEK, -7);
     const next = addDays(WEEK, 7);
 
-    expect(screen.getByRole('link', { name: 'Poprzedni tydzień' })).toHaveAttribute(
-      'href',
-      `/dla-szkol?week=${previous}&preview-month=${monthOfWeek(previous)}`,
-    );
-    expect(screen.getByRole('link', { name: 'Następny tydzień' })).toHaveAttribute(
-      'href',
-      `/dla-szkol?week=${next}&preview-month=${monthOfWeek(next)}`,
-    );
+    expect(screen.getByRole('link', { name: 'Poprzedni tydzień' })).toHaveAttribute('href', `/dla-szkol/${previous}`);
+    expect(screen.getByRole('link', { name: 'Następny tydzień' })).toHaveAttribute('href', `/dla-szkol/${next}`);
   });
 
-  it('shows a past week without a notice', async () => {
-    await renderSchoolsPage({ week: '2026-10-01' });
+  it('keeps the calendar month of the shown week', async () => {
+    await renderWeek(WEEK);
 
-    expect(screen.queryByText(SCHOOLS_LABELS.pastDayNotice)).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'październik 2026' })).toBeInTheDocument();
   });
 });

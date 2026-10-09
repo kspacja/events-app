@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CalendarDay } from '@events/time';
-import { addMonths, buildMonthCalendar, countByDay, dayMarker, isCalendarMonth, monthOfWeek, weeksOf } from './monthCalendar';
+import { addMonths, buildMonthCalendar, countByDay, dayMarker, isCalendarMonth, monthOfWeek, weekOfMonth, weeksOf } from './monthCalendar';
 
 // Wednesday; October 2026 starts on a Thursday
 const TODAY: CalendarDay = '2026-10-14';
@@ -107,5 +107,15 @@ describe('buildMonthCalendar', () => {
     const november = buildMonthCalendar({ month: '2026-11', today: TODAY, selectedWeek: CURRENT_WEEK });
 
     expect(november.previous).toBe('2026-10');
+  });
+});
+
+describe('weekOfMonth', () => {
+  it('takes the week holding the first Thursday, even when it starts in the month before', () => {
+    expect(weekOfMonth('2026-10')).toBe('2026-09-28');
+  });
+
+  it('skips to the next week when the first Thursday is already past the 1st', () => {
+    expect(weekOfMonth('2026-11')).toBe('2026-11-02');
   });
 });

@@ -5,7 +5,7 @@ import { DAY_NAMES } from '@/features/events/labels';
 import { DayJump } from '@/features/events/components/DayJump';
 import { dayDomId } from '@/features/events/scheduleDom';
 import { CALENDAR_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
-import { firstDayOf, monthOf, type CalendarCell, type CalendarMonth, type CalendarWeek, type MonthView } from '../monthCalendar';
+import { firstDayOf, weekOfMonth, type CalendarCell, type CalendarMonth, type CalendarWeek, type MonthView } from '../monthCalendar';
 import { schoolsHref } from '../schoolsHref';
 import { DayMarkers } from './DayMarkers';
 import styles from './MonthCalendar.module.css';
@@ -57,7 +57,7 @@ function DayCell({
     <DayJump
       day={cell.day}
       shownWeek={shownWeek}
-      href={schoolsHref({ week: mondayOf(cell.day), month: monthOf(cell.day) }, dayDomId(cell.day))}
+      href={schoolsHref(mondayOf(cell.day), dayDomId(cell.day))}
       className={className}
       aria-current={cell.isToday ? 'date' : undefined}
     >
@@ -82,7 +82,7 @@ export function MonthCalendar({ calendar, shownWeek }: MonthCalendarProps) {
         <div className={styles.navigation}>
           {previous ? (
             <Link
-              href={schoolsHref({ week: shownWeek, month: previous })}
+              href={schoolsHref(weekOfMonth(previous))}
               scroll={false}
               className={styles.arrow}
               aria-label={CALENDAR_LABELS.previousMonth}
@@ -94,11 +94,11 @@ export function MonthCalendar({ calendar, shownWeek }: MonthCalendarProps) {
               ‹
             </span>
           )}
-          {/* <Link href={schoolsHref({ week: mondayOf(today), month: monthOf(today) })} scroll={false} className={styles.todayLink}>
+          {/* <Link href={schoolsHref(mondayOf(today))} scroll={false} className={styles.todayLink}>
             {CALENDAR_LABELS.today}
           </Link> */}
           <Link
-            href={schoolsHref({ week: shownWeek, month: next })}
+            href={schoolsHref(weekOfMonth(next))}
             scroll={false}
             className={styles.arrow}
             aria-label={CALENDAR_LABELS.nextMonth}
