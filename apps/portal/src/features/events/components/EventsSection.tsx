@@ -13,7 +13,7 @@ import styles from './EventsSection.module.css';
 import { ScrollHint } from './ScrollHint';
 import { STRIP_LABELS } from '../labels';
 import { WeekCount, WeekMap, WeekStrip } from './WeekProgram';
-import { WeekPendingGate, WeekPendingScope } from './WeekPending';
+import { PendingGate, PendingScope } from './PendingScope';
 import { formatDay } from '@/lib/format';
 
 interface EventsSectionProps {
@@ -59,11 +59,11 @@ export function EventsSection({
       layout={layout}
       controlsLabels={controlsLabels}
       map={
-        <WeekPendingGate fallback={<MapSkeleton />}>
+        <PendingGate channel="week" fallback={<MapSkeleton />}>
           <Suspense fallback={<MapSkeleton />}>
             <WeekMap schedule={schedule} />
           </Suspense>
-        </WeekPendingGate>
+        </PendingGate>
       }
     />
   );
@@ -77,7 +77,7 @@ export function EventsSection({
   return (
     <OccurrenceSelectionProvider>
       {layout === 'split' ? (
-        <WeekPendingScope>
+        <PendingScope>
           <div className={styles.split}>
             {header}
             <div className={styles.program}>
@@ -96,11 +96,11 @@ export function EventsSection({
                 <ScrollHint label={STRIP_LABELS.scrollBackHint} direction={-1} />
               </div>
               <div className={styles.strip}>
-                <WeekPendingGate fallback={<StripSkeleton />}>{strip}</WeekPendingGate>
+                <PendingGate channel="week" fallback={<StripSkeleton />}>{strip}</PendingGate>
               </div>
             </div>
           </div>
-        </WeekPendingScope>
+        </PendingScope>
       ) : (
         <>
           {header}

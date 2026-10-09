@@ -10,14 +10,16 @@
   animation: pulse 1.4s ease-in-out infinite;
 }
 
+/* The weekday row is 23px in the real grid; rows are 48px apart */
 .grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 4px;
+  padding-top: 23px;
 }
 
 .cell {
-  aspect-ratio: 1;
+  height: 44px;
+  margin: 2px;
   border-radius: var(--radius-chip-top);
   background: var(--color-bg-subtle);
   animation: pulse 1.4s ease-in-out infinite;

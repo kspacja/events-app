@@ -1,5 +1,4 @@
 import { STATE_LABELS } from '../labels';
-import mapStyles from './EventsMapLoader.module.css';
 import styles from './WeekSkeleton.module.css';
 
 const DAYS = [0, 1, 2, 3, 4, 5, 6];
@@ -16,5 +15,5 @@ export function StripSkeleton() {
 }
 
 export function MapSkeleton() {
-  return <div className={mapStyles.placeholder} />;
+  return <div className={styles.map} aria-hidden="true" />;
 }

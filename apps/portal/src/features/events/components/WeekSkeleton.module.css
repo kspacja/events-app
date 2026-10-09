@@ -1,3 +1,4 @@
+/* At least as tall as the calendar and map column, so the grid does not shift the week row */
 .strip {
   display: flex;
   gap: 8px;
@@ -6,10 +7,32 @@
 
 .day {
   flex: 0 0 var(--day-column-width, 180px);
-  height: 240px;
+  height: 480px;
   border-radius: var(--radius-chip-top);
   background: var(--color-bg-subtle);
   animation: pulse 1.4s ease-in-out infinite;
+}
+
+/* The same footprint as the map panel in MapToggle, so the header keeps its height */
+.map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 52 / 34;
+  border-radius: 18px;
+  background: var(--color-bg-subtle);
+}
+
+@media (max-width: 1023px) {
+  .map {
+    aspect-ratio: auto;
+    height: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .map {
+    height: 240px;
+  }
 }
 
 @keyframes pulse {

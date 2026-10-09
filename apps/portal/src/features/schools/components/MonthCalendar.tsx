@@ -3,11 +3,14 @@ import { mondayOf, type CalendarDay } from '@events/time';
 import { formatDay } from '@/lib/format';
 import { DAY_NAMES } from '@/features/events/labels';
 import { DayJump } from '@/features/events/components/DayJump';
+import { LinkPending } from '@/features/events/components/LinkPending';
+import { PendingGate } from '@/features/events/components/PendingScope';
 import { formatCount } from '@/features/events/schedule';
 import { dayDomId } from '@/features/events/scheduleDom';
 import { CALENDAR_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import { firstDayOf, monthOf, type CalendarCell, type CalendarWeek, type MonthView } from '../monthCalendar';
 import { schoolsHref } from '../schoolsHref';
+import { MonthGridSkeleton } from './MonthCalendarSkeleton';
 import styles from './MonthCalendar.module.css';
 
 // One calendar per page, so a fixed id is enough to label its table
@@ -89,6 +92,7 @@ export function MonthCalendar({ calendar, shownWeek }: MonthCalendarProps) {
               aria-label={CALENDAR_LABELS.previousMonth}
             >
               ‹
+              <LinkPending channels={['month']} showDot={false} />
             </Link>
           ) : (
             <span className={`${styles.arrow} ${styles.disabled}`} aria-hidden="true">
@@ -105,37 +109,40 @@ export function MonthCalendar({ calendar, shownWeek }: MonthCalendarProps) {
             aria-label={CALENDAR_LABELS.nextMonth}
           >
             ›
+            <LinkPending channels={['month']} showDot={false} />
           </Link>
         </div>
       </div>
-      <table className={styles.grid} aria-labelledby={TITLE_ID}>
-        <thead>
-          <tr>
-            {WEEKDAY_SHORT_NAMES.map((name, index) => (
-              <th key={name} scope="col" className={styles.weekday}>
-                <span aria-hidden="true">{name}</span>
-                <span className="visually-hidden">{DAY_NAMES[index]}</span>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {weeks.map((week) => (
-            <tr
-              key={week.monday}
-              className={styles.week}
-              data-current={week.isCurrent || undefined}
-              data-selected={week.isSelected || undefined}
-            >
-              {week.days.map((cell) => (
-                <td key={cell.day} className={styles.cell}>
-                  <DayCell cell={cell} week={week} shownWeek={shownWeek} />
-                </td>
+      <PendingGate channel="month" fallback={<MonthGridSkeleton rows={weeks.length} />}>
+        <table className={styles.grid} aria-labelledby={TITLE_ID}>
+          <thead>
+            <tr>
+              {WEEKDAY_SHORT_NAMES.map((name, index) => (
+                <th key={name} scope="col" className={styles.weekday}>
+                  <span aria-hidden="true">{name}</span>
+                  <span className="visually-hidden">{DAY_NAMES[index]}</span>
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {weeks.map((week) => (
+              <tr
+                key={week.monday}
+                className={styles.week}
+                data-current={week.isCurrent || undefined}
+                data-selected={week.isSelected || undefined}
+              >
+                {week.days.map((cell) => (
+                  <td key={cell.day} className={styles.cell}>
+                    <DayCell cell={cell} week={week} shownWeek={shownWeek} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </PendingGate>
     </nav>
   );
 }

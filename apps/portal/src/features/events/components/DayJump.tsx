@@ -4,6 +4,7 @@ import Link from 'next/link';
 import type { MouseEvent, ReactNode } from 'react';
 import { addDays, type CalendarDay } from '@events/time';
 import { scrollStripToDay } from './DayStrip';
+import { LinkPending } from './LinkPending';
 
 interface DayJumpProps {
   readonly day: CalendarDay;
@@ -20,7 +21,7 @@ function isInWeek(day: CalendarDay, week: CalendarDay): boolean {
   return day >= week && day < addDays(week, 7);
 }
 
-export function DayJump({ day, shownWeek, href, ...props }: DayJumpProps) {
+export function DayJump({ day, shownWeek, href, children, ...props }: DayJumpProps) {
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     const isModified = event.metaKey || event.ctrlKey || event.shiftKey;
     if (isModified || !isInWeek(day, shownWeek)) return;
@@ -29,5 +30,10 @@ export function DayJump({ day, shownWeek, href, ...props }: DayJumpProps) {
     scrollStripToDay(day, reduceMotion ? 'auto' : 'smooth');
   }
 
-  return <Link href={href} scroll={false} onClick={handleClick} {...props} />;
+  return (
+    <Link href={href} scroll={false} onClick={handleClick} {...props}>
+      {children}
+      <LinkPending channels={['week']} showDot={false} />
+    </Link>
+  );
 }
