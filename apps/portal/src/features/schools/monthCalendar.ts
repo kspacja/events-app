@@ -70,8 +70,8 @@ interface MonthCalendarInput {
   readonly month: CalendarMonth;
   /** The current event day (`currentEventDay`): before 04:00 it is still yesterday. */
   readonly today: CalendarDay;
-  /** The picked day; its week is highlighted. */
-  readonly selectedDay: CalendarDay;
+  /** Monday of the shown week; it is highlighted. */
+  readonly selectedWeek: CalendarDay;
   /** Events per day; missing days count as 0. */
   readonly counts: ReadonlyMap<CalendarDay, number>;
 }
@@ -101,13 +101,12 @@ export function weeksOf(month: CalendarMonth): CalendarDay[] {
   return mondays;
 }
 
-export function buildMonthCalendar({ month, today, selectedDay, counts }: MonthCalendarInput): MonthView {
+export function buildMonthCalendar({ month, today, selectedWeek, counts }: MonthCalendarInput): MonthView {
   const currentWeek = mondayOf(today);
-  const selectedMonday = mondayOf(selectedDay);
   const weeks = weeksOf(month).map((monday): CalendarWeek => ({
     monday,
     isCurrent: monday === currentWeek,
-    isSelected: monday === selectedMonday,
+    isSelected: monday === selectedWeek,
     days: Array.from({ length: DAYS_IN_WEEK }, (_, offset): CalendarCell => {
       const day = addDays(monday, offset);
       const count = counts.get(day) ?? 0;

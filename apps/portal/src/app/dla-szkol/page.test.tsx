@@ -7,7 +7,7 @@ import { addDays, currentEventDay, mondayOf } from '@events/time';
 import { EventsSection } from '@/features/events/components/EventsSection';
 import { SchoolsCalendar } from '@/features/schools/components/SchoolsCalendar';
 import { SCHOOLS_LABELS } from '@/features/schools/labels';
-import { monthOf } from '@/features/schools/monthCalendar';
+import { monthOfWeek } from '@/features/schools/monthCalendar';
 import { occurrencesHandler } from '@/mocks/handlers';
 import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
 
@@ -18,6 +18,7 @@ const NOW = new Date('2026-10-07T12:00:00+02:00');
 const TODAY = currentEventDay(NOW);
 // The sample school week has 5 events on its Wednesday
 const WEDNESDAY = addDays(mondayOf(TODAY), 2);
+const WEEK = mondayOf(WEDNESDAY);
 
 type Props<T> = T extends (props: infer P) => unknown ? P : never;
 
@@ -32,7 +33,6 @@ async function renderSchoolsPage(params: Record<string, string>) {
   if (!isValidElement(sectionProps.controls)) throw new Error('the page should pass the calendar');
   const calendar = await SchoolsCalendar(sectionProps.controls.props as Props<typeof SchoolsCalendar>);
   render(await EventsSection({ ...sectionProps, controls: calendar }));
-  return { sectionProps };
 }
 
 describe('/dla-szkol', () => {
@@ -44,7 +44,7 @@ describe('/dla-szkol', () => {
     vi.useRealTimers();
   });
 
-  it('shows only the events for schools in the picked week', async () => {
+  it('shows only the events for schools in the shown week', async () => {
     await renderSchoolsPage({});
 
     expect(screen.getAllByRole('article')).toHaveLength(SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK);
@@ -65,19 +65,28 @@ describe('/dla-szkol', () => {
 
     expect(within(calendar).getByRole('link', { name: /5 wydarzeń/ })).toHaveAttribute(
       'href',
-      `/dla-szkol?day=${WEDNESDAY}&month=${monthOf(WEDNESDAY)}#day-${WEDNESDAY}`,
+      `/dla-szkol?week=${WEEK}&month=${monthOfWeek(WEEK)}#day-${WEDNESDAY}`,
     );
   });
 
-  it('lands the week strip on the picked day', async () => {
-    const { sectionProps } = await renderSchoolsPage({ day: WEDNESDAY });
+  it('moves the shown week a week forward and back', async () => {
+    await renderSchoolsPage({ week: WEEK });
+    const previous = addDays(WEEK, -7);
+    const next = addDays(WEEK, 7);
 
-    expect(sectionProps.landingDay).toBe(WEDNESDAY);
+    expect(screen.getByRole('link', { name: 'Poprzedni tydzień' })).toHaveAttribute(
+      'href',
+      `/dla-szkol?week=${previous}&month=${monthOfWeek(previous)}`,
+    );
+    expect(screen.getByRole('link', { name: 'Następny tydzień' })).toHaveAttribute(
+      'href',
+      `/dla-szkol?week=${next}&month=${monthOfWeek(next)}`,
+    );
   });
 
-  it('tells when a past day was replaced by today', async () => {
-    await renderSchoolsPage({ day: '2026-10-01' });
+  it('shows a past week without a notice', async () => {
+    await renderSchoolsPage({ week: '2026-10-01' });
 
-    expect(screen.getByText(SCHOOLS_LABELS.pastDayNotice)).toBeInTheDocument();
+    expect(screen.queryByText(SCHOOLS_LABELS.pastDayNotice)).not.toBeInTheDocument();
   });
 });

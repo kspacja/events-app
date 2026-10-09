@@ -1,0 +1,127 @@
+/* Covers the strip and lets every click through; only the buttons catch them, and only while shown */
+.overlay {
+  position: absolute;
+  inset: -25px 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.fadeEnd {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 56px;
+  background: linear-gradient(to right, transparent, var(--color-bg));
+  transition: opacity 200ms ease;
+}
+
+.fadeEnd[data-hidden] {
+  opacity: 0;
+}
+
+.start,
+.end {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+}
+
+/* Hidden for now; delete this rule to bring the buttons back */
+.start,
+.end {
+  display: none;
+}
+
+/* Left pair sits right under the "poprzedni tydzień" button */
+.start {
+  top: 0;
+  left: 0;
+}
+
+/* Right pair hangs at the top of the right shadow */
+.end {
+  top: 0;
+  right: 0;
+}
+
+/* At the strip's edge the side is gone, buttons included, so nothing is focusable there */
+.start[data-hidden],
+.end[data-hidden] {
+  visibility: hidden;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  
+  background: none;
+  border: none;
+
+  &:before {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    content: attr(data-sign);
+    width: 30px;
+    height: 30px;
+    padding: 1px 8px 0;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 8px;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+
+    transition:
+      opacity 150ms ease,
+      background-color 150ms ease,
+      color 150ms ease,
+      transform 150ms ease;
+  }
+
+  .hidden-label {
+    display: none;
+  }
+}
+
+/* Shown while the pointer is over the strip or a button has keyboard focus */
+.overlay[data-hovered] .button,
+.overlay:focus-within .button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.button:hover:before {
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-bg);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 0.22);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fadeEnd,
+  .button {
+    transition: none;
+  }
+
+  .button:hover {
+    transform: none;
+  }
+}

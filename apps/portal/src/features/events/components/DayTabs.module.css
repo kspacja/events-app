@@ -1,0 +1,60 @@
+.tabs {
+  display: grid;
+  grid-template-columns: 45px repeat(7, minmax(0, 1fr)) 45px;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 4px 0;
+  border: 0;
+  border-radius: var(--radius-chip-top);
+  background: none;
+  color: var(--color-text-secondary);
+  border: solid 1px var(--color-border);
+  font: inherit;
+  font-size: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tab:hover {
+  background: var(--color-bg-subtle);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.dots {
+  display: flex;
+  gap: 2px;
+  min-height: 6px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.number {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.month {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+}

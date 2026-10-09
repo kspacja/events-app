@@ -1,0 +1,52 @@
+/* Desktop only: left column (calendar, map) and right column (summary, week); widths are set here */
+@media (min-width: 769px) {
+  .split {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    column-gap: 20px;
+    align-items: start;
+  }
+
+  .program {
+    grid-column: 2;
+    grid-row: 3;
+    container-type: inline-size;
+  }
+
+  /* About three and a half days fit on screen, so the last one is cut and the strip reads as sideways */
+  .strip {
+    --day-column-width: clamp(180px, calc(100cqw / 3.5), 240px);
+  }
+
+  .hint {
+    display: block;
+  }
+}
+
+.hint {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+}
+
+@media (max-width: 768px) {
+  .hint {
+    display: none;
+  }
+}
+
+/* The week strip alone is the edge area, so the controls never cover the week arrows above it */
+.strip {
+  position: relative;
+}
+
+.weekArrows {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}

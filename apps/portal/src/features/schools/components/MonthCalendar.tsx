@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import type { CalendarDay } from '@events/time';
+import { mondayOf, type CalendarDay } from '@events/time';
 import { formatDay } from '@/lib/format';
 import { DAY_NAMES } from '@/features/events/labels';
+import { DayJump } from '@/features/events/components/DayJump';
 import { formatCount } from '@/features/events/schedule';
 import { dayDomId } from '@/features/events/scheduleDom';
 import { CALENDAR_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
@@ -14,7 +15,8 @@ const TITLE_ID = 'month-calendar-title';
 
 interface MonthCalendarProps {
   readonly calendar: MonthView;
-  readonly selectedDay: CalendarDay;
+  /** Monday of the shown week. */
+  readonly shownWeek: CalendarDay;
   readonly today: CalendarDay;
 }
 
@@ -37,7 +39,7 @@ function weekState(week: CalendarWeek): string[] {
   ];
 }
 
-function DayCell({ cell, week }: { readonly cell: CalendarCell; readonly week: CalendarWeek }) {
+function DayCell({ cell, week, shownWeek }: { readonly cell: CalendarCell; readonly week: CalendarWeek; readonly shownWeek: CalendarDay }) {
   const number = formatDay(cell.day, 'd');
   const date = formatDay(cell.day, 'EEEE, d MMMM');
   const className = [styles.day, cell.inMonth ? '' : styles.outside, cell.isToday ? styles.today : '']
@@ -54,20 +56,22 @@ function DayCell({ cell, week }: { readonly cell: CalendarCell; readonly week: C
   }
   const count = cell.count === 0 ? CALENDAR_LABELS.noEvents : formatCount(cell.count);
   return (
-    <Link
-      href={schoolsHref({ day: cell.day, month: monthOf(cell.day) }, dayDomId(cell.day))}
+    <DayJump
+      day={cell.day}
+      shownWeek={shownWeek}
+      href={schoolsHref({ week: mondayOf(cell.day), month: monthOf(cell.day) }, dayDomId(cell.day))}
       className={className}
       aria-label={[date, count, ...weekState(week)].join(', ')}
       aria-current={cell.isToday ? 'date' : undefined}
     >
       {number}
       <DayMarkerDots cell={cell} />
-    </Link>
+    </DayJump>
   );
 }
 
-/** Kalendarz miesiąca: picking a day shows its week below; arrows change only the shown month. */
-export function MonthCalendar({ calendar, selectedDay, today }: MonthCalendarProps) {
+/** Kalendarz miesiąca: a day scrolls to it within the shown week or moves to its week; arrows change only the shown month. */
+export function MonthCalendar({ calendar, shownWeek, today }: MonthCalendarProps) {
   const { month, weeks, previous, next } = calendar;
 
   return (
@@ -79,7 +83,8 @@ export function MonthCalendar({ calendar, selectedDay, today }: MonthCalendarPro
         <div className={styles.navigation}>
           {previous ? (
             <Link
-              href={schoolsHref({ day: selectedDay, month: previous })}
+              href={schoolsHref({ week: shownWeek, month: previous })}
+              scroll={false}
               className={styles.arrow}
               aria-label={CALENDAR_LABELS.previousMonth}
             >
@@ -90,11 +95,12 @@ export function MonthCalendar({ calendar, selectedDay, today }: MonthCalendarPro
               ‹
             </span>
           )}
-          <Link href={schoolsHref({ day: today, month: monthOf(today) })} className={styles.todayLink}>
+          <Link href={schoolsHref({ week: mondayOf(today), month: monthOf(today) })} scroll={false} className={styles.todayLink}>
             {CALENDAR_LABELS.today}
           </Link>
           <Link
-            href={schoolsHref({ day: selectedDay, month: next })}
+            href={schoolsHref({ week: shownWeek, month: next })}
+            scroll={false}
             className={styles.arrow}
             aria-label={CALENDAR_LABELS.nextMonth}
           >
@@ -123,7 +129,7 @@ export function MonthCalendar({ calendar, selectedDay, today }: MonthCalendarPro
             >
               {week.days.map((cell) => (
                 <td key={cell.day} className={styles.cell}>
-                  <DayCell cell={cell} week={week} />
+                  <DayCell cell={cell} week={week} shownWeek={shownWeek} />
                 </td>
               ))}
             </tr>

@@ -204,11 +204,11 @@ export function EventsMap({ points, focus }: EventsMapProps) {
         clusterProperties={{ activeCount: ['+', ['case', ['get', 'active'], 1, 0]] }}
       >
         {layers ? (
-          <>
+          <div>
             <Layer {...layers.clusterLayer} />
             <Layer {...layers.clusterCountLayer} />
             <Layer {...layers.pointLayer} />
-          </>
+          </div>
         ) : null}
       </Source>
       {selected && popup ? (

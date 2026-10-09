@@ -5,6 +5,7 @@ import { BackToTop } from '@/features/events/components/BackToTop';
 import { EventsSection } from '@/features/events/components/EventsSection';
 import { createHttpOccurrenceSource } from '@/features/events/source/httpOccurrenceSource';
 import { SchoolsCalendar } from '@/features/schools/components/SchoolsCalendar';
+import { WeekArrow } from '@/features/schools/components/WeekArrow';
 import { SCHOOLS_LABELS } from '@/features/schools/labels';
 import { parseSchoolsQuery } from '@/features/schools/schoolsQuery';
 import styles from '../page.module.css';
@@ -13,19 +14,25 @@ export const metadata: Metadata = { title: SCHOOLS_LABELS.pageTitle };
 
 export default async function SchoolsPage({ searchParams }: PageProps<'/dla-szkol'>) {
   const now = new Date();
-  const { day, week, month, notice } = parseSchoolsQuery(await searchParams, now);
+  const { week, range, month, notice } = parseSchoolsQuery(await searchParams, now);
   const source = createHttpOccurrenceSource(getRuntimeConfig().eventsApiUrl, { forSchools: true });
+  const today = currentEventDay(now);
 
   return (
     <main className={styles.page}>
       <EventsSection
         source={source}
-        range={week}
+        range={range}
         time={null}
         sentence={SCHOOLS_LABELS.heading}
-        controls={<SchoolsCalendar source={source} month={month} selectedDay={day} today={currentEventDay(now)} />}
+        layout="split"
+        controlsLabels={{ show: SCHOOLS_LABELS.calendarShow, hide: SCHOOLS_LABELS.calendarHide }}
+        controls={<SchoolsCalendar source={source} month={month} week={week} today={today} />}
+        rangeNavigation={{
+          previous: <WeekArrow direction={-1} week={week} />,
+          next: <WeekArrow direction={1} week={week} />,
+        }}
         notice={notice}
-        landingDay={day}
       />
       <BackToTop />
     </main>

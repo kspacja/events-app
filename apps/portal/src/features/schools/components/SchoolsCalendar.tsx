@@ -9,17 +9,18 @@ import { MonthCalendar } from './MonthCalendar';
 interface SchoolsCalendarProps {
   readonly source: OccurrenceSource;
   readonly month: CalendarMonth;
-  readonly selectedDay: CalendarDay;
+  /** Monday of the shown week. */
+  readonly week: CalendarDay;
   readonly today: CalendarDay;
 }
 
 /** Reads the school events of the whole month grid (edge weeks included) for the day markers. */
-export async function SchoolsCalendar({ source, month, selectedDay, today }: SchoolsCalendarProps) {
+export async function SchoolsCalendar({ source, month, week, today }: SchoolsCalendarProps) {
   const listings = await source.listOccurrences(scheduleSpan(daysOf(month)));
   return (
     <MonthCalendar
-      calendar={buildMonthCalendar({ month, today, selectedDay, counts: countByDay(listings) })}
-      selectedDay={selectedDay}
+      calendar={buildMonthCalendar({ month, today, selectedWeek: week, counts: countByDay(listings) })}
+      shownWeek={week}
       today={today}
     />
   );

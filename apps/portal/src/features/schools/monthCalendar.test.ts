@@ -69,7 +69,7 @@ describe('buildMonthCalendar', () => {
   const calendar = buildMonthCalendar({
     month: '2026-10',
     today: TODAY,
-    selectedDay: '2026-10-19',
+    selectedWeek: '2026-10-19',
     counts: new Map([
       ['2026-10-14', 2],
       ['2026-10-21', 6],
@@ -111,14 +111,14 @@ describe('buildMonthCalendar', () => {
     expect(calendar.next).toBe('2026-11');
   });
 
-  it('highlights the week of any selected day, not only its Monday', () => {
-    const fromWednesday = buildMonthCalendar({ month: '2026-10', today: TODAY, selectedDay: '2026-10-21', counts: new Map() });
+  it('highlights the shown week', () => {
+    const shown = buildMonthCalendar({ month: '2026-10', today: TODAY, selectedWeek: '2026-10-19', counts: new Map() });
 
-    expect(fromWednesday.weeks.find(({ isSelected }) => isSelected)?.monday).toBe('2026-10-19');
+    expect(shown.weeks.find(({ isSelected }) => isSelected)?.monday).toBe('2026-10-19');
   });
 
   it('goes back once the shown month is ahead', () => {
-    const november = buildMonthCalendar({ month: '2026-11', today: TODAY, selectedDay: CURRENT_WEEK, counts: new Map() });
+    const november = buildMonthCalendar({ month: '2026-11', today: TODAY, selectedWeek: CURRENT_WEEK, counts: new Map() });
 
     expect(november.previous).toBe('2026-10');
   });
