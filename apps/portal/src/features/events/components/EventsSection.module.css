@@ -34,6 +34,19 @@
   color: var(--color-text-tertiary);
 }
 
+.currentMonth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-heading);
+  font-size: 20px;
+}
+
+.rangeLabel {
+  font-size: 13px;
+  color: var(--color-text-tertiary);
+}
+
 @media (max-width: 768px) {
   .hint {
     display: none;
@@ -48,5 +61,6 @@
 .weekArrows {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 8px;
 }

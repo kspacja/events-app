@@ -71,7 +71,7 @@ function DayCell({ cell, week, shownWeek }: { readonly cell: CalendarCell; reado
 }
 
 /** Kalendarz miesiąca: a day scrolls to it within the shown week or moves to its week; arrows change only the shown month. */
-export function MonthCalendar({ calendar, shownWeek, today }: MonthCalendarProps) {
+export function MonthCalendar({ calendar, shownWeek }: MonthCalendarProps) {
   const { month, weeks, previous, next } = calendar;
 
   return (

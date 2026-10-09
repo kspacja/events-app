@@ -16,6 +16,8 @@ import { SkipLink } from './SkipLink';
 import { StripControls } from './StripControls';
 import styles from './EventsSection.module.css';
 import { WeekGrid } from './WeekGrid';
+import {formatDay} from '@/lib/format';
+import {firstDayOf} from '@/features/schools/monthCalendar';
 
 interface EventsSectionProps {
   readonly source: OccurrenceSource;
@@ -73,6 +75,12 @@ export async function EventsSection({
           <div className={styles.program}>
             <div className={styles.weekArrows}>
               {rangeNavigation?.previous}
+
+              <span className={styles.currentMonth}>
+                {formatDay(schedule.landing.day, 'LLLL yyyy')}
+                <span className={styles.rangeLabel}>{formatRangeLabel(range)}</span>
+              </span>
+
               {rangeNavigation?.next}
             </div>
             <div className={styles.hint}>

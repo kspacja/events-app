@@ -12,8 +12,7 @@
 
 .title {
   margin: 0;
-  font-family: var(--font-heading);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
@@ -98,8 +97,10 @@
   font-weight: 700;
 }
 
-.week[data-selected] .day {
-  background: var(--color-accent-soft);
+.week[data-selected] {
+  position: relative;
+  z-index: 2;
+  outline: solid 2px var(--color-accent);
 }
 
 /* The whole row reacts, since picking a day picks its week */
