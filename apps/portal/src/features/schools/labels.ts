@@ -3,7 +3,7 @@ export const SCHOOLS_LABELS = {
   pageTitle: 'Wydarzenia dla szkół',
   pastDayNotice: 'Ten dzień już minął — pokazujemy bieżący tydzień.',
   invalidDayNotice: 'Nie rozpoznaliśmy daty — pokazujemy bieżący tydzień.',
-  calendarShow: 'Pokaż kalendarz',
+  calendarShow: 'Pokaż kalendarz miesięczny',
   calendarHide: 'Ukryj kalendarz',
 } as const;
 
