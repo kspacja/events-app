@@ -13,6 +13,7 @@ import styles from './EventsSection.module.css';
 import { ScrollHint } from './ScrollHint';
 import { STRIP_LABELS } from '../labels';
 import { WeekCount, WeekMap, WeekStrip } from './WeekProgram';
+import { WeekPendingGate, WeekPendingScope } from './WeekPending';
 import { formatDay } from '@/lib/format';
 
 interface EventsSectionProps {
@@ -58,9 +59,11 @@ export function EventsSection({
       layout={layout}
       controlsLabels={controlsLabels}
       map={
-        <Suspense fallback={<MapSkeleton />}>
-          <WeekMap schedule={schedule} />
-        </Suspense>
+        <WeekPendingGate fallback={<MapSkeleton />}>
+          <Suspense fallback={<MapSkeleton />}>
+            <WeekMap schedule={schedule} />
+          </Suspense>
+        </WeekPendingGate>
       }
     />
   );
@@ -74,26 +77,30 @@ export function EventsSection({
   return (
     <OccurrenceSelectionProvider>
       {layout === 'split' ? (
-        <div className={styles.split}>
-          {header}
-          <div className={styles.program}>
-            <div className={styles.weekArrows}>
-              {rangeNavigation?.previous}
+        <WeekPendingScope>
+          <div className={styles.split}>
+            {header}
+            <div className={styles.program}>
+              <div className={styles.weekArrows}>
+                {rangeNavigation?.previous}
 
-              <span className={styles.currentMonth}>
-                {formatDay(range.from, 'LLLL yyyy')}
-                <span className={styles.rangeLabel}>{formatRangeLabel(range)}</span>
-              </span>
+                <span className={styles.currentMonth}>
+                  {formatDay(range.from, 'LLLL yyyy')}
+                  <span className={styles.rangeLabel}>{formatRangeLabel(range)}</span>
+                </span>
 
-              {rangeNavigation?.next}
+                {rangeNavigation?.next}
+              </div>
+              <div className={styles.hint}>
+                <ScrollHint label={STRIP_LABELS.scrollHint} direction={1} />
+                <ScrollHint label={STRIP_LABELS.scrollBackHint} direction={-1} />
+              </div>
+              <div className={styles.strip}>
+                <WeekPendingGate fallback={<StripSkeleton />}>{strip}</WeekPendingGate>
+              </div>
             </div>
-            <div className={styles.hint}>
-              <ScrollHint label={STRIP_LABELS.scrollHint} direction={1} />
-              <ScrollHint label={STRIP_LABELS.scrollBackHint} direction={-1} />
-            </div>
-            <div className={styles.strip}>{strip}</div>
           </div>
-        </div>
+        </WeekPendingScope>
       ) : (
         <>
           {header}
