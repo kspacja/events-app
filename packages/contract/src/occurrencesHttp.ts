@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { diffInDays, isCalendarDay } from '@events/time';
 import { occurrenceListingSchema } from './listing';
 
-/** HTTP transport of the occurrence listing; only the HTTP adapter and its mock import this. */
+/** HTTP transport of the occurrence listing; only the API route, the portal's HTTP adapter and its mock import this. */
 export const MAX_DAYS_PER_REQUEST = 31;
 
 export const occurrencesResponseSchema = z.object({

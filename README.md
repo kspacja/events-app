@@ -33,6 +33,10 @@ pnpm --filter @events/api dev
 
 `db:seed` czyści tabele schematu `events` i wstawia przykładowe dane liczone od dzisiejszego dnia (bieżący tydzień i 4 następne). Gdy dane się zestarzeją — w bazie nie ma Terminów na bieżący tydzień — uruchom go ponownie. Działa tylko na bazie pod `localhost`.
 
+API: `GET /occurrences?from=YYYY-MM-DD&to=YYYY-MM-DD` (maks. 31 dni) zwraca Terminy z Dób wydarzeń w zakresie, w kształcie z `@events/contract`.
+
+Testy integracyjne (`*.integration.test.ts`) idą na prawdziwym Postgresie: `pnpm --filter @events/api test:integration`. Wymagają `docker compose up -d --wait db`; same zakładają i migrują bazę `events_test` (adres: `TEST_DATABASE_URL`, tylko `localhost`). Nie wchodzą do `pnpm test`, więc bramki nie wymagają Dockera.
+
 Schemat tabel: `apps/api/src/contexts/<kontekst>/schema.ts` (Drizzle, ADR-0009), diagram w `docs/database.md`. Po zmianie schematu `pnpm --filter @events/api db:generate --name <opis>` tworzy migrację SQL w `apps/api/drizzle/` — przejrzyj ją przed commitem.
 
 API: [http://localhost:3001/health](http://localhost:3001/health). Bez `apps/api/.env` API wypisuje błąd konfiguracji i czeka na zmiany; `pnpm dev` z korzenia nadal uruchamia portal na MSW.

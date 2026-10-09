@@ -14,6 +14,7 @@
 - `@events/contract` zostaje osobnym pakietem: schematy Wpisu programu i API (zod). Bez zestawu testów zgodności i bez formalnych „obietnic” portu.
 - Portal czyta tylko przez HTTP; w dev i testach MSW `setupServer`. Źródło w pamięci i `OCCURRENCE_SOURCE` znikają.
 - Mock MSW jest prosty: zwraca przykładowe dane dla zakresu, bez odtwarzania całej logiki backendu. Ryzyko rozjazdu mocka z backendem łapią testy integracyjne `apps/api` na prawdziwej bazie.
+- Testy integracyjne `apps/api` na osobnej bazie `events_test` w kontenerze z Docker Compose, poza zwykłym `pnpm test` (bez Testcontainers).
 - Seed z przykładowych danych z etapu 0.6, liczonych od dnia uruchomienia; gdy się zestarzeją, `db:seed` uruchamiamy ręcznie ponownie (bez seedowania przy starcie dev — od etapu 3 kasowałoby dane Studio).
 - `Venue.organizerId` dochodzi dopiero w etapie 2, razem z tabelą Organizatorów (najpierw `null`, potem uzupełnienie i `NOT NULL`); bez Organizatora technicznego.
 - Kategoria nie ma koloru w bazie: nowa Kategoria dostaje `--category-fallback`, własny kolor przez token CSS w `@events/ui`.
@@ -49,11 +50,15 @@
    - Czysta funkcja `EventsData` → wiersze tabel (cena w czterech kolumnach, Kategorie jako `event_categories` z `position`) z testami jednostkowymi; README.
    - Weryfikacja: bramki + seed na bazie z Docker Compose, liczby wierszy w `psql`.
 4. `GET /occurrences` w `apps/api` zgodny ze schematem z `@events/contract` (Doba wydarzeń 04:00, sortowanie; Kategorie Wydarzenia w kolejności `position`, bez szukania `position = 0`) + testy integracyjne na prawdziwej bazie.
+   Zakres:
+   - Trasa: `from`/`to` walidowane `occurrencesQuerySchema` (te same komunikaty 400 co MSW), odpowiedź w kształcie `occurrencesResponseSchema`, błąd bazy = 500 bez szczegółów.
+   - Odczyt w `contexts/events/occurrences.ts`: Termin w zakresie, gdy `starts_at` ∈ [`from` 04:00, `to`+1 04:00) Europe/Warsaw (granice z `@events/time`, indeks na `starts_at`); sortowanie `starts_at`, potem id; Kategorie wg `position`. Zamiana wierszy na Wpis programu (cena z 4 kolumn, `image_url` null = brak pola, `starts_at` przez `toWarsawIso`).
+   - Testy jednostkowe: zamiana wierszy, trasa przez `app.request` z podstawionym źródłem.
+   - Testy integracyjne: osobna baza `events_test` w kontenerze z Docker Compose (tworzona i migrowana przed testami, tylko `localhost`), pliki `*.integration.test.ts`, `pnpm --filter @events/api test:integration`; poza zwykłym `pnpm test`, więc bramki nie wymagają Dockera.
 5. Portal w dev z `EVENTS_API_URL` na lokalne `apps/api` i bez `API_MOCKING`; Kategorie z bazy.
 
 ## Otwarte pytania
 
-- Testy integracyjne `apps/api`: Testcontainers czy baza z Docker Compose?
 
 ## Kryterium ukończenia
 

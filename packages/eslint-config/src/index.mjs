@@ -104,12 +104,12 @@ const TESTING_ONLY_PATTERN = {
 
 const HTTP_TRANSPORT_ONLY_PATTERN = {
   group: ['@events/contract/occurrences-http'],
-  message: 'The HTTP transport is for the HTTP adapter and the mocks only.',
+  message: 'The HTTP transport is for the HTTP adapter, the mocks and the API route only.',
 };
 
 const CONFIG_FILES = ['**/eslint.config.mjs'];
 const TEST_FILES = ['**/*.test.*', '**/*.testing.*', '**/vitest.setup.*'];
-const HTTP_TRANSPORT_FILES = ['**/source/httpOccurrenceSource*', '**/mocks/**'];
+const HTTP_TRANSPORT_FILES = ['**/source/httpOccurrenceSource*', '**/mocks/**', '**/occurrencesRoute*'];
 
 function restrictImports({ paths, patterns }, scope = {}) {
   // The lint config itself imports @events/eslint-config, which the map does not cover

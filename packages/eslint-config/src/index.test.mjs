@@ -109,9 +109,10 @@ describe('transport-only entry points', () => {
     expect(messagesFor(portal, transportImport)).toEqual([expect.stringContaining('HTTP transport')]);
   });
 
-  it('allows them in the HTTP adapter and the mocks', () => {
+  it('allows them in the HTTP adapter, the mocks and the API route', () => {
     expect(messagesFor(portal, transportImport, 'src/source/httpOccurrenceSource.js')).toEqual([]);
     expect(messagesFor(portal, transportImport, 'src/mocks/handlers.js')).toEqual([]);
+    expect(messagesFor(appBoundaries('api'), transportImport, 'src/contexts/events/occurrencesRoute.js')).toEqual([]);
   });
 
   it('rejects them in ordinary test files', () => {
