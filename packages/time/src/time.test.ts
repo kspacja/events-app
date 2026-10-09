@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  eventDayBounds,
   eventDayOf,
   isCalendarDay,
   localDayOf,
@@ -28,6 +29,30 @@ describe('eventDayOf', () => {
     expect(eventDayOf('2026-10-25T03:59:00+01:00')).toBe('2026-10-24');
     expect(eventDayOf('2026-10-25T04:00:00+01:00')).toBe('2026-10-25');
     expect(eventDayOf('2026-10-25T01:30:00+02:00')).toBe('2026-10-24');
+  });
+});
+
+describe('eventDayBounds', () => {
+  it('runs from 04:00 on the first day to 04:00 after the last, Warsaw time', () => {
+    expect(eventDayBounds({ from: '2030-01-05', to: '2030-01-06' })).toEqual({
+      start: new Date('2030-01-05T03:00:00Z'),
+      end: new Date('2030-01-07T03:00:00Z'),
+    });
+  });
+
+  it('uses the offset of each end on DST change days', () => {
+    expect(eventDayBounds({ from: '2030-03-30', to: '2030-03-30' })).toEqual({
+      start: new Date('2030-03-30T03:00:00Z'),
+      end: new Date('2030-03-31T02:00:00Z'),
+    });
+  });
+
+  it('agrees with eventDayOf at both ends', () => {
+    const { start, end } = eventDayBounds({ from: '2030-10-26', to: '2030-10-26' });
+
+    expect(eventDayOf(start.toISOString())).toBe('2030-10-26');
+    expect(eventDayOf(new Date(end.getTime() - 1000).toISOString())).toBe('2030-10-26');
+    expect(eventDayOf(end.toISOString())).toBe('2030-10-27');
   });
 });
 

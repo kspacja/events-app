@@ -109,6 +109,14 @@ export function isWarsawIso(value: string): boolean {
   return !Number.isNaN(instant.getTime()) && toWarsawIso(instant) === value;
 }
 
+/** The instants a range of event days covers, from `from` 04:00 up to (not incl.) 04:00 after `to`; the inverse of eventDayOf. */
+export function eventDayBounds(range: DateRange): { readonly start: Date; readonly end: Date } {
+  return {
+    start: new Date(warsawIsoAt(range.from, DAY_BOUNDARY_MINUTES)),
+    end: new Date(warsawIsoAt(addDays(range.to, 1), DAY_BOUNDARY_MINUTES)),
+  };
+}
+
 /** startsAt for a local wall-clock time (minutes after midnight), with the UTC offset valid on that day. */
 export function warsawIsoAt(day: CalendarDay, minutes: number): string {
   const [year, month, date] = day.split('-').map(Number);

@@ -5,7 +5,6 @@ import { createApp } from '../../app';
 import { OCCURRENCE_ROW } from './occurrenceRow.testing';
 import { toListing, type ListOccurrences } from './occurrences';
 
-
 async function get(query: string, listOccurrences: ListOccurrences) {
   const response = await createApp({ listOccurrences }).request(`/occurrences${query}`);
   return { status: response.status, body: (await response.json()) as unknown };

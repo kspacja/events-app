@@ -14,6 +14,7 @@
 - `@events/contract` zostaje osobnym pakietem: schematy Wpisu programu i API (zod). Bez zestawu testów zgodności i bez formalnych „obietnic” portu.
 - Portal czyta tylko przez HTTP; w dev i testach MSW `setupServer`. Źródło w pamięci i `OCCURRENCE_SOURCE` znikają.
 - Mock MSW jest prosty: zwraca przykładowe dane dla zakresu, bez odtwarzania całej logiki backendu. Ryzyko rozjazdu mocka z backendem łapią testy integracyjne `apps/api` na prawdziwej bazie.
+- `GET /occurrences` pomija i loguje Termin, który łamie kontrakt (np. Wydarzenie bez Kategorii), zamiast odpowiadać 500 na cały zakres.
 - Testy integracyjne `apps/api` na osobnej bazie `events_test` w kontenerze z Docker Compose, poza zwykłym `pnpm test` (bez Testcontainers).
 - Seed z przykładowych danych z etapu 0.6, liczonych od dnia uruchomienia; gdy się zestarzeją, `db:seed` uruchamiamy ręcznie ponownie (bez seedowania przy starcie dev — od etapu 3 kasowałoby dane Studio).
 - `Venue.organizerId` dochodzi dopiero w etapie 2, razem z tabelą Organizatorów (najpierw `null`, potem uzupełnienie i `NOT NULL`); bez Organizatora technicznego.
@@ -59,6 +60,7 @@
 
 ## Otwarte pytania
 
+- brak
 
 ## Kryterium ukończenia
 

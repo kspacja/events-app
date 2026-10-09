@@ -1,6 +1,6 @@
 import { and, asc, eq, gte, inArray, lt, sql } from 'drizzle-orm';
 import { occurrenceListingSchema, type Category, type OccurrenceListing } from '@events/contract/listing';
-import { addDays, DAY_BOUNDARY_MINUTES, toWarsawIso, warsawIsoAt, type DateRange } from '@events/time';
+import { eventDayBounds, toWarsawIso, type DateRange } from '@events/time';
 import type { Db } from '../../db';
 import { categories, eventCategories, events, occurrences, venues } from './schema';
 
@@ -23,16 +23,8 @@ export interface OccurrenceRow {
   readonly lng: number;
 }
 
-/** Event days end at 04:00 Warsaw time, so the range runs from `from` 04:00 up to (not incl.) the day after `to` at 04:00. */
-export function eventDayBounds(range: DateRange): { readonly start: Date; readonly end: Date } {
-  return {
-    start: new Date(warsawIsoAt(range.from, DAY_BOUNDARY_MINUTES)),
-    end: new Date(warsawIsoAt(addDays(range.to, 1), DAY_BOUNDARY_MINUTES)),
-  };
-}
-
 // Unchecked shape; toListing parses it against the contract
-function priceOf(row: OccurrenceRow): object | null {
+function priceOf(row: OccurrenceRow): unknown {
   if (row.priceKind === 'free') return { kind: 'free' };
   if (row.priceKind === 'paid') return { kind: 'paid', from: row.priceFrom, to: row.priceTo, currency: row.priceCurrency };
   return null;
@@ -73,7 +65,6 @@ async function categoriesByEvent(db: Db, eventIds: readonly string[]): Promise<M
   return byEvent;
 }
 
-// Ids sort bytewise (collate "C"), the same order as compareListings in the contract
 export function createOccurrenceReader(db: Db): ListOccurrences {
   return async (range) => {
     const { start, end } = eventDayBounds(range);
@@ -98,9 +89,18 @@ export function createOccurrenceReader(db: Db): ListOccurrences {
       .innerJoin(events, eq(events.id, occurrences.eventId))
       .innerJoin(venues, eq(venues.id, occurrences.venueId))
       .where(and(gte(occurrences.startsAt, start), lt(occurrences.startsAt, end)))
+      // Ids sort bytewise (collate "C"), the same order as compareListings in the contract
       .orderBy(asc(occurrences.startsAt), asc(sql`${occurrences.id} collate "C"`));
 
     const byEvent = await categoriesByEvent(db, [...new Set(rows.map(({ eventId }) => eventId))]);
-    return rows.map((row) => toListing(row, byEvent.get(row.eventId) ?? []));
+    // One bad row must not blank the whole programme: skip it and log why
+    return rows.flatMap((row) => {
+      try {
+        return [toListing(row, byEvent.get(row.eventId) ?? [])];
+      } catch (error: unknown) {
+        console.error('Skipping an occurrence that breaks the contract', { occurrenceId: row.id, error });
+        return [];
+      }
+    });
   };
 }

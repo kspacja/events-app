@@ -9,7 +9,7 @@ const SAFE_DATABASE_NAME = /^[a-z0-9_]+$/;
 const MIGRATIONS_FOLDER = fileURLToPath(new URL('../../drizzle', import.meta.url));
 
 // Creates the test database next to the dev one if missing, then migrates it
-export default async function setup(): Promise<void> {
+export async function setup(): Promise<void> {
   assertLocalDatabase(TEST_DATABASE_URL);
   const target = new URL(TEST_DATABASE_URL);
   const name = target.pathname.slice(1);
