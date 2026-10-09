@@ -95,9 +95,9 @@ export function MonthCalendar({ calendar, shownWeek, today }: MonthCalendarProps
               ‹
             </span>
           )}
-          <Link href={schoolsHref({ week: mondayOf(today), month: monthOf(today) })} scroll={false} className={styles.todayLink}>
+          {/* <Link href={schoolsHref({ week: mondayOf(today), month: monthOf(today) })} scroll={false} className={styles.todayLink}>
             {CALENDAR_LABELS.today}
-          </Link>
+          </Link> */}
           <Link
             href={schoolsHref({ week: shownWeek, month: next })}
             scroll={false}
