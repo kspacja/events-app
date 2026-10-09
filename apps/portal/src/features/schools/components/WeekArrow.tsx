@@ -3,6 +3,7 @@ import type { CalendarDay } from '@events/time';
 import { CALENDAR_LABELS } from '../labels';
 import { schoolsHref } from '../schoolsHref';
 import { shiftWeek } from '../weekShift';
+import { LinkPending } from './LinkPending';
 import styles from './WeekArrow.module.css';
 
 interface WeekArrowProps {
@@ -21,6 +22,7 @@ export function WeekArrow({ direction, week }: WeekArrowProps) {
     >
       <span aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>
       <span className={styles.label}>{direction < 0 ? CALENDAR_LABELS.previousWeek : CALENDAR_LABELS.nextWeek}</span>
+      <LinkPending />
     </Link>
   );
 }

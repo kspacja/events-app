@@ -1,12 +1,17 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { currentEventDay } from '@events/time';
 import { getRuntimeConfig } from '@/config/runtimeConfig';
 import { BackToTop } from '@/features/events/components/BackToTop';
 import { EventsSection } from '@/features/events/components/EventsSection';
+import { EventsSkeleton } from '@/features/events/components/EventsSkeleton';
 import { createHttpOccurrenceSource } from '@/features/events/source/httpOccurrenceSource';
+import { scheduleSpan } from '@/features/events/schedule';
 import { SchoolsCalendar } from '@/features/schools/components/SchoolsCalendar';
+import { MonthCalendarSkeleton } from '@/features/schools/components/MonthCalendarSkeleton';
 import { WeekArrow } from '@/features/schools/components/WeekArrow';
 import { SCHOOLS_LABELS } from '@/features/schools/labels';
+import { daysOf } from '@/features/schools/monthCalendar';
 import { parseSchoolsQuery } from '@/features/schools/schoolsQuery';
 import styles from '../page.module.css';
 
@@ -17,23 +22,32 @@ export default async function SchoolsPage({ searchParams }: PageProps<'/dla-szko
   const { week, range, month, notice } = parseSchoolsQuery(await searchParams, now);
   const source = createHttpOccurrenceSource(getRuntimeConfig().eventsApiUrl, { forSchools: true });
   const today = currentEventDay(now);
+  // Started here, not in the calendar, so it runs alongside the week's request
+  const monthListings = source.listOccurrences(scheduleSpan(daysOf(month)));
 
   return (
     <main className={styles.page}>
-      <EventsSection
-        source={source}
-        range={range}
-        time={null}
-        sentence={SCHOOLS_LABELS.heading}
-        layout="split"
-        controlsLabels={{ show: SCHOOLS_LABELS.calendarShow, hide: SCHOOLS_LABELS.calendarHide }}
-        controls={<SchoolsCalendar source={source} month={month} week={week} today={today} />}
-        rangeNavigation={{
-          previous: <WeekArrow direction={-1} week={week} />,
-          next: <WeekArrow direction={1} week={week} />,
-        }}
-        notice={notice}
-      />
+      {/* Keyed by week: a new week shows the skeleton instead of the old week until its listings arrive */}
+      <Suspense key={week} fallback={<EventsSkeleton />}>
+        <EventsSection
+          source={source}
+          range={range}
+          time={null}
+          sentence={SCHOOLS_LABELS.heading}
+          layout="split"
+          controlsLabels={{ show: SCHOOLS_LABELS.calendarShow, hide: SCHOOLS_LABELS.calendarHide }}
+          controls={
+            <Suspense fallback={<MonthCalendarSkeleton />}>
+              <SchoolsCalendar listings={monthListings} month={month} week={week} today={today} />
+            </Suspense>
+          }
+          rangeNavigation={{
+            previous: <WeekArrow direction={-1} week={week} />,
+            next: <WeekArrow direction={1} week={week} />,
+          }}
+          notice={notice}
+        />
+      </Suspense>
       <BackToTop />
     </main>
   );

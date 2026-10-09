@@ -1,0 +1,69 @@
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.split {
+  display: grid;
+  gap: 16px;
+}
+
+.calendar,
+.arrows,
+.day {
+  border-radius: var(--radius-chip-top);
+  background: var(--color-bg-subtle);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.calendar {
+  height: 260px;
+}
+
+.arrows {
+  height: 52px;
+  margin-bottom: 8px;
+}
+
+.strip {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.day {
+  flex: 0 0 160px;
+  height: 320px;
+}
+
+@media (min-width: 769px) {
+  .split {
+    grid-template-columns: 250px minmax(0, 1fr);
+    column-gap: 20px;
+    align-items: start;
+  }
+
+  .left {
+    grid-column: 1;
+  }
+
+  .right {
+    grid-column: 2;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar,
+  .arrows,
+  .day {
+    animation: none;
+  }
+}

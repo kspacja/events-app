@@ -28,10 +28,12 @@ async function renderSchoolsPage(params: Record<string, string>) {
   const { default: SchoolsPage } = await import('./page');
   const page = await SchoolsPage({ params: Promise.resolve({}), searchParams: Promise.resolve(params) });
 
-  const [section] = (page.props as { children: ReactElement[] }).children;
+  const [sectionBoundary] = (page.props as { children: ReactElement[] }).children;
+  const section = (sectionBoundary as ReactElement<{ children: ReactElement }>).props.children;
   const sectionProps = section.props as Props<typeof EventsSection>;
   if (!isValidElement(sectionProps.controls)) throw new Error('the page should pass the calendar');
-  const calendar = await SchoolsCalendar(sectionProps.controls.props as Props<typeof SchoolsCalendar>);
+  const calendarBoundary = sectionProps.controls as ReactElement<{ children: ReactElement }>;
+  const calendar = await SchoolsCalendar(calendarBoundary.props.children.props as Props<typeof SchoolsCalendar>);
   render(await EventsSection({ ...sectionProps, controls: calendar }));
 }
 

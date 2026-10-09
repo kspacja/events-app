@@ -1,0 +1,37 @@
+.calendar {
+  max-width: 420px;
+}
+
+.toolbar {
+  height: 44px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-chip-top);
+  background: var(--color-bg-subtle);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.cell {
+  aspect-ratio: 1;
+  border-radius: var(--radius-chip-top);
+  background: var(--color-bg-subtle);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toolbar,
+  .cell {
+    animation: none;
+  }
+}
