@@ -7,11 +7,11 @@ const NOW = new Date('2026-10-14T10:00:00Z');
 
 describe('parseSchoolsQuery', () => {
   it('starts on today and its month', () => {
-    expect(parseSchoolsQuery({}, NOW)).toEqual({ day: '2026-10-14', month: '2026-10', notice: null });
+    expect(parseSchoolsQuery({}, NOW)).toMatchObject({ day: '2026-10-14', month: '2026-10', notice: null });
   });
 
   it('takes a future day and defaults the month to it', () => {
-    expect(parseSchoolsQuery({ day: '2026-11-03' }, NOW)).toEqual({ day: '2026-11-03', month: '2026-11', notice: null });
+    expect(parseSchoolsQuery({ day: '2026-11-03' }, NOW)).toMatchObject({ day: '2026-11-03', month: '2026-11', notice: null });
   });
 
   it('keeps a shown month apart from the day', () => {
@@ -19,11 +19,15 @@ describe('parseSchoolsQuery', () => {
   });
 
   it('replaces a past day with today and says so', () => {
-    expect(parseSchoolsQuery({ day: '2026-10-13' }, NOW)).toEqual({
+    expect(parseSchoolsQuery({ day: '2026-10-13' }, NOW)).toMatchObject({
       day: '2026-10-14',
       month: '2026-10',
       notice: SCHOOLS_LABELS.pastDayNotice,
     });
+  });
+
+  it('shows the week of the picked day, Monday to Sunday', () => {
+    expect(parseSchoolsQuery({ day: '2026-10-22' }, NOW).week).toEqual({ from: '2026-10-19', to: '2026-10-25' });
   });
 
   it('replaces an unreadable day with today and says so', () => {

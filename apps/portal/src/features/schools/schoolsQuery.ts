@@ -1,16 +1,15 @@
-import { currentEventDay, isCalendarDay, type CalendarDay } from '@events/time';
-import type { SearchParamsInput } from '@/features/search/searchQuery';
+import { currentEventDay, isCalendarDay, type CalendarDay, type DateRange } from '@events/time';
+import { scheduleSpan } from '@/features/events/schedule';
+import { firstValue, type SearchParamsInput } from '@/lib/searchParams';
 import { SCHOOLS_LABELS } from './labels';
 import { isCalendarMonth, monthOf, type CalendarMonth } from './monthCalendar';
 
 export interface SchoolsQuery {
   readonly day: CalendarDay;
+  /** Monday to Sunday of the picked day. */
+  readonly week: DateRange;
   readonly month: CalendarMonth;
   readonly notice: string | null;
-}
-
-function firstValue(value: string | readonly string[] | undefined) {
-  return typeof value === 'string' ? value : value?.[0];
 }
 
 function parseDay(raw: string | undefined, today: CalendarDay): { day: CalendarDay; notice: string | null } {
@@ -20,11 +19,19 @@ function parseDay(raw: string | undefined, today: CalendarDay): { day: CalendarD
   return { day: raw, notice: null };
 }
 
-/** The picked day (today when missing, invalid or past) and the shown month (the day's month when missing or past). */
+function parseMonth(raw: string | undefined, today: CalendarDay, day: CalendarDay): CalendarMonth {
+  const isShowable = raw !== undefined && isCalendarMonth(raw) && raw >= monthOf(today);
+  return isShowable ? raw : monthOf(day);
+}
+
+/** The picked day (today when missing, invalid or past) and the shown month (the day's month when missing, invalid or past). */
 export function parseSchoolsQuery(params: SearchParamsInput, now: Date): SchoolsQuery {
   const today = currentEventDay(now);
   const { day, notice } = parseDay(firstValue(params.day), today);
-  const rawMonth = firstValue(params.month);
-  const month = rawMonth !== undefined && isCalendarMonth(rawMonth) && rawMonth >= monthOf(today) ? rawMonth : monthOf(day);
-  return { day, month, notice };
+  return {
+    day,
+    week: scheduleSpan({ from: day, to: day }),
+    month: parseMonth(firstValue(params.month), today, day),
+    notice,
+  };
 }

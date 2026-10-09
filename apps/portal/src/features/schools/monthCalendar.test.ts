@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CalendarDay } from '@events/time';
-import { addMonths, buildMonthCalendar, dayMarker, isCalendarMonth, monthOfWeek, weeksOf } from './monthCalendar';
+import { addMonths, buildMonthCalendar, countByDay, dayMarker, isCalendarMonth, monthOfWeek, weeksOf } from './monthCalendar';
 
 // Wednesday; October 2026 starts on a Thursday
 const TODAY: CalendarDay = '2026-10-14';
@@ -36,6 +36,18 @@ describe('months', () => {
     expect(monthOfWeek('2026-09-28')).toBe('2026-10');
     expect(monthOfWeek('2026-10-26')).toBe('2026-10');
     expect(monthOfWeek('2026-11-30')).toBe('2026-12');
+  });
+});
+
+describe('countByDay', () => {
+  it('counts per event day, so the night before 04:00 belongs to the day before', () => {
+    const counts = countByDay([
+      { startsAt: '2026-10-14T10:00:00+02:00' },
+      { startsAt: '2026-10-14T18:00:00+02:00' },
+      { startsAt: '2026-10-15T01:30:00+02:00' },
+    ]);
+
+    expect(Object.fromEntries(counts)).toEqual({ '2026-10-14': 3 });
   });
 });
 

@@ -81,13 +81,6 @@ describe('buildSchedule active rule', () => {
 });
 
 describe('buildSchedule landing', () => {
-  it('lands on the given day instead of the first one', () => {
-    expect(buildSchedule([], { range: WEEK, time: null, landingDay: '2026-06-04' }).landing).toEqual({
-      day: '2026-06-04',
-      occurrenceId: null,
-    });
-  });
-
   const WEEKEND: DateRange = { from: '2026-06-06', to: '2026-06-07' };
   const MID_WEEK: DateRange = { from: '2026-06-03', to: '2026-06-10' };
 
@@ -97,6 +90,13 @@ describe('buildSchedule landing', () => {
     ['a custom range starting mid-week', MID_WEEK, '2026-06-03'],
   ])('lands on the first in-range day of %s', (_name, range, day) => {
     expect(buildSchedule([], { range, time: null }).landing.day).toBe(day);
+  });
+
+  it('lands on the given day instead of the first one', () => {
+    expect(buildSchedule([], { range: WEEK, time: null, landingDay: '2026-06-04' }).landing).toEqual({
+      day: '2026-06-04',
+      occurrenceId: null,
+    });
   });
 
   it('has no occurrence target without a time window', () => {

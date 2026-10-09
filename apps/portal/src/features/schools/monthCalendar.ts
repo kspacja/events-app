@@ -1,4 +1,4 @@
-import { addDays, DAYS_IN_WEEK, mondayOf, type CalendarDay } from '@events/time';
+import { addDays, DAYS_IN_WEEK, eventDayOf, mondayOf, type CalendarDay, type DateRange } from '@events/time';
 
 export type CalendarMonth = `${number}-${number}`;
 
@@ -70,17 +70,32 @@ interface MonthCalendarInput {
   readonly month: CalendarMonth;
   /** The current event day (`currentEventDay`): before 04:00 it is still yesterday. */
   readonly today: CalendarDay;
-  /** Its week is the selected one. */
+  /** The picked day; its week is highlighted. */
   readonly selectedDay: CalendarDay;
   /** Events per day; missing days count as 0. */
   readonly counts: ReadonlyMap<CalendarDay, number>;
 }
 
+/** First to last day of the month. */
+export function daysOf(month: CalendarMonth): DateRange {
+  return { from: firstDayOf(month), to: addDays(firstDayOf(addMonths(month, 1)), -1) };
+}
+
+/** Events per event day (04:00 boundary), for the day markers. */
+export function countByDay(listings: readonly { readonly startsAt: string }[]): Map<CalendarDay, number> {
+  const counts = new Map<CalendarDay, number>();
+  for (const { startsAt } of listings) {
+    const day = eventDayOf(startsAt);
+    counts.set(day, (counts.get(day) ?? 0) + 1);
+  }
+  return counts;
+}
+
 /** The Mondays of every week that has a day in the month: 4 to 6 rows. */
 export function weeksOf(month: CalendarMonth): CalendarDay[] {
-  const lastDay = addDays(firstDayOf(addMonths(month, 1)), -1);
+  const { from, to: lastDay } = daysOf(month);
   const mondays: CalendarDay[] = [];
-  for (let monday = mondayOf(firstDayOf(month)); monday <= lastDay; monday = addDays(monday, DAYS_IN_WEEK)) {
+  for (let monday = mondayOf(from); monday <= lastDay; monday = addDays(monday, DAYS_IN_WEEK)) {
     mondays.push(monday);
   }
   return mondays;

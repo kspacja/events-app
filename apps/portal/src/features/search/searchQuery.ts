@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { DateRange } from '@events/time';
 import { formatClock } from '@/lib/format';
+import { firstValue, type SearchParamsInput } from '@/lib/searchParams';
 import {
   DATE_PRESETS,
   resolvePreset,
@@ -24,10 +25,6 @@ import {
   type TimeWindow,
 } from './timeRange';
 
-export type SearchParamsInput = Readonly<
-  Record<string, string | readonly string[] | undefined>
->;
-
 export interface SearchQuery {
   readonly date: DateSearchResult;
   readonly time: TimeSearchResult;
@@ -40,10 +37,6 @@ export type SearchChange =
 
 const DATE_PARAM_KEYS = ['when', 'from', 'to'] as const;
 const TIME_PARAM_KEYS = ['time', 'timeFrom', 'timeTo'] as const;
-
-function firstValue(value: string | readonly string[] | undefined) {
-  return typeof value === 'string' ? value : value?.[0];
-}
 
 const datePresetSchema = z.enum(DATE_PRESETS);
 const timePresetSchema = z.enum(TIME_PRESETS);
