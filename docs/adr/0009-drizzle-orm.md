@@ -11,11 +11,12 @@ Powód: schemat i typy w jednym miejscu, bez kroku generowania klienta; zapytani
 ## Considered Options
 
 - **Kysely** — odrzucony: bardzo dobry builder zapytań, ale typy bazy trzeba generować albo pisać osobno, a migracje to ręczny kod; więcej pracy przy 1–2 osobach.
-- **Prisma** — odrzucona: własny język schematu i generowany klient, słabsze wsparcie dla wielu schematów Postgresa i pgvector, cięższy runtime.
-- **Surowy SQL (`pg`)** — odrzucony: najmniej abstrakcji, ale bez typów wyników i bez narzędzia do migracji.
+- **Prisma** — odrzucona: własny język schematu i krok generowania klienta; pgvector tylko jako `Unsupported("vector")` i surowy SQL.
+- **Surowy SQL (`pg`)** — odrzucony: najmniej abstrakcji, ale bez typów wyników i bez wbudowanego narzędzia do migracji.
 
 ## Consequences
 
+- `drizzle-kit` nie zarządza rozszerzeniami Postgresa: `CREATE EXTENSION vector` trafia do jednej ręcznie napisanej migracji (`drizzle-kit generate --custom`), przed pierwszą tabelą z kolumną `vector`.
 - Migracje z `drizzle-kit generate` trzeba przeglądać przed commitem; zmiany niszczące (DROP, RENAME, NOT NULL) idą etapami (expand → migrate → contract).
 - Złożone zapytania (np. ranking Rekomendacji) mogą wymagać wstawek `sql` — wtedy typy wyniku trzeba podać ręcznie.
 - Schemat Drizzle żyje w backendzie; pakiety kontekstów nie wystawiają tabel na zewnątrz (lint: schemat jest prywatny).

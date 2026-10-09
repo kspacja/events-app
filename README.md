@@ -5,7 +5,7 @@ Next.js (App Router), React, TypeScript, CSS Modules, MapLibre (OpenFreeMap); w 
 
 ## Wymagania
 
-- Node.js 22+
+- Node.js 22.9+
 - pnpm 11 (`corepack enable` wystarczy, wersja jest w `packageManager`)
 - Docker — tylko do pracy nad backendem (Postgres z pgvector)
 
