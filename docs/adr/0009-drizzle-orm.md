@@ -17,6 +17,7 @@ Powód: schemat i typy w jednym miejscu, bez kroku generowania klienta; zapytani
 ## Consequences
 
 - `drizzle-kit` nie zarządza rozszerzeniami Postgresa: `CREATE EXTENSION vector` trafia do jednej ręcznie napisanej migracji (`drizzle-kit generate --custom`), przed pierwszą tabelą z kolumną `vector`.
+- `drizzle-kit` nie generuje migracji cofających: wycofanie zmiany to nowa migracja w przód.
 - Migracje z `drizzle-kit generate` trzeba przeglądać przed commitem; zmiany niszczące (DROP, RENAME, NOT NULL) idą etapami (expand → migrate → contract).
 - Złożone zapytania (np. ranking Rekomendacji) mogą wymagać wstawek `sql` — wtedy typy wyniku trzeba podać ręcznie.
 - Schemat Drizzle żyje w backendzie; pakiety kontekstów nie wystawiają tabel na zewnątrz (lint: schemat jest prywatny).

@@ -47,7 +47,7 @@
 ## Otwarte pytania
 
 - Testy integracyjne `apps/api`: Testcontainers czy baza z Docker Compose?
-- Seed z `createSampleCatalog(now)` liczy daty względem dnia uruchomienia, więc po zapisie w bazie się starzeje: stała data, cykliczne ponowne seedowanie czy generowanie Terminów przy starcie dev?
+- Seed z `createSampleEvents(now)` liczy daty względem dnia uruchomienia, więc po zapisie w bazie się starzeje: stała data, cykliczne ponowne seedowanie czy generowanie Terminów przy starcie dev?
 
 ## Kryterium ukończenia
 

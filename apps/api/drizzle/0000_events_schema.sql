@@ -37,7 +37,10 @@ CREATE TABLE "events"."venues" (
 	"lng" double precision NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "events"."events" ADD CONSTRAINT "events_category_slug_categories_slug_fk" FOREIGN KEY ("category_slug") REFERENCES "events"."categories"("slug") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "events"."occurrences" ADD CONSTRAINT "occurrences_event_id_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "events"."events"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "events"."occurrences" ADD CONSTRAINT "occurrences_venue_id_venues_id_fk" FOREIGN KEY ("venue_id") REFERENCES "events"."venues"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-CREATE INDEX "occurrences_starts_at_idx" ON "events"."occurrences" USING btree ("starts_at");
+ALTER TABLE "events"."events" ADD CONSTRAINT "events_category_slug_categories_slug_fk" FOREIGN KEY ("category_slug") REFERENCES "events"."categories"("slug") ON DELETE restrict ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "events"."occurrences" ADD CONSTRAINT "occurrences_event_id_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "events"."events"("id") ON DELETE cascade ON UPDATE restrict;--> statement-breakpoint
+ALTER TABLE "events"."occurrences" ADD CONSTRAINT "occurrences_venue_id_venues_id_fk" FOREIGN KEY ("venue_id") REFERENCES "events"."venues"("id") ON DELETE restrict ON UPDATE restrict;--> statement-breakpoint
+CREATE INDEX "events_category_slug_idx" ON "events"."events" USING btree ("category_slug");--> statement-breakpoint
+CREATE INDEX "occurrences_starts_at_idx" ON "events"."occurrences" USING btree ("starts_at");--> statement-breakpoint
+CREATE INDEX "occurrences_event_id_idx" ON "events"."occurrences" USING btree ("event_id");--> statement-breakpoint
+CREATE INDEX "occurrences_venue_id_idx" ON "events"."occurrences" USING btree ("venue_id");

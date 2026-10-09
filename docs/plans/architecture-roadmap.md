@@ -9,7 +9,7 @@ Realizacja ADR-0001…0008 etapami. Pojęcia: `CONTEXT-MAP.md`. Decyzje: `docs/a
 Etap dzieli się na kroki. Każdy krok przechodzi te punkty po kolei:
 
 1. **Zakres** — zakres i decyzje kroku są zapisane w pliku etapu (`stages/`). Ustalenia z rozmowy trafiają tam przed implementacją.
-2. **Implementacja** — commit(y) bez pusha; bramki zielone, smoke test portalu (`API_MOCKING=enabled`) przechodzi.
+2. **Implementacja** — commit(y) bez pusha; bramki zielone, smoke test portalu (`API_MOCKING=enabled`) przechodzi. Zmiana schematu bazy aktualizuje diagram w `docs/database.md`.
 3. **Code review w dwóch osiach** (Standards + Spec, równolegle, punkt odniesienia = commit sprzed kroku; Spec = plik etapu + ADR-y) — każda uwaga poprawiona albo wpisana do „Odłożone” z powodem.
 
 Koniec etapu: status w tabeli zaktualizowany; etap zamyka code review kroków. Przegląd architektury robimy raz, na samym końcu, po ostatnim etapie: użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a plan jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Po etapach — także tych z pełnym numerem — nie robimy żadnego przeglądu architektury, nawet wąskiego.
@@ -42,13 +42,15 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Liniowe `points.find` przy kliknięciu w mapę — wystarcza przy tej skali.
 - `isCalendarDay` mapuje lata 0–99 przez `Date.UTC` — bez znaczenia dla domeny.
 - Lint nie blokuje względnych importów korzenia sąsiedniego pakietu (`../time` bez `/src`) — importy idą przez `@events/*`.
-- Filtr Doby wydarzeń jest dwa razy: w handlerze MSW i w pomocniczej funkcji `sampleCatalog.test.ts` — jedna linia, a backend liczy go w SQL.
+- Filtr Doby wydarzeń jest dwa razy: w handlerze MSW i w pomocniczej funkcji `sampleEvents.test.ts` — jedna linia, a backend liczy go w SQL.
 - Brak testu `EventsMap`: lot do Terminu bez punktu jest potwierdzany tylko w kodzie adaptera, sprawdzony w Chrome — wymaga osobnego zestawu testów mapy.
 - Lista aplikacji niedostępnych dla pakietów w lincie jest wpisana ręcznie obok `DEPENDENCY_MAP` — przy nowej aplikacji trzeba dopisać ją w dwóch miejscach.
 - `apps/api/src/config.ts` składa komunikaty inline zamiast nazwanej `problemsOf` jak w portalu — kosmetyka.
 - Postgres z `docker-compose.yml` nasłuchuje na wszystkich interfejsach (`5432:5432`), nie tylko `127.0.0.1` — lokalne hasło deweloperskie.
 - Wspólny kod konfiguracji (klasa błędu, `blankAsUnset`, komunikaty bez wartości) jest w portalu i w API — wydzielamy przy trzeciej aplikacji.
 - `console.info` przy starcie API — zastąpi go logger w etapie 1.5.
+- Baza nie pilnuje formatu danych: format id i sluga, niepusta etykieta, `NaN` we współrzędnych i cenach, ceny z więcej niż 2 miejscami po przecinku (`numeric(10,2)` je zaokrągla) — dziś dane wchodzą tylko przez seed ze sprawdzonego modelu; wracamy, gdy Studio zacznie zapisywać (etap 3).
+- Tabele bez `created_at` / `updated_at` — dochodzą z pierwszymi zapisami w Studio (etap 3).
 - Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.
 
 ## Testowanie

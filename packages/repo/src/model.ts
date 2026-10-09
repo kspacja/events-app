@@ -37,7 +37,7 @@ export interface Occurrence {
   readonly price: Price | null;
 }
 
-// Venue.organizerId and Submission arrive with stages 1-2 (see docs/plans/stages/1-baza-i-katalog.md)
+// Venue.organizerId arrives with stage 2, Submission with stage 3
 export interface EventsDataInput {
   readonly categories: readonly Category[];
   readonly venues: readonly Venue[];

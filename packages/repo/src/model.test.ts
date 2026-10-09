@@ -87,7 +87,7 @@ describe('createEventsData', () => {
     expect(Object.isFrozen(data.occurrences[0].price)).toBe(true);
   });
 
-  it('is opaque: a plain object or spread copy is not a EventsData', () => {
+  it('is opaque: a plain object or spread copy is not an EventsData', () => {
     const data = createEventsData(VALID);
     // @ts-expect-error a literal lacks the private brand
     const fromLiteral: EventsData = { ...VALID };

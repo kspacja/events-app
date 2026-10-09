@@ -35,6 +35,7 @@ export const priceSchema = z.discriminatedUnion('kind', [
       to: z.number().nonnegative().nullable(),
       currency: z.literal('PLN'),
     })
+    .refine(({ from, to }) => to === null || to >= from, { message: '"to" must not be below "from".', path: ['to'] })
     .readonly(),
 ]);
 

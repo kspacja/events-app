@@ -19,14 +19,19 @@ export const venues = eventsSchema.table('venues', {
   lng: doublePrecision('lng').notNull(),
 });
 
-export const events = eventsSchema.table('events', {
-  id: text('id').primaryKey(),
-  title: text('title').notNull(),
-  categorySlug: text('category_slug')
-    .notNull()
-    .references(() => categories.slug),
-  imageUrl: text('image_url'),
-});
+export const events = eventsSchema.table(
+  'events',
+  {
+    id: text('id').primaryKey(),
+    title: text('title').notNull(),
+    // A renamed slug follows into events; a category in use cannot be deleted
+    categorySlug: text('category_slug')
+      .notNull()
+      .references(() => categories.slug, { onDelete: 'restrict', onUpdate: 'cascade' }),
+    imageUrl: text('image_url'),
+  },
+  (table) => [index('events_category_slug_idx').on(table.categorySlug)],
+);
 
 export const occurrences = eventsSchema.table(
   'occurrences',
@@ -34,10 +39,10 @@ export const occurrences = eventsSchema.table(
     id: text('id').primaryKey(),
     eventId: text('event_id')
       .notNull()
-      .references(() => events.id),
+      .references(() => events.id, { onDelete: 'cascade', onUpdate: 'restrict' }),
     venueId: text('venue_id')
       .notNull()
-      .references(() => venues.id),
+      .references(() => venues.id, { onDelete: 'restrict', onUpdate: 'restrict' }),
     startsAt: timestamp('starts_at', { withTimezone: true }).notNull(),
     // No price kind means the organizer did not give a price
     priceKind: priceKind('price_kind'),
@@ -47,6 +52,8 @@ export const occurrences = eventsSchema.table(
   },
   (table) => [
     index('occurrences_starts_at_idx').on(table.startsAt),
+    index('occurrences_event_id_idx').on(table.eventId),
+    index('occurrences_venue_id_idx').on(table.venueId),
     check(
       'occurrences_price_valid',
       sql`(${table.priceKind} IS DISTINCT FROM 'paid'

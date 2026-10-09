@@ -21,6 +21,10 @@ describe('priceSchema', () => {
     expect(priceSchema.safeParse({ kind: 'paid', from: 20, currency: 'PLN' }).success).toBe(false);
   });
 
+  it('rejects a paid price whose upper bound is below the lower one', () => {
+    expect(priceSchema.safeParse({ kind: 'paid', from: 40, to: 30, currency: 'PLN' }).success).toBe(false);
+  });
+
   it('rejects a paid price without a lower bound', () => {
     expect(priceSchema.safeParse({ kind: 'paid', to: null, currency: 'PLN' }).success).toBe(false);
   });

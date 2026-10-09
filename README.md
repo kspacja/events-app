@@ -30,7 +30,7 @@ pnpm --filter @events/api db:migrate
 pnpm --filter @events/api dev
 ```
 
-Schemat tabel: `apps/api/src/contexts/<kontekst>/schema.ts` (Drizzle, ADR-0009). Po zmianie schematu `pnpm --filter @events/api db:generate --name <opis>` tworzy migrację SQL w `apps/api/drizzle/` — przejrzyj ją przed commitem.
+Schemat tabel: `apps/api/src/contexts/<kontekst>/schema.ts` (Drizzle, ADR-0009), diagram w `docs/database.md`. Po zmianie schematu `pnpm --filter @events/api db:generate --name <opis>` tworzy migrację SQL w `apps/api/drizzle/` — przejrzyj ją przed commitem.
 
 API: [http://localhost:3001/health](http://localhost:3001/health). Bez `apps/api/.env` API wypisuje błąd konfiguracji i czeka na zmiany; `pnpm dev` z korzenia nadal uruchamia portal na MSW.
 
@@ -106,6 +106,7 @@ Doba wydarzeń kończy się o 04:00: wydarzenie z niedzieli 01:30 należy do sob
 - `packages/typescript-config` — wspólne `tsconfig` (strict) i wariant dla Nexta
 - `packages/eslint-config` (`@events/eslint-config`) — wspólny ESLint: granice importów (bez importów w głąb `src` pakietu i bez ścieżek względnych między pakietami/aplikacjami; pakiety bez Reacta/Nexta i bez importu aplikacji) oraz reguły wymagające typów
 - `docs/adr`, `docs/contexts`, `CONTEXT-MAP.md` — decyzje i mapa kontekstów
+- `docs/database.md` — schemat bazy (diagram Mermaid)
 - `HANDOFF.md`, `*.dc.html` — referencja UI (nie kod produkcyjny)
 - `docs/plans` — plan wdrożenia architektury (`architecture-roadmap.md`) i pliki etapów (`stages/`)
 

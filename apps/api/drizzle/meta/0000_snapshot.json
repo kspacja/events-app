@@ -1,5 +1,5 @@
 {
-  "id": "755ad9a7-8bb1-44d0-b79b-2bfa2e8ac683",
+  "id": "4fc2145c-aeb9-46bc-a3ec-a0ea357673e9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -58,7 +58,23 @@
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "events_category_slug_idx": {
+          "name": "events_category_slug_idx",
+          "columns": [
+            {
+              "expression": "category_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "events_category_slug_categories_slug_fk": {
           "name": "events_category_slug_categories_slug_fk",
@@ -71,8 +87,8 @@
           "columnsTo": [
             "slug"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -150,6 +166,36 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "occurrences_event_id_idx": {
+          "name": "occurrences_event_id_idx",
+          "columns": [
+            {
+              "expression": "event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "occurrences_venue_id_idx": {
+          "name": "occurrences_venue_id_idx",
+          "columns": [
+            {
+              "expression": "venue_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -164,8 +210,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "restrict"
         },
         "occurrences_venue_id_venues_id_fk": {
           "name": "occurrences_venue_id_venues_id_fk",
@@ -178,8 +224,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "restrict",
+          "onUpdate": "restrict"
         }
       },
       "compositePrimaryKeys": {},
