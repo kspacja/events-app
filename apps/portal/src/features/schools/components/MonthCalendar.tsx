@@ -5,12 +5,12 @@ import { formatDay } from '@/lib/format';
 import { formatCount } from '@/features/events/schedule';
 import { dayDomId } from '@/features/events/scheduleDom';
 import { CALENDAR_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
-import { monthOf, type CalendarCell, type CalendarMonth, type MonthCalendar as Calendar } from '../monthCalendar';
+import { firstDayOf, monthOf, type CalendarCell, type MonthView } from '../monthCalendar';
 import { schoolsHref } from '../schoolsHref';
 import styles from './MonthCalendar.module.css';
 
 interface MonthCalendarProps {
-  readonly calendar: Calendar;
+  readonly calendar: MonthView;
   readonly selectedWeek: CalendarDay;
   readonly today: CalendarDay;
 }
@@ -27,23 +27,24 @@ function DayMarkerDots({ cell }: { readonly cell: CalendarCell }) {
   );
 }
 
-function DayCell({ cell, month }: { readonly cell: CalendarCell; readonly month: CalendarMonth }) {
+function DayCell({ cell }: { readonly cell: CalendarCell }) {
   const number = formatDay(cell.day, 'd');
-  const label = `${formatDay(cell.day, 'EEEE, d MMMM')}, ${cell.count === 0 ? CALENDAR_LABELS.noEvents : formatCount(cell.count)}`;
+  const date = formatDay(cell.day, 'EEEE, d MMMM');
+  const label = `${date}, ${cell.count === 0 ? CALENDAR_LABELS.noEvents : formatCount(cell.count)}`;
   const className = [styles.day, cell.inMonth ? '' : styles.outside, cell.isToday ? styles.today : '']
     .filter(Boolean)
     .join(' ');
 
   if (cell.isPast) {
     return (
-      <span className={`${className} ${styles.past}`} aria-label={formatDay(cell.day, 'EEEE, d MMMM')}>
+      <span className={`${className} ${styles.past}`} aria-label={date}>
         {number}
       </span>
     );
   }
   return (
     <Link
-      href={schoolsHref({ week: mondayOf(cell.day), month: cell.inMonth ? month : monthOf(cell.day) }, dayDomId(cell.day))}
+      href={schoolsHref({ week: mondayOf(cell.day), month: monthOf(cell.day) }, dayDomId(cell.day))}
       className={className}
       aria-label={label}
       aria-current={cell.isToday ? 'date' : undefined}
@@ -57,7 +58,7 @@ function DayCell({ cell, month }: { readonly cell: CalendarCell; readonly month:
 /** Kalendarz miesiąca: picking a day shows its week below; arrows change only the shown month. */
 export function MonthCalendar({ calendar, selectedWeek, today }: MonthCalendarProps) {
   const { month, weeks, previous, next } = calendar;
-  const title = formatDay(`${month}-01` as CalendarDay, 'LLLL yyyy');
+  const title = formatDay(firstDayOf(month), 'LLLL yyyy');
 
   return (
     <nav className={styles.calendar} aria-label={CALENDAR_LABELS.region}>
@@ -103,7 +104,7 @@ export function MonthCalendar({ calendar, selectedWeek, today }: MonthCalendarPr
             data-selected={week.isSelected || undefined}
           >
             {week.days.map((cell) => (
-              <DayCell key={cell.day} cell={cell} month={month} />
+              <DayCell key={cell.day} cell={cell} />
             ))}
           </div>
         ))}

@@ -67,10 +67,15 @@ describe('MonthCalendar', () => {
     expect(screen.getByRole('link', { name: /21 października/ })).toHaveTextContent('21+3');
   });
 
-  it('keeps the selected week when changing months, and cannot go before the current month', () => {
+  it('cannot go before the current month', () => {
     renderCalendar();
 
     expect(screen.queryByRole('link', { name: 'Poprzedni miesiąc' })).not.toBeInTheDocument();
+  });
+
+  it('keeps the selected week when changing months', () => {
+    renderCalendar();
+
     expect(screen.getByRole('link', { name: 'Następny miesiąc' })).toHaveAttribute(
       'href',
       '/dla-szkol?week=2026-10-19&month=2026-11',
@@ -81,6 +86,11 @@ describe('MonthCalendar', () => {
     renderCalendar('2026-11');
 
     expect(screen.getByRole('link', { name: 'Dziś' })).toHaveAttribute('href', '/dla-szkol?week=2026-10-12&month=2026-10');
+  });
+
+  it('goes back a month once ahead of the current one', () => {
+    renderCalendar('2026-11');
+
     expect(screen.getByRole('link', { name: 'Poprzedni miesiąc' })).toHaveAttribute(
       'href',
       '/dla-szkol?week=2026-10-19&month=2026-10',

@@ -72,8 +72,11 @@ describe('buildMonthCalendar', () => {
     expect(flags).toContainEqual(['2026-10-19', false, true]);
   });
 
-  it('greys out days before today and spots today', () => {
+  it('greys out days before today', () => {
     expect(cell('2026-10-13')).toMatchObject({ isPast: true, isToday: false });
+  });
+
+  it('spots today', () => {
     expect(cell(TODAY)).toMatchObject({ isPast: false, isToday: true });
   });
 
@@ -90,7 +93,16 @@ describe('buildMonthCalendar', () => {
 
   it('does not go back before the current month', () => {
     expect(calendar.previous).toBeNull();
+  });
+
+  it('always goes forward', () => {
     expect(calendar.next).toBe('2026-11');
+  });
+
+  it('highlights the week of any selected day, not only its Monday', () => {
+    const fromWednesday = buildMonthCalendar({ month: '2026-10', today: TODAY, selectedWeek: '2026-10-21', counts: new Map() });
+
+    expect(fromWednesday.weeks.find(({ isSelected }) => isSelected)?.monday).toBe('2026-10-19');
   });
 
   it('goes back once the shown month is ahead', () => {

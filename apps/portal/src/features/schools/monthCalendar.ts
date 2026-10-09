@@ -5,7 +5,7 @@ export type CalendarMonth = `${number}-${number}`;
 const MONTH_FORMAT = /^(\d{4})-(0[1-9]|1[0-2])$/;
 const THURSDAY_OFFSET = 3;
 const MAX_DOTS = 3;
-const MAX_SINGLE_DOTS = 4;
+const DOT_PER_EVENT_UP_TO = 4;
 
 export function isCalendarMonth(value: string): value is CalendarMonth {
   return MONTH_FORMAT.test(value);
@@ -38,7 +38,7 @@ export interface DayMarker {
 
 export function dayMarker(count: number): DayMarker | null {
   if (count <= 0) return null;
-  if (count <= MAX_SINGLE_DOTS) return { dots: count, more: 0 };
+  if (count <= DOT_PER_EVENT_UP_TO) return { dots: count, more: 0 };
   return { dots: MAX_DOTS, more: count - MAX_DOTS };
 }
 
@@ -58,7 +58,7 @@ export interface CalendarWeek {
   readonly days: readonly CalendarCell[];
 }
 
-export interface MonthCalendar {
+export interface MonthView {
   readonly month: CalendarMonth;
   readonly weeks: readonly CalendarWeek[];
   /** null for the current month: the calendar does not go back in time. */
@@ -68,6 +68,7 @@ export interface MonthCalendar {
 
 interface MonthCalendarInput {
   readonly month: CalendarMonth;
+  /** The current event day (`currentEventDay`): before 04:00 it is still yesterday. */
   readonly today: CalendarDay;
   readonly selectedWeek: CalendarDay;
   /** Events per day; missing days count as 0. */
@@ -84,12 +85,13 @@ export function weeksOf(month: CalendarMonth): CalendarDay[] {
   return mondays;
 }
 
-export function buildMonthCalendar({ month, today, selectedWeek, counts }: MonthCalendarInput): MonthCalendar {
+export function buildMonthCalendar({ month, today, selectedWeek, counts }: MonthCalendarInput): MonthView {
   const currentWeek = mondayOf(today);
+  const selectedMonday = mondayOf(selectedWeek);
   const weeks = weeksOf(month).map((monday): CalendarWeek => ({
     monday,
     isCurrent: monday === currentWeek,
-    isSelected: monday === selectedWeek,
+    isSelected: monday === selectedMonday,
     days: Array.from({ length: DAYS_IN_WEEK }, (_, offset): CalendarCell => {
       const day = addDays(monday, offset);
       const count = counts.get(day) ?? 0;

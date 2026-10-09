@@ -95,7 +95,7 @@ a.day:hover {
 }
 
 .outside {
-  color: var(--color-text-tertiary);
+  color: var(--color-text-muted);
 }
 
 .past {
