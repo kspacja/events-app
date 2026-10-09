@@ -27,8 +27,11 @@ Strona: [http://localhost:3000](http://localhost:3000).
 docker compose up -d --wait db
 cp apps/api/.env.example apps/api/.env
 pnpm --filter @events/api db:migrate
+pnpm --filter @events/api db:seed
 pnpm --filter @events/api dev
 ```
+
+`db:seed` czyści tabele schematu `events` i wstawia przykładowe dane liczone od dzisiejszego dnia (bieżący tydzień i 4 następne). Gdy dane się zestarzeją — w bazie nie ma Terminów na bieżący tydzień — uruchom go ponownie. Działa tylko na bazie pod `localhost`.
 
 Schemat tabel: `apps/api/src/contexts/<kontekst>/schema.ts` (Drizzle, ADR-0009), diagram w `docs/database.md`. Po zmianie schematu `pnpm --filter @events/api db:generate --name <opis>` tworzy migrację SQL w `apps/api/drizzle/` — przejrzyj ją przed commitem.
 

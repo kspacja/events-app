@@ -14,7 +14,7 @@
 - `@events/contract` zostaje osobnym pakietem: schematy Wpisu programu i API (zod). Bez zestawu testów zgodności i bez formalnych „obietnic” portu.
 - Portal czyta tylko przez HTTP; w dev i testach MSW `setupServer`. Źródło w pamięci i `OCCURRENCE_SOURCE` znikają.
 - Mock MSW jest prosty: zwraca przykładowe dane dla zakresu, bez odtwarzania całej logiki backendu. Ryzyko rozjazdu mocka z backendem łapią testy integracyjne `apps/api` na prawdziwej bazie.
-- Seed z przykładowych danych z etapu 0.6.
+- Seed z przykładowych danych z etapu 0.6, liczonych od dnia uruchomienia; gdy się zestarzeją, `db:seed` uruchamiamy ręcznie ponownie (bez seedowania przy starcie dev — od etapu 3 kasowałoby dane Studio).
 - `Venue.organizerId` dochodzi dopiero w etapie 2, razem z tabelą Organizatorów (najpierw `null`, potem uzupełnienie i `NOT NULL`); bez Organizatora technicznego.
 - Kategoria nie ma koloru w bazie: nowa Kategoria dostaje `--category-fallback`, własny kolor przez token CSS w `@events/ui`.
 
@@ -44,14 +44,16 @@
    - `venues.address text NOT NULL` (ulica i numer, `city` osobno); `Venue.address` w `@events/repo`, `venue.address` we Wpisie programu; adresy w przykładowych danych. Portal na razie go nie pokazuje.
    - Wydarzenie ma jedną lub więcej Kategorii, pierwsza jest główna: tabela `event_categories` (`event_id`, `category_slug`, `position`; PK `(event_id, category_slug)`, UNIQUE `(event_id, position)`, indeks na `category_slug`; Wydarzenie `CASCADE`, Kategoria `RESTRICT` / `ON UPDATE CASCADE`) zamiast `events.category_slug`; `categories` jako niepusta lista w modelu i kontrakcie; karta bierze kolor i etykietę z Kategorii głównej; słownik zaktualizowany.
    - Migracja `0000` wygenerowana od nowa (niewdrożona), diagram w `docs/database.md`.
-3. Seed z przykładowych danych.
+3. Seed z przykładowych danych — zakres:
+   - `db:seed` w `apps/api`: `createSampleEvents(new Date())`, w jednej transakcji czyści tabele schematu `events` i wstawia dane od nowa (można powtarzać); odmawia, gdy `DATABASE_URL` nie wskazuje na `localhost` / `127.0.0.1`.
+   - Czysta funkcja `EventsData` → wiersze tabel (cena w czterech kolumnach, Kategorie jako `event_categories` z `position`) z testami jednostkowymi; README.
+   - Weryfikacja: bramki + seed na bazie z Docker Compose, liczby wierszy w `psql`.
 4. `GET /occurrences` w `apps/api` zgodny ze schematem z `@events/contract` (Doba wydarzeń 04:00, sortowanie; Kategorie Wydarzenia w kolejności `position`, bez szukania `position = 0`) + testy integracyjne na prawdziwej bazie.
 5. Portal w dev z `EVENTS_API_URL` na lokalne `apps/api` i bez `API_MOCKING`; Kategorie z bazy.
 
 ## Otwarte pytania
 
 - Testy integracyjne `apps/api`: Testcontainers czy baza z Docker Compose?
-- Seed z `createSampleEvents(now)` liczy daty względem dnia uruchomienia, więc po zapisie w bazie się starzeje: stała data, cykliczne ponowne seedowanie czy generowanie Terminów przy starcie dev?
 
 ## Kryterium ukończenia
 
