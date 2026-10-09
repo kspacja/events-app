@@ -1,9 +1,11 @@
 import { render, screen, within } from '@testing-library/react';
+import { http, HttpResponse } from 'msw';
 import type { ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createSampleEvents, toListings } from '@events/repo';
 import { SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK } from '@events/repo/testing';
 import { addDays, currentEventDay, mondayOf } from '@events/time';
+import { countByDay } from '@/features/schools/monthCalendar';
 import { EventsSection } from '@/features/events/components/EventsSection';
 import { SCHOOLS_LABELS } from '@/features/schools/labels';
 import { monthOfWeek } from '@/features/schools/monthCalendar';
@@ -21,7 +23,10 @@ const WEDNESDAY = addDays(mondayOf(TODAY), 2);
 const WEEK = mondayOf(WEDNESDAY);
 
 async function renderSchoolsPage(params: Record<string, string>) {
-  server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => toListings(createSampleEvents(NOW))));
+  const listings = toListings(createSampleEvents(NOW));
+  server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => listings));
+  const schoolCounts = Object.fromEntries(countByDay(listings.filter(({ event }) => event.forSchools)));
+  server.use(http.get('*/api/school-counts', () => HttpResponse.json(schoolCounts)));
   const { default: SchoolsPage } = await import('./page');
   const page = await SchoolsPage({ params: Promise.resolve({}), searchParams: Promise.resolve(params) });
   const [section] = (page as ReactElement<{ children: ReactElement[] }>).props.children;
@@ -56,7 +61,7 @@ describe('/dla-szkol', () => {
     await renderSchoolsPage({});
     const calendar = screen.getByRole('navigation', { name: 'Kalendarz miesiąca' });
 
-    expect(within(calendar).getByRole('link', { name: /5 wydarzeń/ })).toHaveAttribute(
+    expect(await within(calendar).findByRole('link', { name: /5 wydarzeń/ })).toHaveAttribute(
       'href',
       `/dla-szkol?week=${WEEK}&preview-month=${monthOfWeek(WEEK)}#day-${WEDNESDAY}`,
     );

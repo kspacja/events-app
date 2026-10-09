@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
-export type PendingChannel = 'week' | 'month';
+export type PendingChannel = 'week';
 
 type PendingState = Record<PendingChannel, boolean>;
 
@@ -11,7 +11,7 @@ interface PendingValue {
   readonly setPending: (channel: PendingChannel, pending: boolean) => void;
 }
 
-const IDLE: PendingState = { week: false, month: false };
+const IDLE: PendingState = { week: false };
 
 // Without a scope the gates show their children, so the parts also work outside a split layout
 const PendingContext = createContext<PendingValue>({ pending: IDLE, setPending: () => {} });

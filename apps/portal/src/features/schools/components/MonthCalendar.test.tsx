@@ -1,22 +1,24 @@
 import { render, screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { http, HttpResponse } from 'msw';
+import { beforeEach, describe, expect, it } from 'vitest';
 import type { CalendarDay } from '@events/time';
+import { server } from '@/test/mockServer';
 import { buildMonthCalendar } from '../monthCalendar';
 import { MonthCalendar } from './MonthCalendar';
 
 const TODAY: CalendarDay = '2026-10-14';
 const SHOWN_WEEK: CalendarDay = '2026-10-19';
 
+beforeEach(() => {
+  server.use(
+    http.get('*/api/school-counts', () =>
+      HttpResponse.json({ '2026-10-14': 2, '2026-10-21': 6 }),
+    ),
+  );
+});
+
 function renderCalendar(month: '2026-10' | '2026-11' = '2026-10') {
-  const calendar = buildMonthCalendar({
-    month,
-    today: TODAY,
-    selectedWeek: SHOWN_WEEK,
-    counts: new Map([
-      ['2026-10-14', 2],
-      ['2026-10-21', 6],
-    ]),
-  });
+  const calendar = buildMonthCalendar({ month, today: TODAY, selectedWeek: SHOWN_WEEK });
   return render(<MonthCalendar calendar={calendar} shownWeek={SHOWN_WEEK} today={TODAY} />);
 }
 
@@ -27,19 +29,19 @@ describe('MonthCalendar', () => {
     expect(screen.getByRole('heading', { name: 'październik 2026' })).toBeInTheDocument();
   });
 
-  it('links a day to its week and to its column in the strip', () => {
+  it('links a day to its week and to its column in the strip', async () => {
     renderCalendar();
 
-    expect(screen.getByRole('link', { name: 'środa, 21 października, 6 wydarzeń, wybrany tydzień' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'środa, 21 października, 6 wydarzeń, wybrany tydzień' })).toHaveAttribute(
       'href',
       '/dla-szkol?week=2026-10-19&preview-month=2026-10#day-2026-10-21',
     );
   });
 
-  it('links a day of the next month to its own week and month', () => {
+  it('links a day of the next month to its own week and month', async () => {
     renderCalendar();
 
-    expect(screen.getByRole('link', { name: 'niedziela, 1 listopada, brak wydarzeń' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'niedziela, 1 listopada, brak wydarzeń' })).toHaveAttribute(
       'href',
       '/dla-szkol?week=2026-10-26&preview-month=2026-11#day-2026-11-01',
     );
@@ -52,19 +54,19 @@ describe('MonthCalendar', () => {
     expect(screen.getByText('wtorek, 13 października, dzień minął')).toBeInTheDocument();
   });
 
-  it('marks today', () => {
+  it('marks today', async () => {
     renderCalendar();
 
-    expect(screen.getByRole('link', { name: 'środa, 14 października, 2 wydarzenia, bieżący tydzień' })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: 'środa, 14 października, 2 wydarzenia, bieżący tydzień' })).toHaveAttribute(
       'aria-current',
       'date',
     );
   });
 
-  it('shows 3 dots and the rest as a number from 5 events on', () => {
+  it('shows 3 dots and the rest as a number from 5 events on', async () => {
     renderCalendar();
 
-    expect(screen.getByRole('link', { name: /21 października/ })).toHaveTextContent('21+3');
+    expect(await screen.findByRole('link', { name: /21 października/ })).toHaveTextContent('21+3');
   });
 
   it('cannot go before the current month', () => {
@@ -109,10 +111,10 @@ describe('MonthCalendar', () => {
     }
   });
 
-  it('says which week is the current one and which is shown', () => {
+  it('says which week is the current one and which is shown', async () => {
     renderCalendar();
 
-    expect(screen.getByRole('link', { name: /^czwartek, 15 października, .*, bieżący tydzień$/ })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /^czwartek, 22 października, .*, wybrany tydzień$/ })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /^czwartek, 15 października, .*, bieżący tydzień$/ })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /^czwartek, 22 października, .*, wybrany tydzień$/ })).toBeInTheDocument();
   });
 });

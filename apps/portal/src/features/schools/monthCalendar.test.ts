@@ -66,15 +66,7 @@ describe('weeksOf', () => {
 });
 
 describe('buildMonthCalendar', () => {
-  const calendar = buildMonthCalendar({
-    month: '2026-10',
-    today: TODAY,
-    selectedWeek: '2026-10-19',
-    counts: new Map([
-      ['2026-10-14', 2],
-      ['2026-10-21', 6],
-    ]),
-  });
+  const calendar = buildMonthCalendar({ month: '2026-10', today: TODAY, selectedWeek: '2026-10-19' });
   const cell = (day: CalendarDay) => calendar.weeks.flatMap(({ days }) => days).find((found) => found.day === day);
 
   it('marks the current and the selected week separately', () => {
@@ -97,12 +89,6 @@ describe('buildMonthCalendar', () => {
     expect(cell('2026-10-01')?.inMonth).toBe(true);
   });
 
-  it('marks days by their event count', () => {
-    expect(cell(TODAY)?.marker).toEqual({ dots: 2, more: 0 });
-    expect(cell('2026-10-21')?.marker).toEqual({ dots: 3, more: 3 });
-    expect(cell('2026-10-22')?.marker).toBeNull();
-  });
-
   it('does not go back before the current month', () => {
     expect(calendar.previous).toBeNull();
   });
@@ -112,13 +98,13 @@ describe('buildMonthCalendar', () => {
   });
 
   it('highlights the shown week', () => {
-    const shown = buildMonthCalendar({ month: '2026-10', today: TODAY, selectedWeek: '2026-10-19', counts: new Map() });
+    const shown = buildMonthCalendar({ month: '2026-10', today: TODAY, selectedWeek: '2026-10-19' });
 
     expect(shown.weeks.find(({ isSelected }) => isSelected)?.monday).toBe('2026-10-19');
   });
 
   it('goes back once the shown month is ahead', () => {
-    const november = buildMonthCalendar({ month: '2026-11', today: TODAY, selectedWeek: CURRENT_WEEK, counts: new Map() });
+    const november = buildMonthCalendar({ month: '2026-11', today: TODAY, selectedWeek: CURRENT_WEEK });
 
     expect(november.previous).toBe('2026-10');
   });

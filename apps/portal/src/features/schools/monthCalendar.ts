@@ -44,8 +44,6 @@ export function dayMarker(count: number): DayMarker | null {
 
 export interface CalendarCell {
   readonly day: CalendarDay;
-  readonly count: number;
-  readonly marker: DayMarker | null;
   readonly inMonth: boolean;
   readonly isPast: boolean;
   readonly isToday: boolean;
@@ -72,8 +70,6 @@ interface MonthCalendarInput {
   readonly today: CalendarDay;
   /** Monday of the shown week; it is highlighted. */
   readonly selectedWeek: CalendarDay;
-  /** Events per day; missing days count as 0. */
-  readonly counts: ReadonlyMap<CalendarDay, number>;
 }
 
 /** First to last day of the month. */
@@ -101,7 +97,7 @@ export function weeksOf(month: CalendarMonth): CalendarDay[] {
   return mondays;
 }
 
-export function buildMonthCalendar({ month, today, selectedWeek, counts }: MonthCalendarInput): MonthView {
+export function buildMonthCalendar({ month, today, selectedWeek }: MonthCalendarInput): MonthView {
   const currentWeek = mondayOf(today);
   const weeks = weeksOf(month).map((monday): CalendarWeek => ({
     monday,
@@ -109,11 +105,8 @@ export function buildMonthCalendar({ month, today, selectedWeek, counts }: Month
     isSelected: monday === selectedWeek,
     days: Array.from({ length: DAYS_IN_WEEK }, (_, offset): CalendarCell => {
       const day = addDays(monday, offset);
-      const count = counts.get(day) ?? 0;
       return {
         day,
-        count,
-        marker: dayMarker(count),
         inMonth: monthOf(day) === month,
         isPast: day < today,
         isToday: day === today,
