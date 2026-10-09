@@ -11,7 +11,7 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: 56px;
+  width: 96px;
   background: linear-gradient(to right, transparent, var(--color-bg));
   transition: opacity 200ms ease;
 }
