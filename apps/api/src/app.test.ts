@@ -27,7 +27,7 @@ describe('CORS', () => {
       headers: { Origin: 'http://elsewhere.test' },
     });
 
-    expect(response.headers.get('Access-Control-Allow-Origin')).not.toBe('http://elsewhere.test');
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBeNull();
   });
 
   it('answers the preflight for GET', async () => {

@@ -24,7 +24,8 @@ describe('MockingProvider', () => {
       </MockingProvider>,
     );
 
-    await vi.waitFor(() => expect(startBrowserMocking).not.toHaveBeenCalled());
+    await vi.dynamicImportSettled();
+    expect(startBrowserMocking).not.toHaveBeenCalled();
   });
 
   it('starts the worker once for the API URL, however often it renders', async () => {

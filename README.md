@@ -56,7 +56,7 @@ Domyślnie portal działa na MSW i nie potrzebuje bazy. Żeby czytał Terminy z 
 | `pnpm install` → `postinstall` (w `apps/portal`) | kopiuje worker MapLibre z `apps/portal/node_modules/maplibre-gl/dist` do `apps/portal/public/maplibre/` | Turbopack psuje domyślną ścieżkę workera, więc mapa ładuje go z `public/` (`setWorkerUrl`). Folder jest w `.gitignore`. |
 | `pnpm dev` → `predev` | to samo kopiowanie, na wypadek zmiany wersji `maplibre-gl` | bez tych plików mapa jest pusta, a w konsoli pojawia się `Worker failed to load` |
 | start serwera → `src/instrumentation.ts` | przy `API_MOCKING=enabled` uruchamia mock API (MSW) w procesie Node | front działa bez bazy i bez `apps/api`; MSW przechwytuje `fetch` z server components |
-| strona z danymi pobieranymi w przeglądarce → `BrowserMocking` | przy `API_MOCKING=enabled` rejestruje `public/mockServiceWorker.js` (MSW `setupWorker`) z tymi samymi handlerami | przeglądarka pyta API bezpośrednio (CORS); w dev odpowiada jej worker, zapytania czekają na jego start |
+| strona owinięta w `BrowserMocking` | przy `API_MOCKING=enabled` rejestruje `public/mockServiceWorker.js` (MSW `setupWorker`) z tymi samymi handlerami | pod przyszłe zapytania z przeglądarki prosto do API (CORS), np. polubienie; czekają na start workera (`useMockingReady`) |
 
 `pnpm build` ma analogiczny `prebuild`.
 

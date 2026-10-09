@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, use, useState, type ReactNode } from 'react';
 
 const NOT_MOCKED = Promise.resolve();
 const MockingReadyContext = createContext<Promise<void>>(NOT_MOCKED);
@@ -9,8 +9,10 @@ const MockingReadyContext = createContext<Promise<void>>(NOT_MOCKED);
 let started: Promise<void> | undefined;
 
 function startOnce(eventsApiUrl: string): Promise<void> {
-  // Imported lazily, so the handlers and sample data stay out of the bundle unless mocking is on
-  started ??= import('./browser').then(({ startBrowserMocking }) => startBrowserMocking(eventsApiUrl));
+  // Imported lazily, so the handlers and sample data stay out of the initial bundle
+  started ??= import('./browser')
+    .then(({ startBrowserMocking }) => startBrowserMocking(eventsApiUrl))
+    .catch((error: unknown) => console.error('[events] MSW worker did not start', error));
   return started;
 }
 
@@ -24,10 +26,10 @@ export function MockingProvider({ enabled, eventsApiUrl, children }: MockingProv
   const [ready] = useState(() =>
     enabled && typeof window !== 'undefined' ? startOnce(eventsApiUrl) : NOT_MOCKED,
   );
-  return <MockingReadyContext.Provider value={ready}>{children}</MockingReadyContext.Provider>;
+  return <MockingReadyContext value={ready}>{children}</MockingReadyContext>;
 }
 
-/** Browser requests await this, so none reaches the real URL before the MSW worker runs. */
+/** Browser requests to the API await this, so none reaches the real URL before the MSW worker runs. */
 export function useMockingReady(): Promise<void> {
-  return useContext(MockingReadyContext);
+  return use(MockingReadyContext);
 }

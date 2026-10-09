@@ -5,7 +5,6 @@ import { occurrencesRoute } from './contexts/events/occurrencesRoute';
 
 export interface AppDependencies {
   readonly listOccurrences: ListOccurrences;
-  /** The portal's origin, allowed to read the API from the browser. */
   readonly corsOrigin: string;
 }
 

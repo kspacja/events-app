@@ -12,7 +12,7 @@ Dane i logikę wszystkich kontekstów trzyma jeden backend, `apps/api` (Hono + D
 - `@events/contract` trzyma schematy żądań i odpowiedzi API (zod), wspólne dla backendu i klientów.
 - Next.js cache'uje odczyty przez `fetch` z `revalidate`.
 - Frontendy w dev i testach mockują endpointy API przez MSW `setupServer`; nieobsłużone żądania idą do prawdziwego API. Praca nad frontem nie wymaga bazy ani Dockera.
-- Uzupełnienie (etap 3.5): portal czyta też z przeglądarki, bezpośrednio z API (CORS, origin portalu w `CORS_ORIGIN`). W dev odpowiada mu MSW `setupWorker` z tymi samymi handlerami co `setupServer`; adres API i flaga mocka przechodzą do klienta z konfiguracji serwera, bez `NEXT_PUBLIC_`.
+- Uzupełnienie (etap 3.5): odczyty i nawigacja idą przez serwer Nexta; przeglądarka będzie pytać API bezpośrednio tylko przy zapytaniach asynchronicznych, które nie zmieniają strony (np. polubienie). Pod to: CORS w API (origin portalu w `CORS_ORIGIN`) i w dev MSW `setupWorker` z tymi samymi handlerami co `setupServer`; adres API i flaga mocka przechodzą do klienta z konfiguracji serwera, bez `NEXT_PUBLIC_`.
 
 Powód: jedna logika dla wszystkich klientów (furtka na aplikację mobilną), fizyczna i czytelna granica do debugowania (Network, `curl`), niezależna praca nad frontem bez bazy — także dla kolejnych osób w zespole.
 

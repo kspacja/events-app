@@ -45,12 +45,14 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Filtr Doby wydarzeń (z `forSchools`) jest w kilku miejscach: handler MSW, test zgodności w `occurrences.integration.test.ts`, pomocnicza funkcja `sampleEvents.test.ts` — po jednej linii, a backend liczy go w SQL.
 - Brak wspólnego generatora Wpisów programu do testów — nowe wymagane pole kontraktu zmienia kilkanaście obiektów testowych; robimy przy następnym takim polu.
 - Zmiana kontraktu z nowym wymaganym polem: wdrażamy najpierw API, potem portal (etap 7).
+- Reguła produkcyjna portalu patrzy tylko na `VERCEL_ENV`: samodzielny `next start` z `API_MOCKING=enabled` uruchomiłby mock (także worker w przeglądarce) — etap 7.
+- `CORS_ORIGIN` to jeden origin (nie obsłuży adresów podglądu Vercela), a brak w produkcji oznacza `localhost` — etap 7.
 - Brak testu `EventsMap`: lot do Terminu bez punktu jest potwierdzany tylko w kodzie adaptera, sprawdzony w Chrome — wymaga osobnego zestawu testów mapy.
 - Lista aplikacji niedostępnych dla pakietów w lincie jest wpisana ręcznie obok `DEPENDENCY_MAP` — przy nowej aplikacji trzeba dopisać ją w dwóch miejscach.
 - `apps/api/src/config.ts` składa komunikaty inline zamiast nazwanej `problemsOf` jak w portalu — kosmetyka.
 - Postgres z `docker-compose.yml` nasłuchuje na wszystkich interfejsach (`5432:5432`), nie tylko `127.0.0.1` — lokalne hasło deweloperskie.
 - Wspólny kod konfiguracji (klasa błędu, `blankAsUnset`, komunikaty bez wartości) jest w portalu i w API — wydzielamy przy trzeciej aplikacji.
-- `console.*` w API (start, seed, błędy `/occurrences`) i brak identyfikatora korelacji w odpowiedzi 500 — dochodzą z loggerem w etapie 1.5.
+- `console.*` w API (start, seed, błędy `/occurrences`) i w przeglądarce (start workera MSW) i brak identyfikatora korelacji w odpowiedzi 500 — dochodzą z loggerem w etapie 1.5.
 - Baza nie pilnuje formatu danych: format id i sluga, niepusta etykieta, niepuste `name` i `city` Miejsca (także w kontrakcie i modelu), powtórzone Kategorie w kontrakcie, `NaN` we współrzędnych i cenach, ceny z więcej niż 2 miejscami po przecinku (`numeric(10,2)` je zaokrągla) — dziś dane wchodzą tylko przez seed ze sprawdzonego modelu; wracamy, gdy Studio zacznie zapisywać (etap 3).
 - Tabele bez `created_at` / `updated_at` — dochodzą z pierwszymi zapisami w Studio (etap 3).
 - Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.

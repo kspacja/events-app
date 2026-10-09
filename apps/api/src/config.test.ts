@@ -2,13 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { ApiConfigError, parseApiConfig, type ApiConfig } from './config';
 
 const DATABASE_URL = 'postgres://events:events@localhost:5432/events';
+const DEFAULT_CORS_ORIGIN = 'http://localhost:3000';
 
 describe('parseApiConfig', () => {
   const accepted: ReadonlyArray<readonly [string, Record<string, string>, ApiConfig]> = [
-    ['a URL with the default port', { DATABASE_URL }, { databaseUrl: DATABASE_URL, port: 3001, corsOrigin: 'http://localhost:3000' }],
-    ['a blank port as the default', { DATABASE_URL, PORT: '' }, { databaseUrl: DATABASE_URL, port: 3001, corsOrigin: 'http://localhost:3000' }],
-    ['an explicit port', { DATABASE_URL, PORT: '8080' }, { databaseUrl: DATABASE_URL, port: 8080, corsOrigin: 'http://localhost:3000' }],
-    ['the postgresql:// scheme', { DATABASE_URL: 'postgresql://db/events' }, { databaseUrl: 'postgresql://db/events', port: 3001, corsOrigin: 'http://localhost:3000' }],
+    ['a URL with the default port', { DATABASE_URL }, { databaseUrl: DATABASE_URL, port: 3001, corsOrigin: DEFAULT_CORS_ORIGIN }],
+    ['a blank port as the default', { DATABASE_URL, PORT: '' }, { databaseUrl: DATABASE_URL, port: 3001, corsOrigin: DEFAULT_CORS_ORIGIN }],
+    ['an explicit port', { DATABASE_URL, PORT: '8080' }, { databaseUrl: DATABASE_URL, port: 8080, corsOrigin: DEFAULT_CORS_ORIGIN }],
+    ['the postgresql:// scheme', { DATABASE_URL: 'postgresql://db/events' }, { databaseUrl: 'postgresql://db/events', port: 3001, corsOrigin: DEFAULT_CORS_ORIGIN }],
     [
       'a CORS origin',
       { DATABASE_URL, CORS_ORIGIN: 'https://portal.example' },
