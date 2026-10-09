@@ -38,6 +38,14 @@
   text-decoration: none;
 }
 
+/* Text link, not an arrow: small type, but the 44px box stays as the touch target */
+.todayLink {
+  min-width: 0;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .arrow:hover,
 .todayLink:hover {
   background: var(--color-bg-subtle);
