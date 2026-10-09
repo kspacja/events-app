@@ -24,8 +24,8 @@ Koniec etapu: status w tabeli zaktualizowany; etap zamyka code review kroków. P
 | 1. Backend + baza | `apps/api` (Hono + Drizzle) serwuje Terminy z Postgresa, portal czyta przez HTTP (ADR-0008) | zrobione | [stages/1-baza-i-katalog.md](stages/1-baza-i-katalog.md) |
 | 1.5 Obserwowalność | ślady, metryki, logi i błędy z aplikacji i workera | — | [stages/1.5-obserwowalnosc.md](stages/1.5-obserwowalnosc.md) |
 | 2. Tożsamość | konta `Attendee`, `Organizer`, `Moderator`, `Guest` (ADR-0004, 0005) | — | — |
-| 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia | — | — |
-| 3.5 Strona dla szkół | podstrona portalu: Kalendarz miesiąca zamiast Zapytania, afisz wybranego tygodnia, tylko Wydarzenia z Oznaczeniem szkolnym | — | [stages/3.5-strona-dla-szkol.md](stages/3.5-strona-dla-szkol.md) |
+| 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia; ustawia też Oznaczenie szkolne (`forSchools`, etap 3.5) | — | — |
+| 3.5 Strona dla szkół | podstrona portalu: Kalendarz miesiąca zamiast Zapytania, afisz wybranego tygodnia, tylko Wydarzenia z Oznaczeniem szkolnym | zrobione (na MSW i przykładowych danych; Oznaczenie szkolne ustawi Studio w etapie 3) | [stages/3.5-strona-dla-szkol.md](stages/3.5-strona-dla-szkol.md) |
 | 4. Moderacja | `apps/moderation`: kolejka Zgłoszeń i decyzje | — | — |
 | 5. Rekomendacje | `packages/recommendations`, `apps/worker`, Reakcje, `ColdStart` (ADR-0003, 0007) | — | — |
 | 6. Import i Kanały | import CSV, Kanał JSON Zaufanego Organizatora (cyklicznie i na webhook) | — | [stages/6-import-i-kanaly.md](stages/6-import-i-kanaly.md) |
@@ -55,6 +55,9 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - `console.*` w API (start, seed, błędy `/occurrences`) i w przeglądarce (start workera MSW) i brak identyfikatora korelacji w odpowiedzi 500 — dochodzą z loggerem w etapie 1.5.
 - Baza nie pilnuje formatu danych: format id i sluga, niepusta etykieta, niepuste `name` i `city` Miejsca (także w kontrakcie i modelu), powtórzone Kategorie w kontrakcie, `NaN` we współrzędnych i cenach, ceny z więcej niż 2 miejscami po przecinku (`numeric(10,2)` je zaokrągla) — dziś dane wchodzą tylko przez seed ze sprawdzonego modelu; wracamy, gdy Studio zacznie zapisywać (etap 3).
 - Tabele bez `created_at` / `updated_at` — dochodzą z pierwszymi zapisami w Studio (etap 3).
+- Strona `/dla-szkol` nie ma linku ze strony głównej — do projektu UI.
+- Cechy szkolne Wydarzenia (wiek, klasy) i filtry strony dla szkół — po researchu (etap 3.5, „Otwarte”).
+- Obwódka fokusu dni na skrajnych kolumnach Kalendarza miesiąca może być przycięta — sprawdzamy w Chrome na końcu planu.
 - Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.
 
 ## Testowanie

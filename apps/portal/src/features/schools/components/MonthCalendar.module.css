@@ -99,6 +99,11 @@
   background: var(--color-accent-soft);
 }
 
+/* The fill alone is too faint (1.14:1), so the selected week also gets a frame */
+.week[data-selected] .cell {
+  border-block: 2px solid var(--color-accent-strong);
+}
+
 a.day:hover {
   background: var(--color-bg-subtle);
 }
