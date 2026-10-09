@@ -1,22 +1,19 @@
 import 'server-only';
 
-import type { ReactNode } from 'react';
+import { Suspense, type ReactNode } from 'react';
 import type { OccurrenceSource } from '@events/contract/source';
 import type { DateRange } from '@events/time';
 import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatTimeWindow, type TimeWindow } from '@/features/search/timeRange';
-import { buildSchedule, formatCount, scheduleSpan } from '../schedule';
-import { EventsMapLoader } from './EventsMapLoader';
+import { buildSchedule, scheduleSpan } from '../schedule';
 import { Header, type RangeNavigation } from './Header';
 import { OccurrenceSelectionProvider } from '../OccurrenceSelectionProvider';
-import { MapToggle } from './MapToggle';
-import { STRIP_LABELS } from '../labels';
-import { ScrollHint } from './ScrollHint';
-import { SkipLink } from './SkipLink';
-import { StripControls } from './StripControls';
+import { MapSkeleton, StripSkeleton } from './WeekSkeleton';
 import styles from './EventsSection.module.css';
-import { WeekGrid } from './WeekGrid';
-import {formatDay} from '@/lib/format';
+import { ScrollHint } from './ScrollHint';
+import { STRIP_LABELS } from '../labels';
+import { WeekCount, WeekMap, WeekStrip } from './WeekProgram';
+import { formatDay } from '@/lib/format';
 
 interface EventsSectionProps {
   readonly source: OccurrenceSource;
@@ -30,7 +27,7 @@ interface EventsSectionProps {
   readonly controlsLabels?: { readonly show: string; readonly hide: string };
 }
 
-export async function EventsSection({
+export function EventsSection({
   source,
   range,
   time,
@@ -41,8 +38,9 @@ export async function EventsSection({
   layout = 'stacked',
   controlsLabels,
 }: EventsSectionProps) {
-  const listings = await source.listOccurrences(scheduleSpan(range));
-  const schedule = buildSchedule(listings, { range, time });
+  const schedule = source
+    .listOccurrences(scheduleSpan(range))
+    .then((listings) => buildSchedule(listings, { range, time }));
 
   const header = (
     <Header
@@ -52,18 +50,25 @@ export async function EventsSection({
       rangeLabel={formatRangeLabel(range)}
       rangeNavigation={rangeNavigation}
       timeLabel={time ? formatTimeWindow(time) : undefined}
-      countLabel={formatCount(schedule.activeCount)}
+      countLabel={
+        <Suspense fallback={null}>
+          <WeekCount schedule={schedule} />
+        </Suspense>
+      }
       layout={layout}
       controlsLabels={controlsLabels}
       map={
-        <>
-          <SkipLink />
-          <MapToggle>
-            <EventsMapLoader points={schedule.mapPoints} focus={schedule.mapFocus} />
-          </MapToggle>
-        </>
+        <Suspense fallback={<MapSkeleton />}>
+          <WeekMap schedule={schedule} />
+        </Suspense>
       }
     />
+  );
+
+  const strip = (
+    <Suspense key={range.from} fallback={<StripSkeleton />}>
+      <WeekStrip schedule={schedule} withControls={layout === 'split'} />
+    </Suspense>
   );
 
   return (
@@ -74,26 +79,25 @@ export async function EventsSection({
           <div className={styles.program}>
             <div className={styles.weekArrows}>
               {rangeNavigation?.previous}
+
               <span className={styles.currentMonth}>
-                {formatDay(schedule.landing.day, 'LLLL yyyy')}
+                {formatDay(range.from, 'LLLL yyyy')}
                 <span className={styles.rangeLabel}>{formatRangeLabel(range)}</span>
               </span>
+
               {rangeNavigation?.next}
             </div>
             <div className={styles.hint}>
               <ScrollHint label={STRIP_LABELS.scrollHint} direction={1} />
               <ScrollHint label={STRIP_LABELS.scrollBackHint} direction={-1} />
             </div>
-            <div className={styles.strip}>
-              <StripControls days={schedule.weeks.flat().map(({ day }) => day)} />
-              <WeekGrid schedule={schedule} />
-            </div>
+            <div className={styles.strip}>{strip}</div>
           </div>
         </div>
       ) : (
         <>
           {header}
-          <WeekGrid schedule={schedule} />
+          {strip}
         </>
       )}
     </OccurrenceSelectionProvider>

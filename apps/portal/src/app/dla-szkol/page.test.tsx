@@ -1,15 +1,15 @@
 import { render, screen, within } from '@testing-library/react';
-import { isValidElement, type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createSampleEvents, toListings } from '@events/repo';
 import { SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK } from '@events/repo/testing';
 import { addDays, currentEventDay, mondayOf } from '@events/time';
 import { EventsSection } from '@/features/events/components/EventsSection';
-import { SchoolsCalendar } from '@/features/schools/components/SchoolsCalendar';
 import { SCHOOLS_LABELS } from '@/features/schools/labels';
 import { monthOfWeek } from '@/features/schools/monthCalendar';
 import { occurrencesHandler } from '@/mocks/handlers';
 import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
+import { settle } from '@/test/settle';
 
 vi.mock('@/features/events/components/EventsMapLoader', () => ({ EventsMapLoader: () => null }));
 vi.stubEnv('EVENTS_API_URL', TEST_EVENTS_API_URL);
@@ -20,21 +20,12 @@ const TODAY = currentEventDay(NOW);
 const WEDNESDAY = addDays(mondayOf(TODAY), 2);
 const WEEK = mondayOf(WEDNESDAY);
 
-type Props<T> = T extends (props: infer P) => unknown ? P : never;
-
-// Testing Library cannot render async server components, so they are awaited here with the props the page gave them
 async function renderSchoolsPage(params: Record<string, string>) {
   server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => toListings(createSampleEvents(NOW))));
   const { default: SchoolsPage } = await import('./page');
   const page = await SchoolsPage({ params: Promise.resolve({}), searchParams: Promise.resolve(params) });
-
-  const [sectionBoundary] = (page.props as { children: ReactElement[] }).children;
-  const section = (sectionBoundary as ReactElement<{ children: ReactElement }>).props.children;
-  const sectionProps = section.props as Props<typeof EventsSection>;
-  if (!isValidElement(sectionProps.controls)) throw new Error('the page should pass the calendar');
-  const calendarBoundary = sectionProps.controls as ReactElement<{ children: ReactElement }>;
-  const calendar = await SchoolsCalendar(calendarBoundary.props.children.props as Props<typeof SchoolsCalendar>);
-  render(await EventsSection({ ...sectionProps, controls: calendar }));
+  const [section] = (page as ReactElement<{ children: ReactElement[] }>).props.children;
+  render(await settle(EventsSection(section.props as Parameters<typeof EventsSection>[0])));
 }
 
 describe('/dla-szkol', () => {

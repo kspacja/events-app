@@ -4,7 +4,6 @@ import { currentEventDay } from '@events/time';
 import { getRuntimeConfig } from '@/config/runtimeConfig';
 import { BackToTop } from '@/features/events/components/BackToTop';
 import { EventsSection } from '@/features/events/components/EventsSection';
-import { EventsSkeleton } from '@/features/events/components/EventsSkeleton';
 import { createHttpOccurrenceSource } from '@/features/events/source/httpOccurrenceSource';
 import { scheduleSpan } from '@/features/events/schedule';
 import { SchoolsCalendar } from '@/features/schools/components/SchoolsCalendar';
@@ -27,27 +26,24 @@ export default async function SchoolsPage({ searchParams }: PageProps<'/dla-szko
 
   return (
     <main className={styles.page}>
-      {/* Keyed by week: a new week shows the skeleton instead of the old week until its listings arrive */}
-      <Suspense key={week} fallback={<EventsSkeleton />}>
-        <EventsSection
-          source={source}
-          range={range}
-          time={null}
-          sentence={SCHOOLS_LABELS.heading}
-          layout="split"
-          controlsLabels={{ show: SCHOOLS_LABELS.calendarShow, hide: SCHOOLS_LABELS.calendarHide }}
-          controls={
-            <Suspense fallback={<MonthCalendarSkeleton />}>
-              <SchoolsCalendar listings={monthListings} month={month} week={week} today={today} />
-            </Suspense>
-          }
-          rangeNavigation={{
-            previous: <WeekArrow direction={-1} week={week} />,
-            next: <WeekArrow direction={1} week={week} />,
-          }}
-          notice={notice}
-        />
-      </Suspense>
+      <EventsSection
+        source={source}
+        range={range}
+        time={null}
+        sentence={SCHOOLS_LABELS.heading}
+        layout="split"
+        controlsLabels={{ show: SCHOOLS_LABELS.calendarShow, hide: SCHOOLS_LABELS.calendarHide }}
+        controls={
+          <Suspense fallback={<MonthCalendarSkeleton />}>
+            <SchoolsCalendar listings={monthListings} month={month} week={week} today={today} />
+          </Suspense>
+        }
+        rangeNavigation={{
+          previous: <WeekArrow direction={-1} week={week} />,
+          next: <WeekArrow direction={1} week={week} />,
+        }}
+        notice={notice}
+      />
       <BackToTop />
     </main>
   );

@@ -5,6 +5,8 @@ import { SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK } from '@events/repo/testing';
 import { addDays, currentEventDay, mondayOf } from '@events/time';
 import { occurrencesHandler } from '@/mocks/handlers';
 import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
+import { settle } from '@/test/settle';
+import type { ReactElement } from 'react';
 import { createHttpOccurrenceSource } from '../source/httpOccurrenceSource';
 import { formatCount } from '../schedule';
 import { EventsSection } from './EventsSection';
@@ -19,14 +21,13 @@ describe('EventsSection', () => {
     server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => toListings(createSampleEvents(NOW))));
     const source = createHttpOccurrenceSource(TEST_EVENTS_API_URL);
 
-    // Async server components are awaited as plain functions, then the returned element is rendered
-    const section = await EventsSection({
+    const section = EventsSection({
       source,
       range: { from: monday, to: addDays(monday, 6) },
       time: null,
       sentence: 'Szukasz wydarzeń',
     });
-    const { container } = render(section);
+    const { container } = render(await settle(section) as ReactElement);
 
     expect(container.querySelectorAll('article')).toHaveLength(SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK);
     expect(screen.getByText(formatCount(SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK))).toBeInTheDocument();

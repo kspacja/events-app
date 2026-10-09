@@ -1,0 +1,25 @@
+.strip {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.day {
+  flex: 0 0 var(--day-column-width, 180px);
+  height: 240px;
+  border-radius: var(--radius-chip-top);
+  background: var(--color-bg-subtle);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .day {
+    animation: none;
+  }
+}

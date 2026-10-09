@@ -18,7 +18,7 @@ interface HeaderProps {
   /** Arrows on both sides of the range label. */
   readonly rangeNavigation?: RangeNavigation;
   readonly timeLabel?: string;
-  readonly countLabel: string;
+  readonly countLabel: ReactNode;
   readonly map?: ReactNode;
   /** `split`: the heading on top, controls and map in a left column, the summary in the right one. */
   readonly layout?: 'stacked' | 'split';
