@@ -77,3 +77,8 @@ export type Venue = z.infer<typeof venueSchema>;
 export type Price = z.infer<typeof priceSchema>;
 export type Category = z.infer<typeof categorySchema>;
 export type OccurrenceListing = z.infer<typeof occurrenceListingSchema>;
+
+/** The Kategoria główna: the first category, which sets the card's colour and label. */
+export function mainCategory(event: OccurrenceListing['event']): Category {
+  return event.categories[0];
+}

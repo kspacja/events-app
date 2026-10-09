@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { formatLocalTime } from '@/lib/format';
 import { CARD_LABELS } from '../labels';
 import { occurrenceDomId } from '../scheduleDom';
-import type { OccurrenceListing } from '@events/contract/listing';
+import { mainCategory, type OccurrenceListing } from '@events/contract/listing';
 import { ShowOnMapButton } from './ShowOnMapButton';
 import styles from './OccurrenceCard.module.css';
 
@@ -13,8 +13,8 @@ interface OccurrenceCardProps {
 
 export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) {
   const { occurrenceId, startsAt, event, venue } = listing;
-  const { title, categories, imageUrl } = event;
-  const [mainCategory] = categories;
+  const { title, imageUrl } = event;
+  const main = mainCategory(event);
 
   return (
     <article
@@ -24,7 +24,7 @@ export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) 
     >
       <div
         className={styles.image}
-        style={{ backgroundColor: `var(--category-${mainCategory.slug}, var(--category-fallback))` }}
+        style={{ backgroundColor: `var(--category-${main.slug}, var(--category-fallback))` }}
       >
         {imageUrl ? (
           <Image
@@ -39,7 +39,7 @@ export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) 
         <ShowOnMapButton occurrenceId={occurrenceId} title={title} />
       </div>
       <p className={styles.meta}>
-        {formatLocalTime(startsAt)} · {mainCategory.label}
+        {formatLocalTime(startsAt)} · {main.label}
       </p>
       <h3 className={styles.title}>
         {title}

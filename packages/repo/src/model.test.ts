@@ -41,6 +41,11 @@ describe('createEventsData', () => {
     expect(() => createEventsData(data)).toThrow(`Duplicate ${kind} id`);
   });
 
+  it('rejects a venue with an empty address', () => {
+    const data = { ...VALID, venues: [{ ...VENUE, address: ' ' }] };
+    expect(() => createEventsData(data)).toThrow(EventsIntegrityError);
+  });
+
   it.each([
     ['an unknown category', ['music', 'opera']],
     ['no category', []],

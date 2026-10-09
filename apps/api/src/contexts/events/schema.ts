@@ -45,7 +45,7 @@ export const eventCategories = eventsSchema.table(
     eventId: text('event_id')
       .notNull()
       .references(() => events.id, { onDelete: 'cascade', onUpdate: 'restrict' }),
-    // A renamed slug follows into events; a category in use cannot be deleted
+    // A renamed slug follows into event_categories; a category in use cannot be deleted
     categorySlug: text('category_slug')
       .notNull()
       .references(() => categories.slug, { onDelete: 'restrict', onUpdate: 'cascade' }),

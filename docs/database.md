@@ -31,7 +31,7 @@ erDiagram
     event_categories {
         text event_id PK, FK "ON DELETE CASCADE"
         text category_slug PK, FK "ON DELETE RESTRICT, ON UPDATE CASCADE"
-        smallint position "0 = Kategoria główna; UNIQUE z event_id"
+        smallint position ">= 0, UNIQUE z event_id; najniższa = Kategoria główna"
     }
     occurrences {
         text id PK "Termin"
@@ -46,6 +46,6 @@ erDiagram
 ```
 
 - Cena: CHECK `occurrences_price_valid` dopuszcza trzy stany — brak ceny (wszystkie kolumny ceny puste), `free` (kwoty i waluta puste), `paid` (`price_from >= 0`, waluta `PLN`, `price_to` puste albo `>= price_from`). Ta sama reguła jest w `priceSchema` w `@events/contract`.
-- Kategorie: Wydarzenie ma jedną lub więcej Kategorii w `event_categories`, `position` 0 to Kategoria główna. Baza nie wymusza „co najmniej jednej” — pilnuje tego model (`createEventsData`) i zapis Wydarzenia.
+- Kategorie: Wydarzenie ma jedną lub więcej Kategorii w `event_categories`, najniższa `position` to Kategoria główna (pozycje nie muszą zaczynać się od 0 ani iść bez dziur, odczyt sortuje po `position`). Baza nie wymusza „co najmniej jednej” — pilnuje tego model (`createEventsData`) i zapis Wydarzenia.
 - Indeksy: `occurrences.starts_at` oraz każdy klucz obcy (`event_categories.event_id` pokrywa klucz główny).
 - Daty: `starts_at` to `timestamptz`; API zwraca je jako czas Europe/Warsaw (`toWarsawIso`).

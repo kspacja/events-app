@@ -81,6 +81,9 @@ function assertIntegrity(data: EventsDataInput): void {
   const slugs = indexBy(data.categories, ({ slug }) => slug);
   const venues = indexBy(data.venues, ({ id }) => id);
   const events = indexBy(data.events, ({ id }) => id);
+  for (const { id, address } of data.venues) {
+    if (address.trim() === '') throw new EventsIntegrityError(`Venue ${id} has no address`);
+  }
   for (const { id, categorySlugs } of data.events) {
     if (categorySlugs.length === 0) throw new EventsIntegrityError(`Event ${id} has no category`);
     assertUnique(`category of event ${id}`, categorySlugs);

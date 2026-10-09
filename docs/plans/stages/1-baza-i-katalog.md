@@ -33,7 +33,7 @@
    - `apps/api` (`@events/api`): Hono na `@hono/node-server`, dev przez `tsx watch`; konfiguracja walidowana zod przy starcie (`DATABASE_URL` wymagany, tylko kształt adresu; `PORT` z domyślną wartością; komunikaty bez wartości zmiennych); `GET /health`; testy konfiguracji i `/health` przez `app.request`; `.env.example`.
    - `turbo.json` z `DATABASE_URL` w `env`; lint: `api` jako aplikacja w `DEPENDENCY_MAP` i na liście aplikacji niedostępnych dla pakietów; README.
    - Poza zakresem: Drizzle, schemat, połączenie z bazą (krok 2). Wybór sposobu testów integracyjnych odłożony.
-2. Schemat Drizzle Wydarzeń + migracje — zakres:
+2. Schemat Drizzle Wydarzeń + migracje — zakres (kolumny `venues` i `events.category_slug` zmienił krok 2a):
    - `apps/api`: `drizzle-orm`, `pg`, `drizzle-kit`; schemat w `src/contexts/events/schema.ts` w schemacie Postgresa `events`: `categories` (`slug`, `label`), `venues` (`id`, `name`, `city`, `lat`, `lng`), `events` (`id`, `title`, `category_slug`, `image_url`), `occurrences` (`id`, `event_id`, `venue_id`, `starts_at timestamptz`, cena w kolumnach `price_kind`/`price_from`/`price_to`/`price_currency` z CHECK); indeks na `starts_at`.
    - `src/db.ts` z `createDb(databaseUrl)`, `drizzle.config.ts`, migracje SQL w `apps/api/drizzle/`, skrypty `db:generate` i `db:migrate`.
    - `@events/repo`: `Catalog` → `EventsData`, `CatalogData` → `EventsDataInput`, `createCatalog` → `createEventsData`, `CatalogIntegrityError` → `EventsIntegrityError`, `createSampleCatalog` → `createSampleEvents`, `sampleCatalog.ts` → `sampleEvents.ts`.
@@ -45,7 +45,7 @@
    - Wydarzenie ma jedną lub więcej Kategorii, pierwsza jest główna: tabela `event_categories` (`event_id`, `category_slug`, `position`; PK `(event_id, category_slug)`, UNIQUE `(event_id, position)`, indeks na `category_slug`; Wydarzenie `CASCADE`, Kategoria `RESTRICT` / `ON UPDATE CASCADE`) zamiast `events.category_slug`; `categories` jako niepusta lista w modelu i kontrakcie; karta bierze kolor i etykietę z Kategorii głównej; słownik zaktualizowany.
    - Migracja `0000` wygenerowana od nowa (niewdrożona), diagram w `docs/database.md`.
 3. Seed z przykładowych danych.
-4. `GET /occurrences` w `apps/api` zgodny ze schematem z `@events/contract` (Doba wydarzeń 04:00, sortowanie) + testy integracyjne na prawdziwej bazie.
+4. `GET /occurrences` w `apps/api` zgodny ze schematem z `@events/contract` (Doba wydarzeń 04:00, sortowanie; Kategorie Wydarzenia w kolejności `position`, bez szukania `position = 0`) + testy integracyjne na prawdziwej bazie.
 5. Portal w dev z `EVENTS_API_URL` na lokalne `apps/api` i bez `API_MOCKING`; Kategorie z bazy.
 
 ## Otwarte pytania

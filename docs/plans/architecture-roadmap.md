@@ -49,7 +49,7 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Postgres z `docker-compose.yml` nasłuchuje na wszystkich interfejsach (`5432:5432`), nie tylko `127.0.0.1` — lokalne hasło deweloperskie.
 - Wspólny kod konfiguracji (klasa błędu, `blankAsUnset`, komunikaty bez wartości) jest w portalu i w API — wydzielamy przy trzeciej aplikacji.
 - `console.info` przy starcie API — zastąpi go logger w etapie 1.5.
-- Baza nie pilnuje formatu danych: format id i sluga, niepusta etykieta, `NaN` we współrzędnych i cenach, ceny z więcej niż 2 miejscami po przecinku (`numeric(10,2)` je zaokrągla) — dziś dane wchodzą tylko przez seed ze sprawdzonego modelu; wracamy, gdy Studio zacznie zapisywać (etap 3).
+- Baza nie pilnuje formatu danych: format id i sluga, niepusta etykieta, niepuste `name` i `city` Miejsca (także w kontrakcie i modelu), powtórzone Kategorie w kontrakcie, `NaN` we współrzędnych i cenach, ceny z więcej niż 2 miejscami po przecinku (`numeric(10,2)` je zaokrągla) — dziś dane wchodzą tylko przez seed ze sprawdzonego modelu; wracamy, gdy Studio zacznie zapisywać (etap 3).
 - Tabele bez `created_at` / `updated_at` — dochodzą z pierwszymi zapisami w Studio (etap 3).
 - Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.
 
