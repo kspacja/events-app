@@ -13,7 +13,8 @@ interface OccurrenceCardProps {
 
 export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) {
   const { occurrenceId, startsAt, event, venue } = listing;
-  const { title, category, imageUrl } = event;
+  const { title, categories, imageUrl } = event;
+  const [mainCategory] = categories;
 
   return (
     <article
@@ -23,7 +24,7 @@ export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) 
     >
       <div
         className={styles.image}
-        style={{ backgroundColor: `var(--category-${category.slug}, var(--category-fallback))` }}
+        style={{ backgroundColor: `var(--category-${mainCategory.slug}, var(--category-fallback))` }}
       >
         {imageUrl ? (
           <Image
@@ -38,7 +39,7 @@ export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) 
         <ShowOnMapButton occurrenceId={occurrenceId} title={title} />
       </div>
       <p className={styles.meta}>
-        {formatLocalTime(startsAt)} · {category.label}
+        {formatLocalTime(startsAt)} · {mainCategory.label}
       </p>
       <h3 className={styles.title}>
         {title}

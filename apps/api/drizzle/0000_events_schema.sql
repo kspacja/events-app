@@ -6,10 +6,18 @@ CREATE TABLE "events"."categories" (
 	"label" text NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "events"."event_categories" (
+	"event_id" text NOT NULL,
+	"category_slug" text NOT NULL,
+	"position" smallint NOT NULL,
+	CONSTRAINT "event_categories_event_id_category_slug_pk" PRIMARY KEY("event_id","category_slug"),
+	CONSTRAINT "event_categories_event_position_unique" UNIQUE("event_id","position"),
+	CONSTRAINT "event_categories_position_valid" CHECK ("events"."event_categories"."position" >= 0)
+);
+--> statement-breakpoint
 CREATE TABLE "events"."events" (
 	"id" text PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
-	"category_slug" text NOT NULL,
 	"image_url" text
 );
 --> statement-breakpoint
@@ -32,15 +40,17 @@ CREATE TABLE "events"."occurrences" (
 CREATE TABLE "events"."venues" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
+	"address" text NOT NULL,
 	"city" text NOT NULL,
 	"lat" double precision NOT NULL,
 	"lng" double precision NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "events"."events" ADD CONSTRAINT "events_category_slug_categories_slug_fk" FOREIGN KEY ("category_slug") REFERENCES "events"."categories"("slug") ON DELETE restrict ON UPDATE cascade;--> statement-breakpoint
+ALTER TABLE "events"."event_categories" ADD CONSTRAINT "event_categories_event_id_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "events"."events"("id") ON DELETE cascade ON UPDATE restrict;--> statement-breakpoint
+ALTER TABLE "events"."event_categories" ADD CONSTRAINT "event_categories_category_slug_categories_slug_fk" FOREIGN KEY ("category_slug") REFERENCES "events"."categories"("slug") ON DELETE restrict ON UPDATE cascade;--> statement-breakpoint
 ALTER TABLE "events"."occurrences" ADD CONSTRAINT "occurrences_event_id_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "events"."events"("id") ON DELETE cascade ON UPDATE restrict;--> statement-breakpoint
 ALTER TABLE "events"."occurrences" ADD CONSTRAINT "occurrences_venue_id_venues_id_fk" FOREIGN KEY ("venue_id") REFERENCES "events"."venues"("id") ON DELETE restrict ON UPDATE restrict;--> statement-breakpoint
-CREATE INDEX "events_category_slug_idx" ON "events"."events" USING btree ("category_slug");--> statement-breakpoint
+CREATE INDEX "event_categories_category_slug_idx" ON "events"."event_categories" USING btree ("category_slug");--> statement-breakpoint
 CREATE INDEX "occurrences_starts_at_idx" ON "events"."occurrences" USING btree ("starts_at");--> statement-breakpoint
 CREATE INDEX "occurrences_event_id_idx" ON "events"."occurrences" USING btree ("event_id");--> statement-breakpoint
 CREATE INDEX "occurrences_venue_id_idx" ON "events"."occurrences" USING btree ("venue_id");

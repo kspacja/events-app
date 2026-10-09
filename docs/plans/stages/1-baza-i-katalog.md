@@ -40,6 +40,10 @@
    - Lint: sterowniki bazy i ORM zablokowane w aplikacjach Next.js (ADR-0008).
    - Weryfikacja: bramki + migracja na bazie z Docker Compose, tabele sprawdzone w `psql`.
    - Poza zakresem: `Submission` (etap 3), migracja `CREATE EXTENSION vector` (z pierwszą kolumną `vector`, etap 5), Organizator (etap 2).
+2a. Adres Miejsca i wiele Kategorii — zakres:
+   - `venues.address text NOT NULL` (ulica i numer, `city` osobno); `Venue.address` w `@events/repo`, `venue.address` we Wpisie programu; adresy w przykładowych danych. Portal na razie go nie pokazuje.
+   - Wydarzenie ma jedną lub więcej Kategorii, pierwsza jest główna: tabela `event_categories` (`event_id`, `category_slug`, `position`; PK `(event_id, category_slug)`, UNIQUE `(event_id, position)`, indeks na `category_slug`; Wydarzenie `CASCADE`, Kategoria `RESTRICT` / `ON UPDATE CASCADE`) zamiast `events.category_slug`; `categories` jako niepusta lista w modelu i kontrakcie; karta bierze kolor i etykietę z Kategorii głównej; słownik zaktualizowany.
+   - Migracja `0000` wygenerowana od nowa (niewdrożona), diagram w `docs/database.md`.
 3. Seed z przykładowych danych.
 4. `GET /occurrences` w `apps/api` zgodny ze schematem z `@events/contract` (Doba wydarzeń 04:00, sortowanie) + testy integracyjne na prawdziwej bazie.
 5. Portal w dev z `EVENTS_API_URL` na lokalne `apps/api` i bez `API_MOCKING`; Kategorie z bazy.

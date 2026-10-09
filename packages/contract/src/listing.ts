@@ -19,6 +19,7 @@ export type EventId = z.infer<typeof eventIdSchema>;
 export const venueSchema = z
   .object({
     name: z.string(),
+    address: z.string().min(1),
     city: z.string(),
     lat: z.number(),
     lng: z.number(),
@@ -56,7 +57,8 @@ export const listedEventSchema = z
   .object({
     id: eventIdSchema,
     title: z.string(),
-    category: categorySchema,
+    /** At least one; the first is the main category, which sets the card's colour and label. */
+    categories: z.array(categorySchema).min(1).readonly(),
     imageUrl: z.string().optional(),
   })
   .readonly();

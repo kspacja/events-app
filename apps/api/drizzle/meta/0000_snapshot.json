@@ -1,5 +1,5 @@
 {
-  "id": "4fc2145c-aeb9-46bc-a3ec-a0ea357673e9",
+  "id": "e625d69b-a7c7-4e75-892d-503cd0554684",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -29,6 +29,104 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "events.event_categories": {
+      "name": "event_categories",
+      "schema": "events",
+      "columns": {
+        "event_id": {
+          "name": "event_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_slug": {
+          "name": "category_slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "event_categories_category_slug_idx": {
+          "name": "event_categories_category_slug_idx",
+          "columns": [
+            {
+              "expression": "category_slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "event_categories_event_id_events_id_fk": {
+          "name": "event_categories_event_id_events_id_fk",
+          "tableFrom": "event_categories",
+          "tableTo": "events",
+          "schemaTo": "events",
+          "columnsFrom": [
+            "event_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "restrict"
+        },
+        "event_categories_category_slug_categories_slug_fk": {
+          "name": "event_categories_category_slug_categories_slug_fk",
+          "tableFrom": "event_categories",
+          "tableTo": "categories",
+          "schemaTo": "events",
+          "columnsFrom": [
+            "category_slug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "event_categories_event_id_category_slug_pk": {
+          "name": "event_categories_event_id_category_slug_pk",
+          "columns": [
+            "event_id",
+            "category_slug"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "event_categories_event_position_unique": {
+          "name": "event_categories_event_position_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "event_id",
+            "position"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "event_categories_position_valid": {
+          "name": "event_categories_position_valid",
+          "value": "\"events\".\"event_categories\".\"position\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
     "events.events": {
       "name": "events",
       "schema": "events",
@@ -45,12 +143,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "category_slug": {
-          "name": "category_slug",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "image_url": {
           "name": "image_url",
           "type": "text",
@@ -58,39 +150,8 @@
           "notNull": false
         }
       },
-      "indexes": {
-        "events_category_slug_idx": {
-          "name": "events_category_slug_idx",
-          "columns": [
-            {
-              "expression": "category_slug",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "events_category_slug_categories_slug_fk": {
-          "name": "events_category_slug_categories_slug_fk",
-          "tableFrom": "events",
-          "tableTo": "categories",
-          "schemaTo": "events",
-          "columnsFrom": [
-            "category_slug"
-          ],
-          "columnsTo": [
-            "slug"
-          ],
-          "onDelete": "restrict",
-          "onUpdate": "cascade"
-        }
-      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -251,6 +312,12 @@
         },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
           "type": "text",
           "primaryKey": false,
           "notNull": true

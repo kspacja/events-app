@@ -18,8 +18,8 @@ function makeListing(
     occurrenceId: occurrenceIdSchema.parse(occurrenceId),
     startsAt,
     price: null,
-    event: { id: eventIdSchema.parse(eventId), title: `Event ${eventId}`, category: { slug: 'music', label: 'Muzyka' } },
-    venue: { name: 'Venue', city: 'Warszawa', lat, lng: 21 },
+    event: { id: eventIdSchema.parse(eventId), title: `Event ${eventId}`, categories: [{ slug: 'music', label: 'Muzyka' }] },
+    venue: { name: 'Venue', address: 'ul. Testowa 1', city: 'Warszawa', lat, lng: 21 },
   };
 }
 

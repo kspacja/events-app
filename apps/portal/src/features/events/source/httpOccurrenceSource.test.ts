@@ -46,8 +46,8 @@ describe('HTTP occurrence source', () => {
       occurrenceId: 'dup-2030-01-01',
       startsAt: '2030-01-01T18:00:00+01:00',
       price: null,
-      event: { id: 'dup', title: 'Duplicate', category: { slug: 'music', label: 'Muzyka' } },
-      venue: { name: 'Hall', city: 'Warszawa', lat: 52, lng: 21 },
+      event: { id: 'dup', title: 'Duplicate', categories: [{ slug: 'music', label: 'Muzyka' }] },
+      venue: { name: 'Hall', address: 'ul. Testowa 1', city: 'Warszawa', lat: 52, lng: 21 },
     };
     server.use(
       http.get(OCCURRENCES_URL, () => HttpResponse.json({ occurrences: [listing] })),
@@ -87,8 +87,8 @@ describe('HTTP occurrence source', () => {
       occurrenceId: id,
       startsAt,
       price: null,
-      event: { id: `event-${id}`, title: id, category: { slug: 'music', label: 'Muzyka' } },
-      venue: { name: 'Hall', city: 'Warszawa', lat: 52, lng: 21 },
+      event: { id: `event-${id}`, title: id, categories: [{ slug: 'music', label: 'Muzyka' }] },
+      venue: { name: 'Hall', address: 'ul. Testowa 1', city: 'Warszawa', lat: 52, lng: 21 },
     });
     const shuffled = [
       at('c', '2030-01-01T20:00:00+01:00'),

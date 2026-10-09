@@ -3,11 +3,11 @@ import { eventIdSchema, occurrenceIdSchema, occurrenceListingSchema } from '@eve
 import { createEventsData, venueId } from './model';
 import { toListings } from './listings';
 
-const VENUE = { id: venueId('hall'), name: 'Hala', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
+const VENUE = { id: venueId('hall'), name: 'Hala', address: 'ul. Wystawowa 1', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
 const EVENT = {
   id: eventIdSchema.parse('jazz'),
   title: 'Jazz',
-  categorySlug: 'music',
+  categorySlugs: ['music'],
   imageUrl: '/jazz.jpg',
 };
 
@@ -41,10 +41,21 @@ describe('toListings', () => {
       occurrenceId: 'early',
       startsAt: '2030-01-01T10:00:00+01:00',
       price: null,
-      event: { id: 'jazz', title: 'Jazz', category: { slug: 'music', label: 'Muzyka' }, imageUrl: '/jazz.jpg' },
-      venue: { name: 'Hala', city: 'Wrocław', lat: 51.1, lng: 17 },
+      event: { id: 'jazz', title: 'Jazz', categories: [{ slug: 'music', label: 'Muzyka' }], imageUrl: '/jazz.jpg' },
+      venue: { name: 'Hala', address: 'ul. Wystawowa 1', city: 'Wrocław', lat: 51.1, lng: 17 },
     });
     expect(occurrenceListingSchema.safeParse(listing).success).toBe(true);
+  });
+
+  it('keeps the main category first', () => {
+    const twoCategories = createEventsData({
+      categories: [{ slug: 'music', label: 'Muzyka' }, { slug: 'art', label: 'Sztuka' }],
+      venues: [VENUE],
+      events: [{ ...EVENT, categorySlugs: ['art', 'music'] }],
+      occurrences: data.occurrences,
+    });
+
+    expect(toListings(twoCategories)[0].event.categories.map(({ slug }) => slug)).toEqual(['art', 'music']);
   });
 
   it('lists every occurrence in input order', () => {

@@ -13,8 +13,8 @@ const LISTING: OccurrenceListing = {
   occurrenceId: occurrenceIdSchema.parse('e1-2026-06-06'),
   startsAt: '2026-06-06T17:00:00Z',
   price: null,
-  event: { id: eventIdSchema.parse('e1'), title: 'Koncert jazzowy', category: { slug: 'music', label: 'Muzyka' } },
-  venue: { name: 'Klub', city: 'Warszawa', lat: 52, lng: 21 },
+  event: { id: eventIdSchema.parse('e1'), title: 'Koncert jazzowy', categories: [{ slug: 'music', label: 'Muzyka' }] },
+  venue: { name: 'Klub', address: 'ul. Testowa 1', city: 'Warszawa', lat: 52, lng: 21 },
 };
 
 const CARD_SELECTION = JSON.stringify({ occurrenceId: LISTING.occurrenceId, takeFocus: true });
@@ -25,16 +25,24 @@ function SelectionProbe() {
   return <output>{JSON.stringify(instruction)}</output>;
 }
 
-function renderCard(muted = false) {
+function renderCard(muted = false, listing = LISTING) {
   return render(
     <OccurrenceSelectionProvider>
-      <OccurrenceCard listing={LISTING} muted={muted} />
+      <OccurrenceCard listing={listing} muted={muted} />
       <SelectionProbe />
     </OccurrenceSelectionProvider>,
   );
 }
 
 describe('OccurrenceCard', () => {
+  it('labels the card with the main category only', () => {
+    const categories = [{ slug: 'music', label: 'Muzyka' }, { slug: 'meetups', label: 'Spotkania' }];
+    renderCard(false, { ...LISTING, event: { ...LISTING.event, categories } });
+
+    expect(screen.getByText(/· Muzyka/)).toBeInTheDocument();
+    expect(screen.queryByText(/Spotkania/)).not.toBeInTheDocument();
+  });
+
   it('exposes a pin button named after the event', () => {
     renderCard();
 

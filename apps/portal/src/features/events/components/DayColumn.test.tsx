@@ -13,8 +13,8 @@ const LISTING: OccurrenceListing = {
   occurrenceId: occurrenceIdSchema.parse('e1-2026-06-06'),
   startsAt: '2026-06-06T17:00:00Z',
   price: null,
-  event: { id: eventIdSchema.parse('e1'), title: 'Koncert jazzowy', category: { slug: 'music', label: 'Muzyka' } },
-  venue: { name: 'Klub', city: 'Warszawa', lat: 52, lng: 21 },
+  event: { id: eventIdSchema.parse('e1'), title: 'Koncert jazzowy', categories: [{ slug: 'music', label: 'Muzyka' }] },
+  venue: { name: 'Klub', address: 'ul. Testowa 1', city: 'Warszawa', lat: 52, lng: 21 },
 };
 
 function makeDay(overrides: Partial<ScheduleDay> = {}): ScheduleDay {

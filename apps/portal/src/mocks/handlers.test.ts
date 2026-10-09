@@ -13,8 +13,8 @@ const LATE_NIGHT = occurrenceListingSchema.parse({
   occurrenceId: 'late-2030-01-06',
   startsAt: '2030-01-06T01:30:00+01:00',
   price: null,
-  event: { id: 'late', title: 'Late', category: { slug: 'comedy', label: 'Komedia' } },
-  venue: { name: 'Club', city: 'Kraków', lat: 50, lng: 19 },
+  event: { id: 'late', title: 'Late', categories: [{ slug: 'comedy', label: 'Komedia' }] },
+  venue: { name: 'Club', address: 'ul. Testowa 1', city: 'Kraków', lat: 50, lng: 19 },
 });
 
 describe('occurrencesHandler', () => {

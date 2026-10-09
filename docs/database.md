@@ -6,17 +6,19 @@ Postgres, jeden schemat na kontekst (ADR-0002). Tabele definiuje Drizzle w `apps
 
 ```mermaid
 erDiagram
-    categories ||--o{ events : "Kategoria Wydarzenia"
+    categories ||--o{ event_categories : "Kategoria"
+    events ||--|{ event_categories : "Kategorie Wydarzenia"
     events ||--o{ occurrences : "Terminy Wydarzenia"
     venues ||--o{ occurrences : "Miejsce Terminu"
 
     categories {
-        text slug PK "Kategoria; zmiana sluga przechodzi do events"
+        text slug PK "Kategoria; zmiana sluga przechodzi do event_categories"
         text label "nazwa wyświetlana"
     }
     venues {
         text id PK "Miejsce"
         text name
+        text address "ulica i numer"
         text city
         double lat
         double lng
@@ -24,8 +26,12 @@ erDiagram
     events {
         text id PK "Wydarzenie"
         text title
-        text category_slug FK "ON DELETE RESTRICT, ON UPDATE CASCADE"
         text image_url "opcjonalne"
+    }
+    event_categories {
+        text event_id PK, FK "ON DELETE CASCADE"
+        text category_slug PK, FK "ON DELETE RESTRICT, ON UPDATE CASCADE"
+        smallint position "0 = Kategoria główna; UNIQUE z event_id"
     }
     occurrences {
         text id PK "Termin"
@@ -40,5 +46,6 @@ erDiagram
 ```
 
 - Cena: CHECK `occurrences_price_valid` dopuszcza trzy stany — brak ceny (wszystkie kolumny ceny puste), `free` (kwoty i waluta puste), `paid` (`price_from >= 0`, waluta `PLN`, `price_to` puste albo `>= price_from`). Ta sama reguła jest w `priceSchema` w `@events/contract`.
-- Indeksy: `occurrences.starts_at` oraz każdy klucz obcy.
+- Kategorie: Wydarzenie ma jedną lub więcej Kategorii w `event_categories`, `position` 0 to Kategoria główna. Baza nie wymusza „co najmniej jednej” — pilnuje tego model (`createEventsData`) i zapis Wydarzenia.
+- Indeksy: `occurrences.starts_at` oraz każdy klucz obcy (`event_categories.event_id` pokrywa klucz główny).
 - Daty: `starts_at` to `timestamptz`; API zwraca je jako czas Europe/Warsaw (`toWarsawIso`).

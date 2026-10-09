@@ -1,5 +1,16 @@
 import { sql } from 'drizzle-orm';
-import { check, doublePrecision, index, numeric, pgSchema, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  check,
+  doublePrecision,
+  index,
+  numeric,
+  pgSchema,
+  primaryKey,
+  smallint,
+  text,
+  timestamp,
+  unique,
+} from 'drizzle-orm/pg-core';
 
 // One Postgres schema per context (ADR-0002)
 export const eventsSchema = pgSchema('events');
@@ -14,23 +25,38 @@ export const categories = eventsSchema.table('categories', {
 export const venues = eventsSchema.table('venues', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
+  // Street and number; the city is a separate column
+  address: text('address').notNull(),
   city: text('city').notNull(),
   lat: doublePrecision('lat').notNull(),
   lng: doublePrecision('lng').notNull(),
 });
 
-export const events = eventsSchema.table(
-  'events',
+export const events = eventsSchema.table('events', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  imageUrl: text('image_url'),
+});
+
+// An event has one or more categories; position 0 is the main one
+export const eventCategories = eventsSchema.table(
+  'event_categories',
   {
-    id: text('id').primaryKey(),
-    title: text('title').notNull(),
+    eventId: text('event_id')
+      .notNull()
+      .references(() => events.id, { onDelete: 'cascade', onUpdate: 'restrict' }),
     // A renamed slug follows into events; a category in use cannot be deleted
     categorySlug: text('category_slug')
       .notNull()
       .references(() => categories.slug, { onDelete: 'restrict', onUpdate: 'cascade' }),
-    imageUrl: text('image_url'),
+    position: smallint('position').notNull(),
   },
-  (table) => [index('events_category_slug_idx').on(table.categorySlug)],
+  (table) => [
+    primaryKey({ columns: [table.eventId, table.categorySlug] }),
+    unique('event_categories_event_position_unique').on(table.eventId, table.position),
+    index('event_categories_category_slug_idx').on(table.categorySlug),
+    check('event_categories_position_valid', sql`${table.position} >= 0`),
+  ],
 );
 
 export const occurrences = eventsSchema.table(

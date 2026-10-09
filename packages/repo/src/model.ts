@@ -17,6 +17,8 @@ export const venueId = (value: string): VenueId => venueIdSchema.parse(value);
 export interface Venue {
   readonly id: VenueId;
   readonly name: string;
+  /** Street and number; the city is separate. */
+  readonly address: string;
   readonly city: string;
   readonly location: { readonly lat: number; readonly lng: number };
 }
@@ -24,7 +26,8 @@ export interface Venue {
 export interface Event {
   readonly id: EventId;
   readonly title: string;
-  readonly categorySlug: Category['slug'];
+  /** At least one, no repeats; the first is the main category. */
+  readonly categorySlugs: readonly Category['slug'][];
   readonly imageUrl?: string;
 }
 
@@ -78,7 +81,11 @@ function assertIntegrity(data: EventsDataInput): void {
   const slugs = indexBy(data.categories, ({ slug }) => slug);
   const venues = indexBy(data.venues, ({ id }) => id);
   const events = indexBy(data.events, ({ id }) => id);
-  for (const { id, categorySlug } of data.events) lookup(slugs, categorySlug, `category of event ${id}`);
+  for (const { id, categorySlugs } of data.events) {
+    if (categorySlugs.length === 0) throw new EventsIntegrityError(`Event ${id} has no category`);
+    assertUnique(`category of event ${id}`, categorySlugs);
+    for (const slug of categorySlugs) lookup(slugs, slug, `category of event ${id}`);
+  }
   for (const { id, eventId, venueId, startsAt } of data.occurrences) {
     lookup(events, eventId, `event of occurrence ${id}`);
     lookup(venues, venueId, `venue of occurrence ${id}`);
@@ -89,6 +96,8 @@ function assertIntegrity(data: EventsDataInput): void {
 function freezeAll<T extends object>(items: readonly T[], copy: (item: T) => T = (item) => ({ ...item })): readonly T[] {
   return Object.freeze(items.map((item) => Object.freeze(copy(item))));
 }
+
+const copyEvent = (event: Event): Event => ({ ...event, categorySlugs: Object.freeze([...event.categorySlugs]) });
 
 const copyVenue = (venue: Venue): Venue => ({ ...venue, location: Object.freeze({ ...venue.location }) });
 
@@ -110,7 +119,7 @@ export class EventsData implements EventsDataInput {
     assertIntegrity(data);
     this.categories = freezeAll(data.categories);
     this.venues = freezeAll(data.venues, copyVenue);
-    this.events = freezeAll(data.events);
+    this.events = freezeAll(data.events, copyEvent);
     this.occurrences = freezeAll(data.occurrences, copyOccurrence);
   }
 }

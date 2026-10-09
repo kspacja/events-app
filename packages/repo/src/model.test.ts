@@ -4,8 +4,8 @@ import { toListings } from './listings';
 import { EventsData, EventsIntegrityError, createEventsData, venueId, type EventsDataInput } from './model';
 
 const MUSIC = { slug: 'music', label: 'Muzyka' };
-const VENUE = { id: venueId('hall'), name: 'Hala', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
-const EVENT = { id: eventIdSchema.parse('jazz'), title: 'Jazz', categorySlug: 'music' };
+const VENUE = { id: venueId('hall'), name: 'Hala', address: 'ul. Wystawowa 1', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
+const EVENT = { id: eventIdSchema.parse('jazz'), title: 'Jazz', categorySlugs: ['music'] };
 const OCCURRENCE = {
   id: occurrenceIdSchema.parse('jazz-2030-01-01'),
   eventId: EVENT.id,
@@ -41,8 +41,12 @@ describe('createEventsData', () => {
     expect(() => createEventsData(data)).toThrow(`Duplicate ${kind} id`);
   });
 
-  it('rejects an event with an unknown category', () => {
-    const data = { ...VALID, events: [{ ...EVENT, categorySlug: 'opera' }] };
+  it.each([
+    ['an unknown category', ['music', 'opera']],
+    ['no category', []],
+    ['a repeated category', ['music', 'music']],
+  ])('rejects an event with %s', (_name, categorySlugs) => {
+    const data = { ...VALID, events: [{ ...EVENT, categorySlugs }] };
     expect(() => createEventsData(data)).toThrow(EventsIntegrityError);
   });
 

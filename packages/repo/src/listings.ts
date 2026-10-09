@@ -8,15 +8,16 @@ export function toListings(data: EventsData): OccurrenceListing[] {
   const events = indexBy(data.events, ({ id }) => id);
 
   return data.occurrences.map((occurrence): OccurrenceListing => {
-    const { categorySlug, ...event } = lookup(events, occurrence.eventId, 'event');
+    const { categorySlugs, ...event } = lookup(events, occurrence.eventId, 'event');
     const venue = lookup(venues, occurrence.venueId, 'venue');
     return {
       occurrenceId: occurrence.id,
       startsAt: occurrence.startsAt,
       price: occurrence.price,
-      event: { ...event, category: lookup(categories, categorySlug, 'category') },
+      event: { ...event, categories: categorySlugs.map((slug) => lookup(categories, slug, 'category')) },
       venue: {
         name: venue.name,
+        address: venue.address,
         city: venue.city,
         lat: venue.location.lat,
         lng: venue.location.lng,

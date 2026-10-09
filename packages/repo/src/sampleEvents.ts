@@ -15,34 +15,35 @@ const COMEDY: Category = { slug: 'comedy', label: 'Komedia' };
 
 const SAMPLE_CATEGORIES: readonly Category[] = [MUSIC, FILM, FOOD, MOVEMENT, WORKSHOPS, ART, MEETUPS, COMEDY];
 
-const venue = (id: string, name: string, city: string, lat: number, lng: number): Venue => ({
+const venue = (id: string, name: string, address: string, city: string, lat: number, lng: number): Venue => ({
   id: venueId(id),
   name,
+  address,
   city,
   location: { lat, lng },
 });
 
-const OSTROW_TUMSKI = venue('ostrow-tumski', 'Ostrów Tumski', WROCLAW, 51.1142, 17.0465);
-const OSTROW_TUMSKI_BRZEG = venue('ostrow-tumski-brzeg', 'Ostrów Tumski', WROCLAW, 51.1150, 17.0450);
-const MUZEUM_NARODOWE = venue('muzeum-narodowe', 'Muzeum Narodowe', WROCLAW, 51.1100, 17.0480);
-const SRODMIESCIE = venue('srodmiescie', 'Śródmieście', WROCLAW, 51.0980, 17.0330);
-const RYNEK = venue('rynek', 'Rynek', WROCLAW, 51.1100, 17.0320);
-const NADODRZE = venue('nadodrze', 'Nadodrze', WROCLAW, 51.1240, 17.0290);
-const NADODRZE_PODWORKA = venue('nadodrze-podworka', 'Nadodrze', WROCLAW, 51.1250, 17.0300);
-const BULWAR_DUNIKOWSKIEGO = venue('bulwar-dunikowskiego', 'Bulwar Dunikowskiego', WROCLAW, 51.1135, 17.0420);
-const WYSPA_SLODOWA = venue('wyspa-slodowa', 'Wyspa Słodowa', WROCLAW, 51.1130, 17.0380);
-const HALA_STULECIA = venue('hala-stulecia', 'Hala Stulecia', WROCLAW, 51.1067, 17.0770);
-const OLBIN = venue('olbin', 'Ołbin', WROCLAW, 51.1190, 17.0460);
-const KOSCIOL_PRZY_RYNKU = venue('kosciol-przy-rynku', 'Kościół przy Rynku', WROCLAW, 51.1095, 17.0335);
-const PIWNICA_POD_BARANAMI = venue('piwnica-pod-baranami', 'Piwnica pod Baranami', 'Kraków', 50.0616, 19.9372);
-const KAZIMIERZ = venue('kazimierz', 'Kazimierz', 'Kraków', 50.0515, 19.9445);
-const PLAC_NOWY = venue('plac-nowy', 'Plac Nowy', 'Kraków', 50.0521, 19.9446);
-const PLAZA_JELITKOWO = venue('plaza-jelitkowo', 'Plaża Jelitkowo', 'Gdańsk', 54.4217, 18.5780);
-const DLUGIE_POBRZEZE = venue('dlugie-pobrzeze', 'Długie Pobrzeże', 'Gdańsk', 54.3503, 18.6580);
-const STARY_RYNEK = venue('stary-rynek', 'Stary Rynek', 'Poznań', 52.4082, 16.9335);
-const GALERIA_JEZYCE = venue('galeria-jezyce', 'Galeria Jeżyce', 'Poznań', 52.4170, 16.9000);
-const PASAZ_NIEPOLDA = venue('pasaz-niepolda', 'Pasaż Niepolda', WROCLAW, 51.1103, 17.0222);
-const OLOWIANKA = venue('olowianka', 'Ołowianka', 'Gdańsk', 54.3490, 18.6650);
+const OSTROW_TUMSKI = venue('ostrow-tumski', 'Ostrów Tumski', 'pl. Katedralny 18', WROCLAW, 51.1142, 17.0465);
+const OSTROW_TUMSKI_BRZEG = venue('ostrow-tumski-brzeg', 'Ostrów Tumski', 'ul. św. Idziego 2', WROCLAW, 51.1150, 17.0450);
+const MUZEUM_NARODOWE = venue('muzeum-narodowe', 'Muzeum Narodowe', 'pl. Powstańców Warszawy 5', WROCLAW, 51.1100, 17.0480);
+const SRODMIESCIE = venue('srodmiescie', 'Śródmieście', 'ul. Świdnicka 20', WROCLAW, 51.0980, 17.0330);
+const RYNEK = venue('rynek', 'Rynek', 'Rynek 1', WROCLAW, 51.1100, 17.0320);
+const NADODRZE = venue('nadodrze', 'Nadodrze', 'ul. Jedności Narodowej 59', WROCLAW, 51.1240, 17.0290);
+const NADODRZE_PODWORKA = venue('nadodrze-podworka', 'Nadodrze', 'ul. Roosevelta 5', WROCLAW, 51.1250, 17.0300);
+const BULWAR_DUNIKOWSKIEGO = venue('bulwar-dunikowskiego', 'Bulwar Dunikowskiego', 'Bulwar Xawerego Dunikowskiego', WROCLAW, 51.1135, 17.0420);
+const WYSPA_SLODOWA = venue('wyspa-slodowa', 'Wyspa Słodowa', 'Wyspa Słodowa', WROCLAW, 51.1130, 17.0380);
+const HALA_STULECIA = venue('hala-stulecia', 'Hala Stulecia', 'ul. Wystawowa 1', WROCLAW, 51.1067, 17.0770);
+const OLBIN = venue('olbin', 'Ołbin', 'ul. Nowowiejska 51', WROCLAW, 51.1190, 17.0460);
+const KOSCIOL_PRZY_RYNKU = venue('kosciol-przy-rynku', 'Kościół przy Rynku', 'ul. św. Elżbiety 1', WROCLAW, 51.1095, 17.0335);
+const PIWNICA_POD_BARANAMI = venue('piwnica-pod-baranami', 'Piwnica pod Baranami', 'Rynek Główny 27', 'Kraków', 50.0616, 19.9372);
+const KAZIMIERZ = venue('kazimierz', 'Kazimierz', 'ul. Szeroka 6', 'Kraków', 50.0515, 19.9445);
+const PLAC_NOWY = venue('plac-nowy', 'Plac Nowy', 'pl. Nowy 4', 'Kraków', 50.0521, 19.9446);
+const PLAZA_JELITKOWO = venue('plaza-jelitkowo', 'Plaża Jelitkowo', 'ul. Kąpielowa 1', 'Gdańsk', 54.4217, 18.5780);
+const DLUGIE_POBRZEZE = venue('dlugie-pobrzeze', 'Długie Pobrzeże', 'Długie Pobrzeże 14', 'Gdańsk', 54.3503, 18.6580);
+const STARY_RYNEK = venue('stary-rynek', 'Stary Rynek', 'Stary Rynek 1', 'Poznań', 52.4082, 16.9335);
+const GALERIA_JEZYCE = venue('galeria-jezyce', 'Galeria Jeżyce', 'ul. Kraszewskiego 10', 'Poznań', 52.4170, 16.9000);
+const PASAZ_NIEPOLDA = venue('pasaz-niepolda', 'Pasaż Niepolda', 'ul. Ruska 51', WROCLAW, 51.1103, 17.0222);
+const OLOWIANKA = venue('olowianka', 'Ołowianka', 'ul. Ołowianka 1', 'Gdańsk', 54.3490, 18.6650);
 
 const SAMPLE_VENUES: readonly Venue[] = [
   OSTROW_TUMSKI,
@@ -80,7 +81,8 @@ const paid = (from: number, to: number | null = null): Price => ({
 interface SampleEventTemplate {
   readonly id: string;
   readonly title: string;
-  readonly category: Category;
+  /** The first is the main category. */
+  readonly categories: readonly [Category, ...Category[]];
   readonly venue: Venue;
   readonly price?: Price;
   /** Days since Monday: 0..6 */
@@ -91,30 +93,30 @@ interface SampleEventTemplate {
 
 // Order matters: the skip cycle below is keyed by the template index
 const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
-  { id: 'wro-choir', title: 'Koncert chóralny w katedrze', category: MUSIC, venue: OSTROW_TUMSKI, dayOffset: 0, time: '19:00', price: free },
-  { id: 'wro-exhibition', title: 'Wystawa: miasto po zmroku', category: ART, venue: MUZEUM_NARODOWE, dayOffset: 1, time: '18:00', price: paid(15) },
-  { id: 'wro-boardgames', title: 'Wieczór gier planszowych', category: MEETUPS, venue: SRODMIESCIE, dayOffset: 2, time: '18:30' },
-  { id: 'wro-standup', title: 'Stand-up w piwnicy', category: COMEDY, venue: RYNEK, dayOffset: 3, time: '20:00' },
-  { id: 'wro-courtyard', title: 'Koncert w podwórku', category: MUSIC, venue: NADODRZE, dayOffset: 3, time: '21:30' },
-  { id: 'wro-jazz', title: 'Jazz nad Odrą', category: MUSIC, venue: BULWAR_DUNIKOWSKIEGO, dayOffset: 4, time: '19:00', price: paid(40, 80) },
-  { id: 'wro-cinema', title: 'Kino plenerowe', category: FILM, venue: WYSPA_SLODOWA, dayOffset: 4, time: '20:30', price: free },
-  { id: 'wro-market', title: 'Targ producentów', category: FOOD, venue: HALA_STULECIA, dayOffset: 5, time: '10:00', price: free },
-  { id: 'wro-walk', title: 'Spacer po podwórkach', category: MOVEMENT, venue: NADODRZE_PODWORKA, dayOffset: 5, time: '14:00' },
-  { id: 'wro-run', title: 'Nocny bieg', category: MOVEMENT, venue: OSTROW_TUMSKI_BRZEG, dayOffset: 5, time: '21:00' },
-  { id: 'wro-ceramics', title: 'Warsztaty ceramiki', category: WORKSHOPS, venue: OLBIN, dayOffset: 6, time: '12:00' },
-  { id: 'wro-organ', title: 'Recital organowy', category: MUSIC, venue: KOSCIOL_PRZY_RYNKU, dayOffset: 6, time: '18:00' },
+  { id: 'wro-choir', title: 'Koncert chóralny w katedrze', categories: [MUSIC], venue: OSTROW_TUMSKI, dayOffset: 0, time: '19:00', price: free },
+  { id: 'wro-exhibition', title: 'Wystawa: miasto po zmroku', categories: [ART], venue: MUZEUM_NARODOWE, dayOffset: 1, time: '18:00', price: paid(15) },
+  { id: 'wro-boardgames', title: 'Wieczór gier planszowych', categories: [MEETUPS], venue: SRODMIESCIE, dayOffset: 2, time: '18:30' },
+  { id: 'wro-standup', title: 'Stand-up w piwnicy', categories: [COMEDY], venue: RYNEK, dayOffset: 3, time: '20:00' },
+  { id: 'wro-courtyard', title: 'Koncert w podwórku', categories: [MUSIC], venue: NADODRZE, dayOffset: 3, time: '21:30' },
+  { id: 'wro-jazz', title: 'Jazz nad Odrą', categories: [MUSIC], venue: BULWAR_DUNIKOWSKIEGO, dayOffset: 4, time: '19:00', price: paid(40, 80) },
+  { id: 'wro-cinema', title: 'Kino plenerowe', categories: [FILM], venue: WYSPA_SLODOWA, dayOffset: 4, time: '20:30', price: free },
+  { id: 'wro-market', title: 'Targ producentów', categories: [FOOD, MEETUPS], venue: HALA_STULECIA, dayOffset: 5, time: '10:00', price: free },
+  { id: 'wro-walk', title: 'Spacer po podwórkach', categories: [MOVEMENT, ART], venue: NADODRZE_PODWORKA, dayOffset: 5, time: '14:00' },
+  { id: 'wro-run', title: 'Nocny bieg', categories: [MOVEMENT], venue: OSTROW_TUMSKI_BRZEG, dayOffset: 5, time: '21:00' },
+  { id: 'wro-ceramics', title: 'Warsztaty ceramiki', categories: [WORKSHOPS], venue: OLBIN, dayOffset: 6, time: '12:00' },
+  { id: 'wro-organ', title: 'Recital organowy', categories: [MUSIC], venue: KOSCIOL_PRZY_RYNKU, dayOffset: 6, time: '18:00' },
 
-  { id: 'krk-jazz', title: 'Jazz w piwnicy', category: MUSIC, venue: PIWNICA_POD_BARANAMI, dayOffset: 1, time: '20:00', price: paid(30, 60) },
-  { id: 'krk-standup', title: 'Stand-up na Kazimierzu', category: COMEDY, venue: KAZIMIERZ, dayOffset: 3, time: '19:30' },
-  { id: 'krk-market', title: 'Targ śniadaniowy', category: FOOD, venue: PLAC_NOWY, dayOffset: 5, time: '11:00' },
-  { id: 'gdn-cinema', title: 'Kino na plaży', category: FILM, venue: PLAZA_JELITKOWO, dayOffset: 4, time: '21:00' },
-  { id: 'gdn-run', title: 'Bieg nad Motławą', category: MOVEMENT, venue: DLUGIE_POBRZEZE, dayOffset: 6, time: '09:00' },
-  { id: 'poz-workshop', title: 'Warsztaty fotograficzne', category: WORKSHOPS, venue: STARY_RYNEK, dayOffset: 2, time: '17:00' },
-  { id: 'poz-art', title: 'Wernisaż na Jeżycach', category: ART, venue: GALERIA_JEZYCE, dayOffset: 4, time: '18:00' },
+  { id: 'krk-jazz', title: 'Jazz w piwnicy', categories: [MUSIC, MEETUPS], venue: PIWNICA_POD_BARANAMI, dayOffset: 1, time: '20:00', price: paid(30, 60) },
+  { id: 'krk-standup', title: 'Stand-up na Kazimierzu', categories: [COMEDY], venue: KAZIMIERZ, dayOffset: 3, time: '19:30' },
+  { id: 'krk-market', title: 'Targ śniadaniowy', categories: [FOOD], venue: PLAC_NOWY, dayOffset: 5, time: '11:00' },
+  { id: 'gdn-cinema', title: 'Kino na plaży', categories: [FILM], venue: PLAZA_JELITKOWO, dayOffset: 4, time: '21:00' },
+  { id: 'gdn-run', title: 'Bieg nad Motławą', categories: [MOVEMENT], venue: DLUGIE_POBRZEZE, dayOffset: 6, time: '09:00' },
+  { id: 'poz-workshop', title: 'Warsztaty fotograficzne', categories: [WORKSHOPS, ART], venue: STARY_RYNEK, dayOffset: 2, time: '17:00' },
+  { id: 'poz-art', title: 'Wernisaż na Jeżycach', categories: [ART], venue: GALERIA_JEZYCE, dayOffset: 4, time: '18:00' },
 
-  { id: 'wro-club', title: 'Nocny set w klubie', category: MUSIC, venue: PASAZ_NIEPOLDA, dayOffset: 4, time: '23:00', price: paid(25) },
-  { id: 'krk-latenight', title: 'Nocny stand-up po północy', category: COMEDY, venue: PLAC_NOWY, dayOffset: 6, time: '01:30', price: paid(20, 35) },
-  { id: 'gdn-afterparty', title: 'Afterparty na Ołowiance', category: MUSIC, venue: OLOWIANKA, dayOffset: 5, time: '01:00' },
+  { id: 'wro-club', title: 'Nocny set w klubie', categories: [MUSIC], venue: PASAZ_NIEPOLDA, dayOffset: 4, time: '23:00', price: paid(25) },
+  { id: 'krk-latenight', title: 'Nocny stand-up po północy', categories: [COMEDY], venue: PLAC_NOWY, dayOffset: 6, time: '01:30', price: paid(20, 35) },
+  { id: 'gdn-afterparty', title: 'Afterparty na Ołowiance', categories: [MUSIC], venue: OLOWIANKA, dayOffset: 5, time: '01:00' },
 ];
 
 /** Every template occurs in the first week, so this is the size of the sample data's first week. */
@@ -139,10 +141,10 @@ function isSkipped(weekIndex: number, templateIndex: number): boolean {
 export function createSampleEvents(now: Date): EventsData {
   const firstMonday = mondayOf(currentEventDay(now));
 
-  const events: Event[] = SAMPLE_EVENTS.map(({ id, title, category }) => ({
+  const events: Event[] = SAMPLE_EVENTS.map(({ id, title, categories }) => ({
     id: eventIdSchema.parse(id),
     title,
-    categorySlug: category.slug,
+    categorySlugs: categories.map(({ slug }) => slug),
   }));
 
   const occurrences = Array.from({ length: GENERATED_WEEKS }, (_, weekIndex) =>

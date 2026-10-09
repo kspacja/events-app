@@ -13,11 +13,11 @@ Konkretne wystąpienie Wydarzenia w danym dniu, o danej godzinie i w danym Miejs
 _Avoid_: wystąpienie, occurrence, data
 
 **Miejsce** (`Venue`):
-Lokal lub przestrzeń, w której odbywa się Termin; należy do Organizatora, który je wprowadził.
+Lokal lub przestrzeń, w której odbywa się Termin; ma nazwę, adres (ulica i numer) i miasto; należy do Organizatora, który je wprowadził.
 _Avoid_: lokalizacja, adres, organizator (w znaczeniu z PoC)
 
 **Kategoria** (`Category`):
-Pozycja z zarządzanej listy rodzajów Wydarzeń (np. muzyka, film), którą Organizator przypisuje Wydarzeniu; lista zmienia się w czasie.
+Pozycja z zarządzanej listy rodzajów Wydarzeń (np. muzyka, film); Organizator przypisuje Wydarzeniu jedną lub więcej, a pierwsza jest **Kategorią główną** (kolor i etykieta na karcie); lista zmienia się w czasie.
 _Avoid_: typ, tag, Klaster tematyczny
 
 **Cena** (`Price`):

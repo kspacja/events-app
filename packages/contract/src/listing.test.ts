@@ -72,8 +72,8 @@ describe('occurrenceListingSchema', () => {
     occurrenceId: 'concert-2030-03-01',
     startsAt: '2030-03-01T19:00:00+01:00',
     price: null,
-    event: { id: 'concert', title: 'Koncert', category: { slug: 'music', label: 'Muzyka' } },
-    venue: { name: 'Klub', city: 'Warszawa', lat: 52.2, lng: 21 },
+    event: { id: 'concert', title: 'Koncert', categories: [{ slug: 'music', label: 'Muzyka' }] },
+    venue: { name: 'Klub', address: 'ul. Mazowiecka 12', city: 'Warszawa', lat: 52.2, lng: 21 },
   };
 
   it('accepts a listing with or without a price', () => {
@@ -90,7 +90,17 @@ describe('occurrenceListingSchema', () => {
   });
 
   it('rejects a category given as a bare slug', () => {
-    const body = { ...listing, event: { ...listing.event, category: 'music' } };
+    const body = { ...listing, event: { ...listing.event, categories: ['music'] } };
+    expect(occurrenceListingSchema.safeParse(body).success).toBe(false);
+  });
+
+  it('requires at least one category', () => {
+    const body = { ...listing, event: { ...listing.event, categories: [] } };
+    expect(occurrenceListingSchema.safeParse(body).success).toBe(false);
+  });
+
+  it('rejects a venue without an address', () => {
+    const body = { ...listing, venue: { ...listing.venue, address: '' } };
     expect(occurrenceListingSchema.safeParse(body).success).toBe(false);
   });
 
