@@ -57,6 +57,10 @@
    - Testy jednostkowe: zamiana wierszy, trasa przez `app.request` z podstawionym źródłem.
    - Testy integracyjne: osobna baza `events_test` w kontenerze z Docker Compose (tworzona i migrowana przed testami, tylko `localhost`), pliki `*.integration.test.ts`, `pnpm --filter @events/api test:integration`; poza zwykłym `pnpm test`, więc bramki nie wymagają Dockera.
 5. Portal w dev z `EVENTS_API_URL` na lokalne `apps/api` i bez `API_MOCKING`; Kategorie z bazy.
+   Zakres:
+   - Przepis „portal na lokalnym API” w `apps/portal/.env.example` i README (`EVENTS_API_URL=http://localhost:3001`, bez `API_MOCKING`); domyślnie zostaje MSW (ADR-0008).
+   - Kategorie przychodzą z Wpisów programu; nieznana Kategoria dostaje `--category-fallback` — bez nowego kodu, tylko weryfikacja.
+   - Weryfikacja kryterium ukończenia: portal na API po seedzie = portal na MSW (22 karty, te same etykiety); nowa Kategoria dodana w `psql` jako główna widać na karcie z kolorem zastępczym; portal bez bazy działa na MSW.
 
 ## Otwarte pytania
 

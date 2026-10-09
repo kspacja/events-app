@@ -33,6 +33,10 @@ pnpm --filter @events/api dev
 
 `db:seed` czyści tabele schematu `events` i wstawia przykładowe dane liczone od dzisiejszego dnia (bieżący tydzień i 4 następne). Gdy dane się zestarzeją — w bazie nie ma Terminów na bieżący tydzień — uruchom go ponownie. Działa tylko na bazie pod `localhost`.
 
+#### Portal na lokalnym API
+
+Domyślnie portal działa na MSW i nie potrzebuje bazy. Żeby czytał Terminy z `apps/api`, w `apps/portal/.env.local` ustaw `EVENTS_API_URL=http://localhost:3001` i usuń `API_MOCKING` (albo zostaw puste), uruchom API (powyżej) i zrestartuj portal. Po zmianie danych w bazie usuń `apps/portal/.next/cache/fetch-cache` — portal trzyma odpowiedzi API 5 minut. Kategorie przychodzą z bazy: nowa Kategoria bez własnego tokenu koloru dostaje `--category-fallback`.
+
 Testy integracyjne (`*.integration.test.ts`) idą na prawdziwym Postgresie: `pnpm --filter @events/api test:integration`. Wymagają `docker compose up -d --wait db`; same zakładają i migrują bazę `events_test` (adres: `TEST_DATABASE_URL`, tylko `localhost`). Nie wchodzą do `pnpm test`, więc bramki nie wymagają Dockera.
 
 Schemat tabel: `apps/api/src/contexts/<kontekst>/schema.ts` (Drizzle, ADR-0009), diagram w `docs/database.md`. Po zmianie schematu `pnpm --filter @events/api db:generate --name <opis>` tworzy migrację SQL w `apps/api/drizzle/` — przejrzyj ją przed commitem.
