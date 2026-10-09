@@ -13,6 +13,8 @@ interface DayJumpProps {
   readonly className?: string;
   readonly 'aria-label'?: string;
   readonly 'aria-current'?: 'date';
+  /** Takes over a jump to another week, so the page can react before that week arrives. */
+  readonly onNavigate?: () => void;
   readonly children: ReactNode;
 }
 
@@ -20,10 +22,16 @@ function isInWeek(day: CalendarDay, week: CalendarDay): boolean {
   return day >= week && day < addDays(week, 7);
 }
 
-export function DayJump({ day, shownWeek, href, children, ...props }: DayJumpProps) {
+export function DayJump({ day, shownWeek, href, onNavigate, children, ...props }: DayJumpProps) {
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     const isModified = event.metaKey || event.ctrlKey || event.shiftKey;
-    if (isModified || !isInWeek(day, shownWeek)) return;
+    if (isModified) return;
+    if (!isInWeek(day, shownWeek)) {
+      if (!onNavigate) return;
+      event.preventDefault();
+      onNavigate();
+      return;
+    }
     event.preventDefault();
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     scrollStripToDay(day, reduceMotion ? 'auto' : 'smooth');

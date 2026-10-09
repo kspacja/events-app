@@ -26,6 +26,8 @@ interface MonthCalendarProps {
   /** Monday of the shown week. */
   readonly week: CalendarDay;
   readonly today: CalendarDay;
+  /** Takes over a day link to another week (its Monday and the day's anchor). */
+  readonly onNavigate?: (week: CalendarDay, anchor: string) => void;
 }
 
 function weekState(week: CalendarWeek): string[] {
@@ -40,11 +42,13 @@ function DayCell({
   week,
   shownWeek,
   month,
+  onNavigate,
 }: {
   readonly cell: CalendarCell;
   readonly week: CalendarWeek;
   readonly shownWeek: CalendarDay;
   readonly month: CalendarMonth;
+  readonly onNavigate?: (week: CalendarDay, anchor: string) => void;
 }) {
   const number = formatDay(cell.day, 'd');
   const date = formatDay(cell.day, 'EEEE, d MMMM');
@@ -66,6 +70,7 @@ function DayCell({
       day={cell.day}
       shownWeek={shownWeek}
       href={schoolsHref(mondayOf(cell.day), dayDomId(cell.day))}
+      onNavigate={onNavigate ? () => onNavigate(mondayOf(cell.day), dayDomId(cell.day)) : undefined}
       className={className}
       aria-current={cell.isToday ? 'date' : undefined}
     >
@@ -78,7 +83,7 @@ function DayCell({
 }
 
 /** Kalendarz miesiąca: a day scrolls to it within the shown week or moves to its week; the arrows change only the shown month, never the URL. */
-export function MonthCalendar({ week, today }: MonthCalendarProps) {
+export function MonthCalendar({ week, today, onNavigate }: MonthCalendarProps) {
   const [shown, setShown] = useState({ week, month: monthOfWeek(week) });
   // A new week brings its own month; in between, the arrows move the month on their own
   const month = shown.week === week ? shown.month : monthOfWeek(week);
@@ -140,7 +145,7 @@ export function MonthCalendar({ week, today }: MonthCalendarProps) {
             >
               {calendarWeek.days.map((cell) => (
                 <td key={cell.day} className={styles.cell}>
-                  <DayCell cell={cell} week={calendarWeek} shownWeek={week} month={calendar.month} />
+                  <DayCell cell={cell} week={calendarWeek} shownWeek={week} month={calendar.month} onNavigate={onNavigate} />
                 </td>
               ))}
             </tr>
