@@ -56,15 +56,24 @@ describe('occurrencesHandler', () => {
   });
 
   it('keeps events for schools out of the general programme and serves them only on request', async () => {
-    const forSchools = occurrenceListingSchema.parse({
+    const schoolListing = occurrenceListingSchema.parse({
       ...LATE_NIGHT,
       occurrenceId: 'class-2030-01-05',
       event: { ...LATE_NIGHT.event, forSchools: true },
     });
-    server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => [LATE_NIGHT, forSchools]));
+    server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => [LATE_NIGHT, schoolListing]));
 
     expect((await call('?from=2030-01-05&to=2030-01-05')).body).toEqual({ occurrences: [LATE_NIGHT] });
     expect((await call('?from=2030-01-05&to=2030-01-05&forSchools=false')).body).toEqual({ occurrences: [LATE_NIGHT] });
-    expect((await call('?from=2030-01-05&to=2030-01-05&forSchools=true')).body).toEqual({ occurrences: [forSchools] });
+    expect((await call('?from=2030-01-05&to=2030-01-05&forSchools=true')).body).toEqual({ occurrences: [schoolListing] });
+  });
+
+  it('reads the first forSchools when the parameter repeats, like the API', async () => {
+    const schoolListing = occurrenceListingSchema.parse({ ...LATE_NIGHT, event: { ...LATE_NIGHT.event, forSchools: true } });
+    server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => [schoolListing]));
+
+    expect((await call('?from=2030-01-05&to=2030-01-05&forSchools=true&forSchools=false')).body).toEqual({
+      occurrences: [schoolListing],
+    });
   });
 });

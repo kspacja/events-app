@@ -37,7 +37,7 @@ Testy integracyjne (`*.integration.test.ts`) idą na prawdziwym Postgresie: `pnp
 
 Schemat tabel: `apps/api/src/contexts/<kontekst>/schema.ts` (Drizzle, ADR-0009), diagram w `docs/database.md`. Po zmianie schematu `pnpm --filter @events/api db:generate --name <opis>` tworzy migrację SQL w `apps/api/drizzle/` — przejrzyj ją przed commitem.
 
-API: [http://localhost:3001/health](http://localhost:3001/health) oraz `GET /occurrences?from=YYYY-MM-DD&to=YYYY-MM-DD` (maks. 31 dni) — Terminy z Dób wydarzeń w zakresie, w kształcie z `@events/contract`; Termin łamiący kontrakt jest pomijany i logowany. Bez `apps/api/.env` API wypisuje błąd konfiguracji i czeka na zmiany; `pnpm dev` z korzenia nadal uruchamia portal na MSW.
+API: [http://localhost:3001/health](http://localhost:3001/health) oraz `GET /occurrences?from=YYYY-MM-DD&to=YYYY-MM-DD[&forSchools=true|false]` (maks. 31 dni) — Terminy z Dób wydarzeń w zakresie, w kształcie z `@events/contract`; bez `forSchools` (albo `false`) program ogólny bez Wydarzeń szkolnych, `true` tylko Wydarzenia szkolne, inna wartość = 400; Termin łamiący kontrakt jest pomijany i logowany. Bez `apps/api/.env` API wypisuje błąd konfiguracji i czeka na zmiany; `pnpm dev` z korzenia nadal uruchamia portal na MSW.
 
 | Zmienna (`apps/api/.env`) | Wartość | Znaczenie |
 | --- | --- | --- |

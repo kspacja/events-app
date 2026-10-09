@@ -28,6 +28,7 @@ describe('occurrencesQuerySchema', () => {
     ['from after to', { from: '2030-03-02', to: FROM }, OCCURRENCES_QUERY_ERRORS.order],
     ['missing', {}, OCCURRENCES_QUERY_ERRORS.missing],
     ['an unknown forSchools value', { from: FROM, to: FROM, forSchools: 'yes' }, OCCURRENCES_QUERY_ERRORS.forSchools],
+    ['an empty forSchools value', { from: FROM, to: FROM, forSchools: '' }, OCCURRENCES_QUERY_ERRORS.forSchools],
   ])('rejects %s with its own error', (_name, query, message) => {
     expect(errorOf(query)).toBe(message);
   });

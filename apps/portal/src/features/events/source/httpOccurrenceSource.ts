@@ -86,7 +86,6 @@ async function fetchChunk(eventsApiUrl: string, range: DateRange, forSchools: bo
 }
 
 export interface HttpOccurrenceSourceOptions {
-  /** The schools page reads only events for schools; everywhere else reads the general programme. */
   readonly forSchools?: boolean;
 }
 

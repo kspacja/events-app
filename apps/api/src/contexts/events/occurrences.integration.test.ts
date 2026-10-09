@@ -62,6 +62,7 @@ const DST_DATA = createEventsData({
 const db = createDb(TEST_DATABASE_URL);
 const listOccurrences = createOccurrenceReader(db);
 const general = (range: DateRange) => listOccurrences({ ...range, forSchools: false });
+const schools = (range: DateRange) => listOccurrences({ ...range, forSchools: true });
 const ids = (listings: readonly { occurrenceId: string }[]) => listings.map(({ occurrenceId: id }) => id);
 
 beforeEach(async () => {
@@ -155,7 +156,7 @@ describe('createOccurrenceReader on Postgres', () => {
     const saturday: DateRange = { from: '2030-01-05', to: '2030-01-05' };
 
     expect(ids(await general(saturday))).not.toContain('school-class');
-    expect(ids(await listOccurrences({ ...saturday, forSchools: true }))).toEqual(['school-class']);
+    expect(ids(await schools(saturday))).toEqual(['school-class']);
   });
 
   it('skips an occurrence that breaks the contract and serves the rest', async () => {

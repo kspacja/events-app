@@ -119,7 +119,7 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'krk-latenight', title: 'Nocny stand-up po północy', categories: [COMEDY], venue: PLAC_NOWY, dayOffset: 6, time: '01:30', price: paid(20, 35) },
   { id: 'gdn-afterparty', title: 'Afterparty na Ołowiance', categories: [MUSIC], venue: OLOWIANKA, dayOffset: 5, time: '01:00' },
 
-  // Events for schools: only on the schools page; Wednesday has 5 of them, enough for the "+n" day marker
+  // Events for schools; Wednesday has 5 in the first week (later weeks skip one), enough for the "+n" day marker
   { id: 'wro-school-concert', title: 'Koncert edukacyjny', categories: [MUSIC], venue: HALA_STULECIA, dayOffset: 0, time: '10:00', price: free, forSchools: true },
   { id: 'krk-school-history', title: 'Lekcja historii na Kazimierzu', categories: [MEETUPS], venue: KAZIMIERZ, dayOffset: 1, time: '10:00', price: free, forSchools: true },
   { id: 'wro-school-museum', title: 'Lekcja muzealna: sztuka średniowiecza', categories: [ART], venue: MUZEUM_NARODOWE, dayOffset: 2, time: '09:00', price: free, forSchools: true },

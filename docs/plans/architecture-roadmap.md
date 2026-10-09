@@ -42,7 +42,9 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Liniowe `points.find` przy kliknięciu w mapę — wystarcza przy tej skali.
 - `isCalendarDay` mapuje lata 0–99 przez `Date.UTC` — bez znaczenia dla domeny.
 - Lint nie blokuje względnych importów korzenia sąsiedniego pakietu (`../time` bez `/src`) — importy idą przez `@events/*`.
-- Filtr Doby wydarzeń jest dwa razy: w handlerze MSW i w pomocniczej funkcji `sampleEvents.test.ts` — jedna linia, a backend liczy go w SQL.
+- Filtr Doby wydarzeń (z `forSchools`) jest w kilku miejscach: handler MSW, test zgodności w `occurrences.integration.test.ts`, pomocnicza funkcja `sampleEvents.test.ts` — po jednej linii, a backend liczy go w SQL.
+- Brak wspólnego generatora Wpisów programu do testów — nowe wymagane pole kontraktu zmienia kilkanaście obiektów testowych; robimy przy następnym takim polu.
+- Zmiana kontraktu z nowym wymaganym polem: wdrażamy najpierw API, potem portal (etap 7).
 - Brak testu `EventsMap`: lot do Terminu bez punktu jest potwierdzany tylko w kodzie adaptera, sprawdzony w Chrome — wymaga osobnego zestawu testów mapy.
 - Lista aplikacji niedostępnych dla pakietów w lincie jest wpisana ręcznie obok `DEPENDENCY_MAP` — przy nowej aplikacji trzeba dopisać ją w dwóch miejscach.
 - `apps/api/src/config.ts` składa komunikaty inline zamiast nazwanej `problemsOf` jak w portalu — kosmetyka.

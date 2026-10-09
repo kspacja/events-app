@@ -5,7 +5,6 @@ import type { Db } from '../../db';
 import { categories, eventCategories, events, occurrences, venues } from './schema';
 
 export interface OccurrencesQuery extends DateRange {
-  /** true: only events for schools; false: the general programme, which never includes them. */
   readonly forSchools: boolean;
 }
 

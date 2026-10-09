@@ -48,6 +48,17 @@ describe('GET /occurrences', () => {
     expect(asked).toEqual([{ from: '2030-01-01', to: '2030-01-01', forSchools: true }]);
   });
 
+  it('reads the first forSchools when the parameter repeats, like the mock', async () => {
+    const asked: OccurrencesQuery[] = [];
+
+    await get('?from=2030-01-01&to=2030-01-01&forSchools=true&forSchools=false', async (query) => {
+      asked.push(query);
+      return [];
+    });
+
+    expect(asked.map(({ forSchools }) => forSchools)).toEqual([true]);
+  });
+
   it('answers 500 without database details when reading fails', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
