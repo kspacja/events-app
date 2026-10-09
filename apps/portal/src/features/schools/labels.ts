@@ -11,6 +11,9 @@ export const CALENDAR_LABELS = {
   nextMonth: 'Następny miesiąc',
   today: 'Dziś',
   noEvents: 'brak wydarzeń',
+  currentWeek: 'bieżący tydzień',
+  selectedWeek: 'wybrany tydzień',
+  pastDay: 'dzień minął',
 } as const;
 
 export const WEEKDAY_SHORT_NAMES = ['pn', 'wt', 'śr', 'czw', 'pt', 'sob', 'nd'] as const;

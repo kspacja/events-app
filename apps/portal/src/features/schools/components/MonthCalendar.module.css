@@ -48,24 +48,33 @@
   background: var(--color-bg-subtle);
 }
 
+.arrow:focus-visible,
+.todayLink:focus-visible,
+.day:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
 .disabled {
   color: var(--color-text-disabled);
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .weekday {
-  padding-bottom: 6px;
+  padding: 0 0 6px;
+  font-weight: 400;
   color: var(--color-text-muted);
   font-size: 13px;
   text-align: center;
 }
 
-.week {
-  display: contents;
+.cell {
+  padding: 0;
 }
 
 .day {
@@ -98,8 +107,10 @@ a.day:hover {
   color: var(--color-text-muted);
 }
 
+/* Muted text on a subtle background: readable (≥ 4.5:1) yet apart from the neighbouring months' days */
 .past {
-  color: var(--color-text-disabled);
+  color: var(--color-text-muted);
+  background: var(--color-bg-subtle);
 }
 
 .today {
