@@ -54,6 +54,6 @@ _Avoid_: partner, zweryfikowany
 Pole Wydarzenia z Kanału poprawione przez Organizatora w Studio, którego kolejne pobranie Kanału nie nadpisuje.
 _Avoid_: nadpisanie, override
 
-**Oznaczenie szkolne** (`SchoolSuitability`):
-Cecha Wydarzenia „dla grup szkolnych”, ustawiana przez Organizatora; szczegóły (wiek, klasy) czekają na research.
+**Oznaczenie szkolne** (`SchoolSuitability`, pole `forSchools`):
+Cecha Wydarzenia „dla grup szkolnych”, ustawiana przez Organizatora; takie Wydarzenie nie pojawia się w programie ogólnym, tylko na stronie dla szkół; szczegóły (wiek, klasy) czekają na research.
 _Avoid_: kategoria szkolna, tag

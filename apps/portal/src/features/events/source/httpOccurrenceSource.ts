@@ -57,11 +57,11 @@ async function readChunk(url: string, cache?: RequestCache) {
   return occurrencesResponseSchema.safeParse(body);
 }
 
-async function fetchChunk(eventsApiUrl: string, range: DateRange): Promise<OccurrenceListing[]> {
-  const url = `${eventsApiUrl}/occurrences?${new URLSearchParams({
-    from: range.from,
-    to: range.to,
-  })}`;
+async function fetchChunk(eventsApiUrl: string, range: DateRange, forSchools: boolean): Promise<OccurrenceListing[]> {
+  const params = new URLSearchParams({ from: range.from, to: range.to });
+  // Only set when needed, so general-programme URLs (and their cache entries) stay as they were
+  if (forSchools) params.set('forSchools', 'true');
+  const url = `${eventsApiUrl}/occurrences?${params}`;
 
   try {
     let parsed = await readChunk(url);
@@ -85,10 +85,20 @@ async function fetchChunk(eventsApiUrl: string, range: DateRange): Promise<Occur
   }
 }
 
-export function createHttpOccurrenceSource(eventsApiUrl: string): OccurrenceSource {
+export interface HttpOccurrenceSourceOptions {
+  /** The schools page reads only events for schools; everywhere else reads the general programme. */
+  readonly forSchools?: boolean;
+}
+
+export function createHttpOccurrenceSource(
+  eventsApiUrl: string,
+  { forSchools = false }: HttpOccurrenceSourceOptions = {},
+): OccurrenceSource {
   return {
     async listOccurrences(range) {
-      const chunks = await Promise.all(splitIntoChunks(range).map((chunk) => fetchChunk(eventsApiUrl, chunk)));
+      const chunks = await Promise.all(
+        splitIntoChunks(range).map((chunk) => fetchChunk(eventsApiUrl, chunk, forSchools)),
+      );
       return dedupeByOccurrenceId(chunks.flat()).sort(compareListings);
     },
   };

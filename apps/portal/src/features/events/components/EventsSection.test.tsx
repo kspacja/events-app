@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { createSampleEvents, toListings } from '@events/repo';
-import { SAMPLE_OCCURRENCES_IN_FIRST_WEEK } from '@events/repo/testing';
+import { SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK } from '@events/repo/testing';
 import { addDays, currentEventDay, mondayOf } from '@events/time';
 import { occurrencesHandler } from '@/mocks/handlers';
 import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
@@ -28,7 +28,7 @@ describe('EventsSection', () => {
     });
     const { container } = render(section);
 
-    expect(container.querySelectorAll('article')).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
-    expect(screen.getByText(formatCount(SAMPLE_OCCURRENCES_IN_FIRST_WEEK))).toBeInTheDocument();
+    expect(container.querySelectorAll('article')).toHaveLength(SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK);
+    expect(screen.getByText(formatCount(SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK))).toBeInTheDocument();
   });
 });

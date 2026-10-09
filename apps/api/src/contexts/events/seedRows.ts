@@ -32,7 +32,7 @@ export function toSeedRows(data: EventsData): EventsSeedRows {
       lat: location.lat,
       lng: location.lng,
     })),
-    events: data.events.map(({ id, title, imageUrl }) => ({ id, title, imageUrl: imageUrl ?? null })),
+    events: data.events.map(({ id, title, imageUrl, forSchools }) => ({ id, title, imageUrl: imageUrl ?? null, forSchools })),
     eventCategories: data.events.flatMap(({ id, categorySlugs }) =>
       categorySlugs.map((categorySlug, position) => ({ eventId: id, categorySlug, position })),
     ),

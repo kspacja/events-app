@@ -72,7 +72,7 @@ describe('occurrenceListingSchema', () => {
     occurrenceId: 'concert-2030-03-01',
     startsAt: '2030-03-01T19:00:00+01:00',
     price: null,
-    event: { id: 'concert', title: 'Koncert', categories: [{ slug: 'music', label: 'Muzyka' }] },
+    event: { id: 'concert', title: 'Koncert', categories: [{ slug: 'music', label: 'Muzyka' }], forSchools: false },
     venue: { name: 'Klub', address: 'ul. Mazowiecka 12', city: 'Warszawa', lat: 52.2, lng: 21 },
   };
 

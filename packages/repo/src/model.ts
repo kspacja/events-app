@@ -33,6 +33,8 @@ export interface Event {
   /** At least one, no repeats; the first is the main category. */
   readonly categorySlugs: readonly Category['slug'][];
   readonly imageUrl?: string;
+  /** Oznaczenie szkolne: only on the schools page, never in the general programme. */
+  readonly forSchools: boolean;
 }
 
 export interface Occurrence {

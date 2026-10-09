@@ -60,6 +60,8 @@ export const listedEventSchema = z
     /** At least one; the first is the main category, which sets the card's colour and label. */
     categories: z.array(categorySchema).min(1).readonly(),
     imageUrl: z.string().optional(),
+    /** Oznaczenie szkolne: shown only on the schools page, never in the general programme. */
+    forSchools: z.boolean(),
   })
   .readonly();
 

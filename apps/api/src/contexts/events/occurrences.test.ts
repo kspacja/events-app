@@ -10,7 +10,7 @@ describe('toListing', () => {
       occurrenceId: 'jazz-2030-01-01',
       startsAt: '2030-01-01T19:00:00+01:00',
       price: null,
-      event: { id: 'jazz', title: 'Jazz', categories: [MUSIC] },
+      event: { id: 'jazz', title: 'Jazz', categories: [MUSIC], forSchools: false },
       venue: { name: 'Hala', address: 'ul. Wystawowa 1', city: 'Wrocław', lat: 51.1, lng: 17 },
     });
   });
@@ -30,7 +30,13 @@ describe('toListing', () => {
     const art = { slug: 'art', label: 'Sztuka' };
     const listing = toListing({ ...OCCURRENCE_ROW, imageUrl: '/jazz.jpg' }, [art, MUSIC]);
 
-    expect(listing.event).toEqual({ id: 'jazz', title: 'Jazz', categories: [art, MUSIC], imageUrl: '/jazz.jpg' });
+    expect(listing.event).toEqual({
+      id: 'jazz',
+      title: 'Jazz',
+      categories: [art, MUSIC],
+      imageUrl: '/jazz.jpg',
+      forSchools: false,
+    });
   });
 
   it('rejects data the contract forbids, such as an event without a category', () => {

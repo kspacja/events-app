@@ -5,7 +5,7 @@ import { EventsData, EventsIntegrityError, createEventsData, venueId, type Event
 
 const MUSIC = { slug: 'music', label: 'Muzyka' };
 const VENUE = { id: venueId('hall'), name: 'Hala', address: 'ul. Wystawowa 1', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
-const EVENT = { id: eventIdSchema.parse('jazz'), title: 'Jazz', categorySlugs: ['music'] };
+const EVENT = { id: eventIdSchema.parse('jazz'), title: 'Jazz', categorySlugs: ['music'], forSchools: false };
 const OCCURRENCE = {
   id: occurrenceIdSchema.parse('jazz-2030-01-01'),
   eventId: EVENT.id,

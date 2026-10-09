@@ -8,6 +8,7 @@ const EVENT = {
   id: eventIdSchema.parse('jazz'),
   title: 'Jazz',
   categorySlugs: ['music'],
+  forSchools: false,
   imageUrl: '/jazz.jpg',
 };
 
@@ -41,7 +42,7 @@ describe('toListings', () => {
       occurrenceId: 'early',
       startsAt: '2030-01-01T10:00:00+01:00',
       price: null,
-      event: { id: 'jazz', title: 'Jazz', categories: [{ slug: 'music', label: 'Muzyka' }], imageUrl: '/jazz.jpg' },
+      event: { id: 'jazz', title: 'Jazz', categories: [{ slug: 'music', label: 'Muzyka' }], imageUrl: '/jazz.jpg', forSchools: false },
       venue: { name: 'Hala', address: 'ul. Wystawowa 1', city: 'Wrocław', lat: 51.1, lng: 17 },
     });
     expect(occurrenceListingSchema.safeParse(listing).success).toBe(true);

@@ -13,7 +13,7 @@ const LATE_NIGHT = occurrenceListingSchema.parse({
   occurrenceId: 'late-2030-01-06',
   startsAt: '2030-01-06T01:30:00+01:00',
   price: null,
-  event: { id: 'late', title: 'Late', categories: [{ slug: 'comedy', label: 'Komedia' }] },
+  event: { id: 'late', title: 'Late', categories: [{ slug: 'comedy', label: 'Komedia' }], forSchools: false },
   venue: { name: 'Club', address: 'ul. Testowa 1', city: 'Kraków', lat: 50, lng: 19 },
 });
 
@@ -53,5 +53,18 @@ describe('occurrencesHandler', () => {
 
     expect((await call('?from=2030-01-05&to=2030-01-05')).body).toEqual({ occurrences: [LATE_NIGHT] });
     expect((await call('?from=2030-01-06&to=2030-01-06')).body).toEqual({ occurrences: [] });
+  });
+
+  it('keeps events for schools out of the general programme and serves them only on request', async () => {
+    const forSchools = occurrenceListingSchema.parse({
+      ...LATE_NIGHT,
+      occurrenceId: 'class-2030-01-05',
+      event: { ...LATE_NIGHT.event, forSchools: true },
+    });
+    server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => [LATE_NIGHT, forSchools]));
+
+    expect((await call('?from=2030-01-05&to=2030-01-05')).body).toEqual({ occurrences: [LATE_NIGHT] });
+    expect((await call('?from=2030-01-05&to=2030-01-05&forSchools=false')).body).toEqual({ occurrences: [LATE_NIGHT] });
+    expect((await call('?from=2030-01-05&to=2030-01-05&forSchools=true')).body).toEqual({ occurrences: [forSchools] });
   });
 });

@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import {
+  boolean,
   check,
   doublePrecision,
   index,
@@ -36,6 +37,8 @@ export const events = eventsSchema.table('events', {
   id: text('id').primaryKey(),
   title: text('title').notNull(),
   imageUrl: text('image_url'),
+  // Oznaczenie szkolne: such events are left out of the general programme
+  forSchools: boolean('for_schools').notNull().default(false),
 });
 
 // An event has one or more categories; position 0 is the main one

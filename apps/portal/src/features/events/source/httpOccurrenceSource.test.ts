@@ -27,6 +27,17 @@ describe('HTTP occurrence source', () => {
     server.events.removeAllListeners();
   });
 
+  it('asks only for events for schools when created for the schools page', async () => {
+    const urls = countRequests();
+    await createHttpOccurrenceSource(TEST_EVENTS_API_URL, { forSchools: true }).listOccurrences({
+      from: firstMonday,
+      to: firstMonday,
+    });
+    await listOccurrences({ from: firstMonday, to: firstMonday });
+
+    expect(urls.map((url) => url.searchParams.get('forSchools'))).toEqual(['true', null]);
+  });
+
   it('uses a single request for a 31-day range', async () => {
     const urls = countRequests();
     await listOccurrences({ from: firstMonday, to: addDays(firstMonday, 30) });
@@ -46,7 +57,7 @@ describe('HTTP occurrence source', () => {
       occurrenceId: 'dup-2030-01-01',
       startsAt: '2030-01-01T18:00:00+01:00',
       price: null,
-      event: { id: 'dup', title: 'Duplicate', categories: [{ slug: 'music', label: 'Muzyka' }] },
+      event: { id: 'dup', title: 'Duplicate', categories: [{ slug: 'music', label: 'Muzyka' }], forSchools: false },
       venue: { name: 'Hall', address: 'ul. Testowa 1', city: 'Warszawa', lat: 52, lng: 21 },
     };
     server.use(
@@ -87,7 +98,7 @@ describe('HTTP occurrence source', () => {
       occurrenceId: id,
       startsAt,
       price: null,
-      event: { id: `event-${id}`, title: id, categories: [{ slug: 'music', label: 'Muzyka' }] },
+      event: { id: `event-${id}`, title: id, categories: [{ slug: 'music', label: 'Muzyka' }], forSchools: false },
       venue: { name: 'Hall', address: 'ul. Testowa 1', city: 'Warszawa', lat: 52, lng: 21 },
     });
     const shuffled = [

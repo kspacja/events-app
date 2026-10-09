@@ -10,6 +10,7 @@ export const OCCURRENCE_ROW: OccurrenceRow = {
   eventId: 'jazz',
   title: 'Jazz',
   imageUrl: null,
+  forSchools: false,
   venueName: 'Hala',
   venueAddress: 'ul. Wystawowa 1',
   venueCity: 'Wrocław',

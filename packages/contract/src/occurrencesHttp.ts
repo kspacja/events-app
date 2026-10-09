@@ -14,14 +14,21 @@ export const OCCURRENCES_QUERY_ERRORS = {
   format: 'Parameters "from" and "to" must be YYYY-MM-DD dates.',
   order: '"from" must not be after "to".',
   tooLong: `The range must not exceed ${MAX_DAYS_PER_REQUEST} days.`,
+  forSchools: 'Parameter "forSchools" must be "true" or "false".',
 } as const;
 
 const calendarDaySchema = z
   .string({ error: OCCURRENCES_QUERY_ERRORS.missing })
   .refine(isCalendarDay, { error: OCCURRENCES_QUERY_ERRORS.format });
 
+// Absent means the general programme, which never includes events for schools
+const forSchoolsSchema = z
+  .enum(['true', 'false'], { error: OCCURRENCES_QUERY_ERRORS.forSchools })
+  .optional()
+  .transform((value) => value === 'true');
+
 export const occurrencesQuerySchema = z
-  .object({ from: calendarDaySchema, to: calendarDaySchema })
+  .object({ from: calendarDaySchema, to: calendarDaySchema, forSchools: forSchoolsSchema })
   .check((ctx) => {
     const { from, to } = ctx.value;
     const length = diffInDays(from, to);

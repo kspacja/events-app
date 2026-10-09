@@ -3,7 +3,7 @@ import { createEventsData, createSampleEvents, eventId, occurrenceId, venueId, t
 import { toSeedRows } from './seedRows';
 
 const VENUE = { id: venueId('hall'), name: 'Hala', address: 'ul. Wystawowa 1', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
-const EVENT = { id: eventId('jazz'), title: 'Jazz', categorySlugs: ['art', 'music'] };
+const EVENT = { id: eventId('jazz'), title: 'Jazz', categorySlugs: ['art', 'music'], forSchools: false };
 
 function dataWithPrice(price: Price | null) {
   return createEventsData({
@@ -54,7 +54,7 @@ describe('toSeedRows', () => {
   });
 
   it('turns a missing image into null', () => {
-    expect(toSeedRows(dataWithPrice(null)).events).toEqual([{ id: 'jazz', title: 'Jazz', imageUrl: null }]);
+    expect(toSeedRows(dataWithPrice(null)).events).toEqual([{ id: 'jazz', title: 'Jazz', imageUrl: null, forSchools: false }]);
   });
 
   it('has one row per sample record', () => {

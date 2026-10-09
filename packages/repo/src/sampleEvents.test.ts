@@ -2,14 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { currentEventDay, eventDayOf, isDayInRange, localMinutesOf, mondayOf, addDays, type DateRange } from '@events/time';
 import type { EventsData } from './model';
 import { toListings } from './listings';
-import { createSampleEvents, SAMPLE_OCCURRENCES_IN_FIRST_WEEK } from './sampleEvents';
+import {
+  createSampleEvents,
+  SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK,
+  SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK,
+} from './sampleEvents';
 
 // Wednesday noon, so the current week is Monday 2030-01-07 to Sunday 2030-01-13
 const NOW = new Date('2030-01-09T12:00:00Z');
 const FIRST_MONDAY = mondayOf('2030-01-09');
 const WEEK = { from: FIRST_MONDAY, to: addDays(FIRST_MONDAY, 6) };
 const WEEKS = 5;
-const OCCURRENCES_IN_FIVE_WEEKS = 88;
+const OCCURRENCES_IN_FIVE_WEEKS = 124;
+const ALL_IN_FIRST_WEEK = SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK + SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK;
 
 const listingsIn = (data: EventsData, range: DateRange) =>
   toListings(data).filter(({ startsAt }) => isDayInRange(eventDayOf(startsAt), range));
@@ -45,8 +50,24 @@ describe('createSampleEvents', () => {
   it('lists every event in the current week, one occurrence each', () => {
     const week = listingsIn(data, WEEK);
 
-    expect(week).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
-    expect(new Set(week.map(({ event }) => event.id)).size).toBe(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
+    expect(week).toHaveLength(ALL_IN_FIRST_WEEK);
+    expect(new Set(week.map(({ event }) => event.id)).size).toBe(ALL_IN_FIRST_WEEK);
+  });
+
+  it('marks only the school events for schools', () => {
+    const week = listingsIn(data, WEEK);
+
+    expect(week.filter(({ event }) => event.forSchools)).toHaveLength(SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK);
+    expect(week.filter(({ event }) => !event.forSchools)).toHaveLength(SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK);
+  });
+
+  it('has a day with at least 5 school events, for the "+n" day marker', () => {
+    const perDay = new Map<string, number>();
+    for (const { startsAt, event } of listingsIn(data, WEEK)) {
+      if (event.forSchools) perDay.set(eventDayOf(startsAt), (perDay.get(eventDayOf(startsAt)) ?? 0) + 1);
+    }
+
+    expect(Math.max(...perDay.values())).toBeGreaterThanOrEqual(5);
   });
 
   it('skips some occurrences in later weeks across the 5 generated weeks', () => {
@@ -69,7 +90,7 @@ describe('createSampleEvents', () => {
     const shownWeek = { from: shownMonday, to: addDays(shownMonday, 6) };
 
     expect(shownMonday).toBe(FIRST_MONDAY);
-    expect(listingsIn(createSampleEvents(mondayAfterMidnight), shownWeek)).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
-    expect(listingsIn(createSampleEvents(NOW), shownWeek)).toHaveLength(SAMPLE_OCCURRENCES_IN_FIRST_WEEK);
+    expect(listingsIn(createSampleEvents(mondayAfterMidnight), shownWeek)).toHaveLength(ALL_IN_FIRST_WEEK);
+    expect(listingsIn(createSampleEvents(NOW), shownWeek)).toHaveLength(ALL_IN_FIRST_WEEK);
   });
 });

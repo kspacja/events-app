@@ -89,6 +89,7 @@ interface SampleEventTemplate {
   readonly dayOffset: number;
   /** Local time, `HH:mm` */
   readonly time: string;
+  readonly forSchools?: true;
 }
 
 // Order matters: the skip cycle below is keyed by the template index
@@ -117,10 +118,22 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'wro-club', title: 'Nocny set w klubie', categories: [MUSIC], venue: PASAZ_NIEPOLDA, dayOffset: 4, time: '23:00', price: paid(25) },
   { id: 'krk-latenight', title: 'Nocny stand-up po północy', categories: [COMEDY], venue: PLAC_NOWY, dayOffset: 6, time: '01:30', price: paid(20, 35) },
   { id: 'gdn-afterparty', title: 'Afterparty na Ołowiance', categories: [MUSIC], venue: OLOWIANKA, dayOffset: 5, time: '01:00' },
+
+  // Events for schools: only on the schools page; Wednesday has 5 of them, enough for the "+n" day marker
+  { id: 'wro-school-concert', title: 'Koncert edukacyjny', categories: [MUSIC], venue: HALA_STULECIA, dayOffset: 0, time: '10:00', price: free, forSchools: true },
+  { id: 'krk-school-history', title: 'Lekcja historii na Kazimierzu', categories: [MEETUPS], venue: KAZIMIERZ, dayOffset: 1, time: '10:00', price: free, forSchools: true },
+  { id: 'wro-school-museum', title: 'Lekcja muzealna: sztuka średniowiecza', categories: [ART], venue: MUZEUM_NARODOWE, dayOffset: 2, time: '09:00', price: free, forSchools: true },
+  { id: 'wro-school-science', title: 'Pokaz naukowy dla klas 4–6', categories: [WORKSHOPS], venue: HALA_STULECIA, dayOffset: 2, time: '10:00', price: paid(12), forSchools: true },
+  { id: 'wro-school-ceramics', title: 'Warsztaty ceramiki dla szkół', categories: [WORKSHOPS, ART], venue: OLBIN, dayOffset: 2, time: '11:00', price: paid(15), forSchools: true },
+  { id: 'wro-school-organ', title: 'Lekcja o organach', categories: [MUSIC], venue: KOSCIOL_PRZY_RYNKU, dayOffset: 2, time: '12:00', price: free, forSchools: true },
+  { id: 'wro-school-walk', title: 'Spacer historyczny po Rynku', categories: [MOVEMENT], venue: RYNEK, dayOffset: 2, time: '12:30', price: free, forSchools: true },
+  { id: 'gdn-school-port', title: 'Lekcja w porcie', categories: [MOVEMENT], venue: DLUGIE_POBRZEZE, dayOffset: 3, time: '09:30', forSchools: true },
+  { id: 'poz-school-photo', title: 'Fotografia dla klas 7–8', categories: [WORKSHOPS, ART], venue: GALERIA_JEZYCE, dayOffset: 4, time: '11:00', price: paid(10), forSchools: true },
 ];
 
-/** Every template occurs in the first week, so this is the size of the sample data's first week. */
-export const SAMPLE_OCCURRENCES_IN_FIRST_WEEK = SAMPLE_EVENTS.length;
+// Every template occurs in the first week, so these are the first week's sizes
+export const SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK = SAMPLE_EVENTS.filter(({ forSchools }) => !forSchools).length;
+export const SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK = SAMPLE_EVENTS.filter(({ forSchools }) => forSchools).length;
 
 const GENERATED_WEEKS = 5;
 const DAYS_IN_WEEK = 7;
@@ -141,10 +154,11 @@ function isSkipped(weekIndex: number, templateIndex: number): boolean {
 export function createSampleEvents(now: Date): EventsData {
   const firstMonday = mondayOf(currentEventDay(now));
 
-  const events: Event[] = SAMPLE_EVENTS.map(({ id, title, categories }) => ({
+  const events: Event[] = SAMPLE_EVENTS.map(({ id, title, categories, forSchools = false }) => ({
     id: eventIdSchema.parse(id),
     title,
     categorySlugs: categories.map(({ slug }) => slug),
+    forSchools,
   }));
 
   const occurrences = Array.from({ length: GENERATED_WEEKS }, (_, weekIndex) =>

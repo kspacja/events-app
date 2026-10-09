@@ -1,0 +1,1 @@
+ALTER TABLE "events"."events" ADD COLUMN "for_schools" boolean DEFAULT false NOT NULL;

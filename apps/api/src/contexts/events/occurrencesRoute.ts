@@ -6,7 +6,11 @@ const UNAVAILABLE = 'The programme is temporarily unavailable.';
 
 export function occurrencesRoute(listOccurrences: ListOccurrences) {
   return new Hono().get('/occurrences', async (c) => {
-    const parsed = occurrencesQuerySchema.safeParse({ from: c.req.query('from'), to: c.req.query('to') });
+    const parsed = occurrencesQuerySchema.safeParse({
+      from: c.req.query('from'),
+      to: c.req.query('to'),
+      forSchools: c.req.query('forSchools'),
+    });
     if (!parsed.success) return c.json({ error: parsed.error.issues[0].message }, 400);
 
     try {

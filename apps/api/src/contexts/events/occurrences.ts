@@ -4,7 +4,12 @@ import { eventDayBounds, toWarsawIso, type DateRange } from '@events/time';
 import type { Db } from '../../db';
 import { categories, eventCategories, events, occurrences, venues } from './schema';
 
-export type ListOccurrences = (range: DateRange) => Promise<OccurrenceListing[]>;
+export interface OccurrencesQuery extends DateRange {
+  /** true: only events for schools; false: the general programme, which never includes them. */
+  readonly forSchools: boolean;
+}
+
+export type ListOccurrences = (query: OccurrencesQuery) => Promise<OccurrenceListing[]>;
 
 export interface OccurrenceRow {
   readonly id: string;
@@ -16,6 +21,7 @@ export interface OccurrenceRow {
   readonly eventId: string;
   readonly title: string;
   readonly imageUrl: string | null;
+  readonly forSchools: boolean;
   readonly venueName: string;
   readonly venueAddress: string;
   readonly venueCity: string;
@@ -41,6 +47,7 @@ export function toListing(row: OccurrenceRow, eventCategoryList: readonly Catego
       title: row.title,
       categories: eventCategoryList,
       ...(row.imageUrl === null ? {} : { imageUrl: row.imageUrl }),
+      forSchools: row.forSchools,
     },
     venue: { name: row.venueName, address: row.venueAddress, city: row.venueCity, lat: row.lat, lng: row.lng },
   });
@@ -66,7 +73,7 @@ async function categoriesByEvent(db: Db, eventIds: readonly string[]): Promise<M
 }
 
 export function createOccurrenceReader(db: Db): ListOccurrences {
-  return async (range) => {
+  return async ({ forSchools, ...range }) => {
     const { start, end } = eventDayBounds(range);
     const rows = await db
       .select({
@@ -79,6 +86,7 @@ export function createOccurrenceReader(db: Db): ListOccurrences {
         eventId: events.id,
         title: events.title,
         imageUrl: events.imageUrl,
+        forSchools: events.forSchools,
         venueName: venues.name,
         venueAddress: venues.address,
         venueCity: venues.city,
@@ -88,7 +96,7 @@ export function createOccurrenceReader(db: Db): ListOccurrences {
       .from(occurrences)
       .innerJoin(events, eq(events.id, occurrences.eventId))
       .innerJoin(venues, eq(venues.id, occurrences.venueId))
-      .where(and(gte(occurrences.startsAt, start), lt(occurrences.startsAt, end)))
+      .where(and(gte(occurrences.startsAt, start), lt(occurrences.startsAt, end), eq(events.forSchools, forSchools)))
       // Ids sort bytewise (collate "C"), the same order as compareListings in the contract
       .orderBy(asc(occurrences.startsAt), asc(sql`${occurrences.id} collate "C"`));
 
