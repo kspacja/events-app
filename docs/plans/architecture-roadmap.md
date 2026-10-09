@@ -9,10 +9,9 @@ Realizacja ADR-0001…0008 etapami. Pojęcia: `CONTEXT-MAP.md`. Decyzje: `docs/a
 Etap dzieli się na kroki. Każdy krok przechodzi te punkty po kolei:
 
 1. **Zakres** — zakres i decyzje kroku są zapisane w pliku etapu (`stages/`). Ustalenia z rozmowy trafiają tam przed implementacją.
-2. **Implementacja** — commit(y) bez pusha; bramki zielone, smoke test portalu (`API_MOCKING=enabled`) przechodzi. Zmiana schematu bazy aktualizuje diagram w `docs/database.md`.
-3. **Code review w dwóch osiach** (Standards + Spec, równolegle, punkt odniesienia = commit sprzed kroku; Spec = plik etapu + ADR-y) — każda uwaga poprawiona albo wpisana do „Odłożone” z powodem.
+2. **Implementacja** — commit(y) bez pusha; bramki zielone, smoke test portalu (`API_MOCKING=enabled`, świeży serwer — stary zatrzymany po porcie) przechodzi. Zmiana schematu bazy aktualizuje diagram w `docs/database.md`.
 
-Koniec etapu: status w tabeli zaktualizowany; etap zamyka code review kroków. Przegląd architektury robimy raz, na samym końcu, po ostatnim etapie: użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a plan jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Po etapach — także tych z pełnym numerem — nie robimy żadnego przeglądu architektury, nawet wąskiego.
+Koniec etapu: **code review w dwóch osiach** całego etapu (Standards + Spec, równolegle, punkt odniesienia = commit sprzed etapu; Spec = plik etapu + ADR-y) — każda uwaga poprawiona albo wpisana do „Odłożone” z powodem; potem status w tabeli zaktualizowany. Po krokach nie robimy code review (od 2026-10-09, koszt tokenów). Przegląd architektury robimy raz, na samym końcu, po ostatnim etapie: użytkownik uruchamia `/mattpocock-skills:improve-codebase-architecture` (model nie może go wywołać), a plan jest zamknięty, gdy każdy kandydat jest wdrożony, odłożony albo odrzucony. Po etapach — także tych z pełnym numerem — nie robimy żadnego przeglądu architektury, nawet wąskiego.
 
 ## Etapy
 
