@@ -21,7 +21,7 @@ Koniec etapu: status w tabeli zaktualizowany; etap zamyka code review kroków. P
 | 0. Monorepo | pnpm + Turborepo, `apps/portal`, pakiety współdzielone | zrobione | historia gita |
 | 0.5 Porządki | czas lokalny, seam odczytu Terminów, wybór Terminu na mapie | zrobione | historia gita |
 | 0.6 Gotowość do etapu 1 | interfejs źródła Terminów w pakiecie, Kategoria jako dane, przykładowy Katalog | zrobione | [stages/0.6-gotowosc-do-etapu-1.md](stages/0.6-gotowosc-do-etapu-1.md) |
-| 1. Backend + baza | `apps/api` (Hono + Drizzle) serwuje Terminy z Postgresa, portal czyta przez HTTP (ADR-0008) | — | [stages/1-baza-i-katalog.md](stages/1-baza-i-katalog.md) |
+| 1. Backend + baza | `apps/api` (Hono + Drizzle) serwuje Terminy z Postgresa, portal czyta przez HTTP (ADR-0008) | zrobione | [stages/1-baza-i-katalog.md](stages/1-baza-i-katalog.md) |
 | 1.5 Obserwowalność | ślady, metryki, logi i błędy z aplikacji i workera | — | [stages/1.5-obserwowalnosc.md](stages/1.5-obserwowalnosc.md) |
 | 2. Tożsamość | konta `Attendee`, `Organizer`, `Moderator`, `Guest` (ADR-0004, 0005) | — | — |
 | 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia | — | — |

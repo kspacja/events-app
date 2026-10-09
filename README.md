@@ -1,7 +1,7 @@
 # Portal wydarzeń
 
 Strona startowa portalu z wydarzeniami: widok tygodnia, wyszukiwanie zdaniem („Pokaż mi …”) i mapa z pinami.
-Next.js (App Router), React, TypeScript, CSS Modules, MapLibre (OpenFreeMap); w dev portal działa na MSW. Backend `apps/api` (Hono) powstaje w etapie 1.
+Next.js (App Router), React, TypeScript, CSS Modules, MapLibre (OpenFreeMap). Backend `apps/api` (Hono, Drizzle, Postgres) serwuje Terminy przez HTTP; w dev portal domyślnie działa na MSW i nie potrzebuje bazy.
 
 ## Wymagania
 
@@ -33,10 +33,6 @@ pnpm --filter @events/api dev
 
 `db:seed` czyści tabele schematu `events` i wstawia przykładowe dane liczone od dzisiejszego dnia (bieżący tydzień i 4 następne). Gdy dane się zestarzeją — w bazie nie ma Terminów na bieżący tydzień — uruchom go ponownie. Działa tylko na bazie pod `localhost`.
 
-#### Portal na lokalnym API
-
-Domyślnie portal działa na MSW i nie potrzebuje bazy. Żeby czytał Terminy z `apps/api`, w `apps/portal/.env.local` ustaw `EVENTS_API_URL=http://localhost:3001` i usuń `API_MOCKING` (albo zostaw puste), uruchom API (powyżej) i zrestartuj portal. Po zmianie danych w bazie usuń `apps/portal/.next/cache/fetch-cache` — portal trzyma odpowiedzi API 5 minut. Kategorie przychodzą z bazy: nowa Kategoria bez własnego tokenu koloru dostaje `--category-fallback`.
-
 Testy integracyjne (`*.integration.test.ts`) idą na prawdziwym Postgresie: `pnpm --filter @events/api test:integration`. Wymagają `docker compose up -d --wait db`; same zakładają i migrują bazę `events_test` (adres: `TEST_DATABASE_URL`, tylko `localhost`). Nie wchodzą do `pnpm test`, więc bramki nie wymagają Dockera.
 
 Schemat tabel: `apps/api/src/contexts/<kontekst>/schema.ts` (Drizzle, ADR-0009), diagram w `docs/database.md`. Po zmianie schematu `pnpm --filter @events/api db:generate --name <opis>` tworzy migrację SQL w `apps/api/drizzle/` — przejrzyj ją przed commitem.
@@ -48,13 +44,17 @@ API: [http://localhost:3001/health](http://localhost:3001/health) oraz `GET /occ
 | `DATABASE_URL` | `postgres://events:events@localhost:5432/events` | baza z `docker-compose.yml`; wymagany adres `postgres://` (komunikat błędu nie pokazuje wartości) |
 | `PORT` | `3001` (domyślnie) | port API |
 
+#### Portal na lokalnym API
+
+Domyślnie portal działa na MSW i nie potrzebuje bazy. Żeby czytał Terminy z `apps/api`, w `apps/portal/.env.local` ustaw `EVENTS_API_URL=http://localhost:3001` i usuń `API_MOCKING` (albo zostaw puste), uruchom API (powyżej) i zrestartuj portal. Po zmianie danych w bazie usuń `apps/portal/.next/cache/fetch-cache` i zrestartuj portal — trzyma odpowiedzi API 5 minut. Kategorie przychodzą z bazy: nowa Kategoria bez własnego tokenu koloru dostaje `--category-fallback`.
+
 ### Co dzieje się po drodze
 
 | Krok | Co robi | Dlaczego |
 | --- | --- | --- |
 | `pnpm install` → `postinstall` (w `apps/portal`) | kopiuje worker MapLibre z `apps/portal/node_modules/maplibre-gl/dist` do `apps/portal/public/maplibre/` | Turbopack psuje domyślną ścieżkę workera, więc mapa ładuje go z `public/` (`setWorkerUrl`). Folder jest w `.gitignore`. |
 | `pnpm dev` → `predev` | to samo kopiowanie, na wypadek zmiany wersji `maplibre-gl` | bez tych plików mapa jest pusta, a w konsoli pojawia się `Worker failed to load` |
-| start serwera → `src/instrumentation.ts` | uruchamia mock API (MSW) w procesie Node | nie ma prawdziwego backendu; MSW przechwytuje `fetch` z server components |
+| start serwera → `src/instrumentation.ts` | przy `API_MOCKING=enabled` uruchamia mock API (MSW) w procesie Node | front działa bez bazy i bez `apps/api`; MSW przechwytuje `fetch` z server components |
 
 `pnpm build` ma analogiczny `prebuild`.
 
@@ -62,8 +62,8 @@ API: [http://localhost:3001/health](http://localhost:3001/health) oraz `GET /occ
 
 | Zmienna | Wartość | Znaczenie |
 | --- | --- | --- |
-| `EVENTS_API_URL` | `http://api.events.local` | adres API, z którego portal pobiera Terminy. Wymagany, musi być poprawnym adresem http(s). Brak wartości domyślnej. |
-| `API_MOCKING` | `enabled` | uruchamia MSW, który w procesie odpowiada pod `EVENTS_API_URL`. Bez tego strona próbuje połączyć się z prawdziwym API i pokazuje błąd. |
+| `EVENTS_API_URL` | `http://api.events.local` (MSW) albo `http://localhost:3001` (lokalne `apps/api`) | adres API, z którego portal pobiera Terminy. Wymagany, musi być poprawnym adresem http(s). Brak wartości domyślnej. |
+| `API_MOCKING` | `enabled` | uruchamia MSW, który w procesie odpowiada pod `EVENTS_API_URL`. Bez tego portal pyta prawdziwe API pod `EVENTS_API_URL` — zob. „Portal na lokalnym API”. |
 
 Konfiguracja jest walidowana przy starcie serwera, w hooku instrumentacji (`apps/portal/src/config/runtimeConfig.ts`). Błędna konfiguracja nie zatrzymuje serwera (Next 16): serwer działa dalej i odpowiada 500, a w logu jest czytelny komunikat z nazwami zmiennych (bez ich wartości). Na Vercel błąd ujawni się więc w czasie działania (po deployu), nie podczas builda.
 
@@ -100,7 +100,8 @@ Doba wydarzeń kończy się o 04:00: wydarzenie z niedzieli 01:30 należy do sob
 ## Typowe problemy
 
 - **Pusta mapa, `Worker failed to load`** — brak plików w `apps/portal/public/maplibre/`. Folder jest generowany (nie ma go w repozytorium, jest w `.gitignore`); `pnpm install` i `pnpm dev` go odtwarzają, a ręcznie: uruchom `node scripts/copy-maplibre-worker.mjs` w `apps/portal`.
-- **„Nie udało się wczytać wydarzeń”** — brak `apps/portal/.env.local` albo `API_MOCKING` nie jest `enabled`. Po zmianie env zrestartuj serwer.
+- **„Nie udało się wczytać wydarzeń”** — brak `apps/portal/.env.local`, albo `API_MOCKING` nie jest `enabled`, a `apps/api` pod `EVENTS_API_URL` nie działa. Po zmianie env zrestartuj serwer.
+- **Pusty tydzień na lokalnym API** — przykładowe dane w bazie się zestarzały; uruchom ponownie `pnpm --filter @events/api db:seed` i wyczyść `apps/portal/.next/cache/fetch-cache`.
 - **Zmiany w danych mocka nie są widoczne** — Next trzyma odpowiedzi API w `apps/portal/.next/cache/fetch-cache` (5 min, przeżywa rebuild). Usuń `apps/portal/.next/cache/fetch-cache` i zrestartuj serwer.
 - **`typecheck` zgłasza błąd w `.next/dev/types/...`** — nieaktualne typy po `next dev`. Usuń `apps/portal/.next` i uruchom ponownie.
 
