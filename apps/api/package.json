@@ -8,18 +8,18 @@
     "start": "tsx --env-file-if-exists=.env src/server.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "tsx --env-file-if-exists=.env src/seed.ts",
+    "db:seed": "tsx --env-file-if-exists=.env src/runSeed.ts",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
-    "@events/contract": "workspace:*",
     "@events/repo": "workspace:*",
     "@hono/node-server": "^2.1.3",
     "drizzle-orm": "^0.45.3",
     "hono": "^4.13.13",
     "pg": "^8.23.1",
+    "pg-connection-string": "^2.14.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {

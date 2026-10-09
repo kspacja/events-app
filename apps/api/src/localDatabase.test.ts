@@ -9,7 +9,12 @@ describe('assertLocalDatabase', () => {
     },
   );
 
-  it.each(['postgres://u:p@ep-cool-1.eu-central-1.aws.neon.tech/events', 'postgres://u:p@localhost.evil.com/events'])(
+  it.each([
+    'postgres://u:p@ep-cool-1.eu-central-1.aws.neon.tech/events',
+    'postgres://u:p@localhost.evil.com/events',
+    'postgres://u:p@localhost/events?host=ep-cool-1.eu-central-1.aws.neon.tech',
+    'postgres://u:p@localhost/events?hostaddr=10.0.0.1',
+  ])(
     'refuses %s',
     (url) => {
       expect(() => assertLocalDatabase(url)).toThrow('localhost');

@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { eventIdSchema, occurrenceIdSchema } from '@events/contract/listing';
-import { createEventsData, createSampleEvents, venueId, type Price } from '@events/repo';
+import { createEventsData, createSampleEvents, eventId, occurrenceId, venueId, type Price } from '@events/repo';
 import { toSeedRows } from './seedRows';
 
 const VENUE = { id: venueId('hall'), name: 'Hala', address: 'ul. Wystawowa 1', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
-const EVENT = { id: eventIdSchema.parse('jazz'), title: 'Jazz', categorySlugs: ['art', 'music'] };
+const EVENT = { id: eventId('jazz'), title: 'Jazz', categorySlugs: ['art', 'music'] };
 
 function dataWithPrice(price: Price | null) {
   return createEventsData({
@@ -16,7 +15,7 @@ function dataWithPrice(price: Price | null) {
     events: [EVENT],
     occurrences: [
       {
-        id: occurrenceIdSchema.parse('jazz-2030-01-01'),
+        id: occurrenceId('jazz-2030-01-01'),
         eventId: EVENT.id,
         venueId: VENUE.id,
         startsAt: '2030-01-01T19:00:00+01:00',

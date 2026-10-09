@@ -45,7 +45,7 @@
    - Wydarzenie ma jedną lub więcej Kategorii, pierwsza jest główna: tabela `event_categories` (`event_id`, `category_slug`, `position`; PK `(event_id, category_slug)`, UNIQUE `(event_id, position)`, indeks na `category_slug`; Wydarzenie `CASCADE`, Kategoria `RESTRICT` / `ON UPDATE CASCADE`) zamiast `events.category_slug`; `categories` jako niepusta lista w modelu i kontrakcie; karta bierze kolor i etykietę z Kategorii głównej; słownik zaktualizowany.
    - Migracja `0000` wygenerowana od nowa (niewdrożona), diagram w `docs/database.md`.
 3. Seed z przykładowych danych — zakres:
-   - `db:seed` w `apps/api`: `createSampleEvents(new Date())`, w jednej transakcji czyści tabele schematu `events` i wstawia dane od nowa (można powtarzać); odmawia, gdy `DATABASE_URL` nie wskazuje na `localhost` / `127.0.0.1`.
+   - `db:seed` w `apps/api`: `createSampleEvents(new Date())`, w jednej transakcji czyści tabele schematu `events` i wstawia dane od nowa (można powtarzać); odmawia, gdy `DATABASE_URL` nie wskazuje na `localhost` / `127.0.0.1` / `::1` (host czytany jak w sterowniku `pg`, z `?host=`; `hostaddr` odrzucany).
    - Czysta funkcja `EventsData` → wiersze tabel (cena w czterech kolumnach, Kategorie jako `event_categories` z `position`) z testami jednostkowymi; README.
    - Weryfikacja: bramki + seed na bazie z Docker Compose, liczby wierszy w `psql`.
 4. `GET /occurrences` w `apps/api` zgodny ze schematem z `@events/contract` (Doba wydarzeń 04:00, sortowanie; Kategorie Wydarzenia w kolejności `position`, bez szukania `position = 0`) + testy integracyjne na prawdziwej bazie.

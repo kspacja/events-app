@@ -2,6 +2,8 @@ export { toListings } from './listings';
 export {
   EventsIntegrityError,
   createEventsData,
+  eventId,
+  occurrenceId,
   venueId,
   type EventsData,
   type EventsDataInput,

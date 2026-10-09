@@ -1,5 +1,7 @@
 import {
   brandedIdSchema,
+  eventIdSchema,
+  occurrenceIdSchema,
   type Category,
   type EventId,
   type OccurrenceId,
@@ -13,6 +15,8 @@ export const venueIdSchema = brandedIdSchema<'VenueId'>();
 export type VenueId = ReturnType<typeof venueIdSchema.parse>; // repo has no direct zod dependency, so no z.infer
 
 export const venueId = (value: string): VenueId => venueIdSchema.parse(value);
+export const eventId = (value: string): EventId => eventIdSchema.parse(value);
+export const occurrenceId = (value: string): OccurrenceId => occurrenceIdSchema.parse(value);
 
 export interface Venue {
   readonly id: VenueId;
