@@ -32,7 +32,7 @@ describe('MonthCalendar', () => {
 
     expect(screen.getByRole('link', { name: 'środa, 21 października, 6 wydarzeń, wybrany tydzień' })).toHaveAttribute(
       'href',
-      '/dla-szkol?week=2026-10-19&month=2026-10#day-2026-10-21',
+      '/dla-szkol?week=2026-10-19&preview-month=2026-10#day-2026-10-21',
     );
   });
 
@@ -41,7 +41,7 @@ describe('MonthCalendar', () => {
 
     expect(screen.getByRole('link', { name: 'niedziela, 1 listopada, brak wydarzeń' })).toHaveAttribute(
       'href',
-      '/dla-szkol?week=2026-10-26&month=2026-11#day-2026-11-01',
+      '/dla-szkol?week=2026-10-26&preview-month=2026-11#day-2026-11-01',
     );
   });
 
@@ -78,7 +78,7 @@ describe('MonthCalendar', () => {
 
     expect(screen.getByRole('link', { name: 'Następny miesiąc' })).toHaveAttribute(
       'href',
-      '/dla-szkol?week=2026-10-19&month=2026-11',
+      '/dla-szkol?week=2026-10-19&preview-month=2026-11',
     );
   });
 
@@ -87,7 +87,7 @@ describe('MonthCalendar', () => {
 
     expect(screen.getByRole('link', { name: 'Obecny tydz.' })).toHaveAttribute(
       'href',
-      '/dla-szkol?week=2026-10-12&month=2026-10',
+      '/dla-szkol?week=2026-10-12&preview-month=2026-10',
     );
   });
 
@@ -96,7 +96,7 @@ describe('MonthCalendar', () => {
 
     expect(screen.getByRole('link', { name: 'Poprzedni miesiąc' })).toHaveAttribute(
       'href',
-      '/dla-szkol?week=2026-10-19&month=2026-10',
+      '/dla-szkol?week=2026-10-19&preview-month=2026-10',
     );
   });
 

@@ -11,6 +11,6 @@ interface SchoolsState {
 
 /** The schools page for a shown week and month, optionally with a hash that the week strip reads once. */
 export function schoolsHref({ week, month }: SchoolsState, anchor?: string): string {
-  const query = new URLSearchParams({ week, month });
+  const query = new URLSearchParams({ week, 'preview-month': month });
   return `${SCHOOLS_PATH}?${query}${anchor ? `#${anchor}` : ''}`;
 }

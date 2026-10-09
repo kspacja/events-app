@@ -65,7 +65,7 @@ describe('/dla-szkol', () => {
 
     expect(within(calendar).getByRole('link', { name: /5 wydarzeń/ })).toHaveAttribute(
       'href',
-      `/dla-szkol?week=${WEEK}&month=${monthOfWeek(WEEK)}#day-${WEDNESDAY}`,
+      `/dla-szkol?week=${WEEK}&preview-month=${monthOfWeek(WEEK)}#day-${WEDNESDAY}`,
     );
   });
 
@@ -76,11 +76,11 @@ describe('/dla-szkol', () => {
 
     expect(screen.getByRole('link', { name: 'Poprzedni tydzień' })).toHaveAttribute(
       'href',
-      `/dla-szkol?week=${previous}&month=${monthOfWeek(previous)}`,
+      `/dla-szkol?week=${previous}&preview-month=${monthOfWeek(previous)}`,
     );
     expect(screen.getByRole('link', { name: 'Następny tydzień' })).toHaveAttribute(
       'href',
-      `/dla-szkol?week=${next}&month=${monthOfWeek(next)}`,
+      `/dla-szkol?week=${next}&preview-month=${monthOfWeek(next)}`,
     );
   });
 

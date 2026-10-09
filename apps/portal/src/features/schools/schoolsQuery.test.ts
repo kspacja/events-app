@@ -15,7 +15,7 @@ describe('parseSchoolsQuery', () => {
   });
 
   it('keeps a shown month apart from the week', () => {
-    expect(parseSchoolsQuery({ week: '2026-10-21', month: '2026-12' }, NOW).month).toBe('2026-12');
+    expect(parseSchoolsQuery({ week: '2026-10-21', 'preview-month': '2026-12' }, NOW).month).toBe('2026-12');
   });
 
   it('keeps a past week, so it can be shown', () => {

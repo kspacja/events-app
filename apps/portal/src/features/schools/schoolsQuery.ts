@@ -31,7 +31,7 @@ export function parseSchoolsQuery(params: SearchParamsInput, now: Date): Schools
   return {
     week,
     range: scheduleSpan({ from: week, to: week }),
-    month: parseMonth(firstValue(params.month), today, week),
+    month: parseMonth(firstValue(params['preview-month']), today, week),
     notice,
   };
 }
