@@ -30,12 +30,6 @@ export function firstDayOf(month: CalendarMonth): CalendarDay {
   return `${month}-01` as CalendarDay;
 }
 
-/** The first week of the month: the Monday-to-Sunday week that holds the month's first Thursday. */
-export function weekOfMonth(month: CalendarMonth): CalendarDay {
-  const monday = mondayOf(firstDayOf(month));
-  return monthOfWeek(monday) === month ? monday : addDays(monday, DAYS_IN_WEEK);
-}
-
 /** Znacznik dnia: one dot per event up to 4; from 5 on, 3 dots and the rest as a number. */
 export interface DayMarker {
   readonly dots: number;

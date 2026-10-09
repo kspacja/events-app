@@ -7,8 +7,7 @@ import { OccurrenceSelectionProvider } from '@/features/events/OccurrenceSelecti
 import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatDay } from '@/lib/format';
 import { SCHOOLS_LABELS } from '../labels';
-import { monthOfWeek } from '../monthCalendar';
-import { SchoolsCalendar } from './SchoolsCalendar';
+import { MonthCalendar } from './MonthCalendar';
 import { WeekArrow } from './WeekArrow';
 import styles from './WeekShell.module.css';
 
@@ -29,9 +28,7 @@ export function WeekShell({ week, today, map, children }: WeekShellProps) {
         <Header
           layout="split"
           sentence={SCHOOLS_LABELS.heading}
-          controls={
-            <SchoolsCalendar month={monthOfWeek(week)} week={week} today={today} />
-          }
+          controls={<MonthCalendar week={week} today={today} />}
           rangeLabel={formatRangeLabel(range)}
           countLabel={null}
           map={map}

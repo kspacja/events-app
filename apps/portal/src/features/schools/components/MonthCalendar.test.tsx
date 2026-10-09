@@ -1,9 +1,9 @@
 import { render, screen, within } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
+import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { CalendarDay } from '@events/time';
 import { server } from '@/test/mockServer';
-import { buildMonthCalendar } from '../monthCalendar';
 import { MonthCalendar } from './MonthCalendar';
 
 const TODAY: CalendarDay = '2026-10-14';
@@ -17,20 +17,21 @@ beforeEach(() => {
   );
 });
 
-function renderCalendar(month: '2026-10' | '2026-11' = '2026-10') {
-  const calendar = buildMonthCalendar({ month, today: TODAY, selectedWeek: SHOWN_WEEK });
-  return render(<MonthCalendar calendar={calendar} shownWeek={SHOWN_WEEK} today={TODAY} />);
+// The calendar starts on the month of the shown week; the arrows move it without touching the URL
+async function renderCalendar(month: '2026-10' | '2026-11' = '2026-10') {
+  render(<MonthCalendar week={SHOWN_WEEK} today={TODAY} />);
+  if (month === '2026-11') await userEvent.click(screen.getByRole('button', { name: 'Następny miesiąc' }));
 }
 
 describe('MonthCalendar', () => {
-  it('names the month', () => {
-    renderCalendar();
+  it('names the month', async () => {
+    await renderCalendar();
 
     expect(screen.getByRole('heading', { name: 'październik 2026' })).toBeInTheDocument();
   });
 
   it('links a day to its week and to its column in the strip', async () => {
-    renderCalendar();
+    await renderCalendar();
 
     expect(await screen.findByRole('link', { name: 'środa, 21 października, 6 wydarzeń, wybrany tydzień' })).toHaveAttribute(
       'href',
@@ -39,7 +40,7 @@ describe('MonthCalendar', () => {
   });
 
   it('links a day of the next month to its own week and month', async () => {
-    renderCalendar();
+    await renderCalendar();
 
     expect(await screen.findByRole('link', { name: 'niedziela, 1 listopada, brak wydarzeń' })).toHaveAttribute(
       'href',
@@ -47,15 +48,15 @@ describe('MonthCalendar', () => {
     );
   });
 
-  it('shows past days without a link', () => {
-    renderCalendar();
+  it('shows past days without a link', async () => {
+    await renderCalendar();
 
     expect(screen.queryByRole('link', { name: /wtorek, 13 października/ })).not.toBeInTheDocument();
     expect(screen.getByText('wtorek, 13 października, dzień minął')).toBeInTheDocument();
   });
 
   it('marks today', async () => {
-    renderCalendar();
+    await renderCalendar();
 
     expect(await screen.findByRole('link', { name: 'środa, 14 października, 2 wydarzenia, bieżący tydzień' })).toHaveAttribute(
       'aria-current',
@@ -64,28 +65,20 @@ describe('MonthCalendar', () => {
   });
 
   it('shows 3 dots and the rest as a number from 5 events on', async () => {
-    renderCalendar();
+    await renderCalendar();
 
     expect(await screen.findByRole('link', { name: /21 października/ })).toHaveTextContent('21+3');
   });
 
-  it('cannot go before the current month', () => {
-    renderCalendar();
+  it('cannot go before the current month', async () => {
+    await renderCalendar();
 
-    expect(screen.queryByRole('link', { name: 'Poprzedni miesiąc' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Poprzedni miesiąc' })).not.toBeInTheDocument();
   });
 
-  it('moves to the first week of the next month', () => {
-    renderCalendar();
 
-    expect(screen.getByRole('link', { name: 'Następny miesiąc' })).toHaveAttribute(
-      'href',
-      '/dla-szkol/2026-11-02',
-    );
-  });
-
-  it('goes back to the current week and month with "Obecny tydz."', () => {
-    renderCalendar('2026-11');
+  it('goes back to the current week and month with "Obecny tydz."', async () => {
+    await renderCalendar('2026-11');
 
     expect(screen.getByRole('link', { name: 'Obecny tydz.' })).toHaveAttribute(
       'href',
@@ -93,17 +86,14 @@ describe('MonthCalendar', () => {
     );
   });
 
-  it('goes back a month once ahead of the current one', () => {
-    renderCalendar('2026-11');
+  it('goes back a month once ahead of the current one', async () => {
+    await renderCalendar('2026-11');
 
-    expect(screen.getByRole('link', { name: 'Poprzedni miesiąc' })).toHaveAttribute(
-      'href',
-      '/dla-szkol/2026-09-28',
-    );
+    expect(screen.getByRole('button', { name: 'Poprzedni miesiąc' })).toBeInTheDocument();
   });
 
-  it('is a table labelled by the month, with full day names for screen readers', () => {
-    renderCalendar();
+  it('is a table labelled by the month, with full day names for screen readers', async () => {
+    await renderCalendar();
     const table = screen.getByRole('table', { name: 'październik 2026' });
 
     for (const name of ['Poniedziałek', 'Czwartek', 'Niedziela']) {
@@ -112,7 +102,7 @@ describe('MonthCalendar', () => {
   });
 
   it('says which week is the current one and which is shown', async () => {
-    renderCalendar();
+    await renderCalendar();
 
     expect(await screen.findByRole('link', { name: /^czwartek, 15 października, .*, bieżący tydzień$/ })).toBeInTheDocument();
     expect(await screen.findByRole('link', { name: /^czwartek, 22 października, .*, wybrany tydzień$/ })).toBeInTheDocument();
