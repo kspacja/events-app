@@ -43,6 +43,7 @@ API: [http://localhost:3001/health](http://localhost:3001/health) oraz `GET /occ
 | --- | --- | --- |
 | `DATABASE_URL` | `postgres://events:events@localhost:5432/events` | baza z `docker-compose.yml`; wymagany adres `postgres://` (komunikat błędu nie pokazuje wartości) |
 | `PORT` | `3001` (domyślnie) | port API |
+| `CORS_ORIGIN` | `http://localhost:3000` (domyślnie) | origin portalu, z którego przeglądarka może czytać API |
 
 #### Portal na lokalnym API
 
@@ -55,6 +56,7 @@ Domyślnie portal działa na MSW i nie potrzebuje bazy. Żeby czytał Terminy z 
 | `pnpm install` → `postinstall` (w `apps/portal`) | kopiuje worker MapLibre z `apps/portal/node_modules/maplibre-gl/dist` do `apps/portal/public/maplibre/` | Turbopack psuje domyślną ścieżkę workera, więc mapa ładuje go z `public/` (`setWorkerUrl`). Folder jest w `.gitignore`. |
 | `pnpm dev` → `predev` | to samo kopiowanie, na wypadek zmiany wersji `maplibre-gl` | bez tych plików mapa jest pusta, a w konsoli pojawia się `Worker failed to load` |
 | start serwera → `src/instrumentation.ts` | przy `API_MOCKING=enabled` uruchamia mock API (MSW) w procesie Node | front działa bez bazy i bez `apps/api`; MSW przechwytuje `fetch` z server components |
+| strona z danymi pobieranymi w przeglądarce → `BrowserMocking` | przy `API_MOCKING=enabled` rejestruje `public/mockServiceWorker.js` (MSW `setupWorker`) z tymi samymi handlerami | przeglądarka pyta API bezpośrednio (CORS); w dev odpowiada jej worker, zapytania czekają na jego start |
 
 `pnpm build` ma analogiczny `prebuild`.
 

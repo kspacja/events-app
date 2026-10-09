@@ -5,10 +5,15 @@ const DATABASE_URL = 'postgres://events:events@localhost:5432/events';
 
 describe('parseApiConfig', () => {
   const accepted: ReadonlyArray<readonly [string, Record<string, string>, ApiConfig]> = [
-    ['a URL with the default port', { DATABASE_URL }, { databaseUrl: DATABASE_URL, port: 3001 }],
-    ['a blank port as the default', { DATABASE_URL, PORT: '' }, { databaseUrl: DATABASE_URL, port: 3001 }],
-    ['an explicit port', { DATABASE_URL, PORT: '8080' }, { databaseUrl: DATABASE_URL, port: 8080 }],
-    ['the postgresql:// scheme', { DATABASE_URL: 'postgresql://db/events' }, { databaseUrl: 'postgresql://db/events', port: 3001 }],
+    ['a URL with the default port', { DATABASE_URL }, { databaseUrl: DATABASE_URL, port: 3001, corsOrigin: 'http://localhost:3000' }],
+    ['a blank port as the default', { DATABASE_URL, PORT: '' }, { databaseUrl: DATABASE_URL, port: 3001, corsOrigin: 'http://localhost:3000' }],
+    ['an explicit port', { DATABASE_URL, PORT: '8080' }, { databaseUrl: DATABASE_URL, port: 8080, corsOrigin: 'http://localhost:3000' }],
+    ['the postgresql:// scheme', { DATABASE_URL: 'postgresql://db/events' }, { databaseUrl: 'postgresql://db/events', port: 3001, corsOrigin: 'http://localhost:3000' }],
+    [
+      'a CORS origin',
+      { DATABASE_URL, CORS_ORIGIN: 'https://portal.example' },
+      { databaseUrl: DATABASE_URL, port: 3001, corsOrigin: 'https://portal.example' },
+    ],
   ];
 
   it.each(accepted)('accepts %s', (_name, env, expected) => {
@@ -21,6 +26,8 @@ describe('parseApiConfig', () => {
     ['a non-postgres URL', { DATABASE_URL: 'http://localhost:5432' }, 'DATABASE_URL'],
     ['a non-numeric port', { DATABASE_URL, PORT: 'abc' }, 'PORT'],
     ['an out-of-range port', { DATABASE_URL, PORT: '70000' }, 'PORT'],
+    ['a CORS origin with a path', { DATABASE_URL, CORS_ORIGIN: 'https://portal.example/app' }, 'CORS_ORIGIN'],
+    ['a non-http CORS origin', { DATABASE_URL, CORS_ORIGIN: 'ftp://portal.example' }, 'CORS_ORIGIN'],
   ];
 
   it.each(rejected)('rejects %s', (_name, env, variable) => {

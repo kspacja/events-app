@@ -11,6 +11,8 @@ import { createOccurrenceReader } from './occurrences';
 import { eventCategories } from './schema';
 import { seedEvents } from './seed';
 
+const PORTAL_ORIGIN = 'http://localhost:3000';
+
 const VENUE = { id: venueId('hall'), name: 'Hala', address: 'ul. Wystawowa 1', city: 'Wrocław', location: { lat: 51.1, lng: 17 } };
 const PAID: Price = { kind: 'paid', from: 40, to: 80, currency: 'PLN' };
 
@@ -167,7 +169,7 @@ describe('createOccurrenceReader on Postgres', () => {
   });
 
   it('serves the contract shape over HTTP', async () => {
-    const response = await createApp({ listOccurrences }).request('/occurrences?from=2030-01-04&to=2030-01-06');
+    const response = await createApp({ listOccurrences, corsOrigin: PORTAL_ORIGIN }).request('/occurrences?from=2030-01-04&to=2030-01-06');
 
     const body = (await response.json()) as { occurrences: unknown[] };
 

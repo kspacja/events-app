@@ -4,8 +4,10 @@ import { createApp } from '../../app';
 import { OCCURRENCE_ROW } from './occurrenceRow.testing';
 import { toListing, type ListOccurrences, type OccurrencesQuery } from './occurrences';
 
+const PORTAL_ORIGIN = 'http://localhost:3000';
+
 async function get(query: string, listOccurrences: ListOccurrences) {
-  const response = await createApp({ listOccurrences }).request(`/occurrences${query}`);
+  const response = await createApp({ listOccurrences, corsOrigin: PORTAL_ORIGIN }).request(`/occurrences${query}`);
   return { status: response.status, body: (await response.json()) as unknown };
 }
 
