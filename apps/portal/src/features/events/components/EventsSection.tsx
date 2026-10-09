@@ -76,9 +76,7 @@ export async function EventsSection({
               {rangeNavigation?.next}
             </div>
             <div className={styles.hint}>
-              <span>
-                {STRIP_LABELS.weekHint} · <ScrollHint label={STRIP_LABELS.scrollHint} direction={1} />
-              </span>
+              <ScrollHint label={STRIP_LABELS.scrollHint} direction={1} />
               <ScrollHint label={STRIP_LABELS.scrollBackHint} direction={-1} />
             </div>
             <div className={styles.strip}>
