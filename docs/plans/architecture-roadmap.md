@@ -28,7 +28,7 @@ Koniec etapu: **code review w dwóch osiach** całego etapu (Standards + Spec, r
 | 4. Moderacja | `apps/moderation`: kolejka Zgłoszeń i decyzje | — | — |
 | 5. Rekomendacje | `packages/recommendations`, `apps/worker`, Reakcje, `ColdStart` (ADR-0003, 0007) | — | — |
 | 6. Import i Kanały | import CSV, Kanał JSON Zaufanego Organizatora (cyklicznie i na webhook) | — | [stages/6-import-i-kanaly.md](stages/6-import-i-kanaly.md) |
-| 7. Wdrożenie | Vercel, Neon, Railway/Fly, CI (ADR-0006) | — | — |
+| 7. Wdrożenie | Vercel, Neon, Railway/Fly, CI (ADR-0006) | w toku: release Preview na MSW | [stages/7-wdrozenie.md](stages/7-wdrozenie.md) |
 
 Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryterium ukończenia.
 
