@@ -3,12 +3,12 @@
   max-width: calc(var(--day-column-width) * 7 + 80px);
   min-height: 100vh;
   margin: 0 auto;
-  padding: 28px 40px 48px;
+  padding: 28px 0 48px 40px;
 }
 
 @media (max-width: 768px) {
   .page {
-    padding: 16px 16px 40px;
+    padding: 16px 0 40px 16px;
   }
 }
 
