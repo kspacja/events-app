@@ -28,6 +28,7 @@ function ShellContent({ today, children }: SchoolsShellProps) {
       <Header
         layout="split"
         sentence={SCHOOLS_LABELS.heading}
+        sentencePlace="beside"
         controls={<MonthCalendar week={week} today={today} onNavigate={navigate} />}
         rangeLabel={formatRangeLabel(range)}
         countLabel={null}

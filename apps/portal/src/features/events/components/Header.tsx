@@ -11,6 +11,7 @@ export interface RangeNavigation {
 
 interface HeaderProps {
   readonly sentence: ReactNode;
+  readonly sentencePlace?: 'below' | 'beside';
   /** Shown under the heading, outside the <h1>, e.g. a calendar. */
   readonly controls?: ReactNode;
   readonly notice?: ReactNode;
@@ -39,6 +40,7 @@ function Logo() {
 
 export function Header({
   sentence,
+  sentencePlace = 'below',
   controls,
   notice,
   rangeLabel,
@@ -52,7 +54,7 @@ export function Header({
   if (layout === 'split') {
     return (
       <header className={`${styles.header} ${styles.split}`}>
-        <div className={styles.title}>
+        <div className={`${styles.title} ${sentencePlace === 'beside' ? styles.sentenceBeside : ''}`}>
           <Logo />
           <h1 className={styles.sentence}>{sentence}</h1>
         </div>

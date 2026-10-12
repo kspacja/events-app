@@ -1,6 +1,6 @@
 export const SCHOOLS_LABELS = {
-  heading: 'Wydarzenia dla grup szkolnych',
-  pageTitle: 'Wydarzenia dla szkół',
+  heading: 'Dla szkół',
+  pageTitle: 'Dla szkół',
   calendarShow: 'Pokaż kalendarz miesięczny',
   calendarHide: 'Ukryj kalendarz',
 } as const;
