@@ -13,6 +13,7 @@ export default async function WeekPage({ params }: { readonly params: Promise<{ 
   if (!valid || raw !== week) redirect(schoolsHref(week));
 
   const schedule = await loadWeekSchedule(week as CalendarDay);
+  
   return (
     <>
       <WeekMapPoints points={schedule.mapPoints} focus={schedule.mapFocus} />

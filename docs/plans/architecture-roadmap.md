@@ -58,6 +58,7 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Cechy szkolne Wydarzenia (wiek, klasy) i filtry strony dla szkół — po researchu (etap 3.5, „Otwarte”).
 - Obwódka fokusu dni na skrajnych kolumnach Kalendarza miesiąca może być przycięta — sprawdzamy w Chrome na końcu planu.
 - Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.
+- Szybsze przełączanie tygodni na `/dla-szkol` (produkcyjnie): `experimental.staleTimes.dynamic` (np. 300 s), żeby odwiedzony tydzień wracał z cache przeglądarki, oraz `router.prefetch` dwóch następnych tygodni w `WeekNavigationProvider` (pełne pobranie, 5 min). Szkielet `WeekArea` zostaje na skoki do odległych tygodni. `'use cache'` na `loadWeekSchedule` niepotrzebne: wymaga `cacheComponents`, a dane już cache'uje `fetch` z `revalidate` (ADR-0008).
 
 ## Testowanie
 

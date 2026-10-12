@@ -63,9 +63,24 @@ export function WeekNavigationProvider({ today, children }: WeekNavigationProvid
   );
 }
 
-/** The week's place in the layout: its skeleton while a week change is pending. */
+// Fast week changes keep the old strip instead of flashing the skeleton
+const SKELETON_DELAY_MS = 200;
+
+/** The week's place in the layout: its skeleton once a week change takes longer than a moment. */
 export function WeekArea({ children }: { readonly children: ReactNode }) {
-  return useWeekNavigation().pending ? <StripSkeleton /> : children;
+  const { pending } = useWeekNavigation();
+  const [slow, setSlow] = useState(false);
+
+  useEffect(() => {
+    if (!pending) return;
+    const timer = setTimeout(() => setSlow(true), SKELETON_DELAY_MS);
+    return () => {
+      clearTimeout(timer);
+      setSlow(false);
+    };
+  }, [pending]);
+
+  return pending && slow ? <StripSkeleton /> : children;
 }
 
 /** The map stays mounted across weeks; each week page only hands it new points. */
