@@ -18,7 +18,6 @@
 }
 
 .logo {
-  align-self: flex-start;
   font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 800;
@@ -96,10 +95,6 @@
     gap: 0;
   }
 
-  .logo {
-    font-size: 20px;
-  }
-
   .sentence {
     margin-top: 18px;
     font-size: 22px;
@@ -154,20 +149,19 @@
 .header.split .sentenceBeside {
   flex-direction: row;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 
   .sentence {
-    margin: 0;
+    margin: 2px 0 0;
     font-family: var(--font-heading);
     font-size: 18px;
   }
 }
 
 .header.split .sidebar {
-  grid-column: 1;
-  grid-row: 2 / span 2;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 28px;
   min-width: 0;
   padding-top: 28px;
@@ -181,7 +175,7 @@
 
 .header.split .map {
   flex: none;
-  width: 100%;
+  position: relative;
 }
 
 @media (max-width: 768px) {
@@ -194,8 +188,12 @@
     padding-top: 12px;
   }
 
+  /* The map's button and panel join the sidebar row, so both buttons sit side by side and the panels stack below */
+  .header.split .map {
+    display: contents;
+  }
+
   .header.split .title {
-    gap: 0;
     padding-bottom: 14px;
     border-bottom-width: 3px;
   }

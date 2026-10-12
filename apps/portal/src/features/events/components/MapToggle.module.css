@@ -21,9 +21,6 @@
 
 @media (max-width: 768px) {
   .button {
-    position: absolute;
-    top: 0;
-    right: 0;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -38,7 +35,9 @@
     cursor: pointer;
   }
 
+  /* Below both toggle buttons, under the calendar when both are open */
   .panel {
+    order: 1;
     width: 100%;
     height: 240px;
   }

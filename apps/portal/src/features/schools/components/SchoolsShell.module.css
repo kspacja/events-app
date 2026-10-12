@@ -1,7 +1,13 @@
+.split {
+  --strip-bleed: 30px;
+  padding-right: var(--strip-bleed);
+}
+
 /* Desktop only: left column (calendar, map) and right column (summary, week); widths are set here */
 @media (min-width: 769px) {
   /* Wider right gutter that only the week strip reaches into, so the days read as running off the page */
   .split {
+    --strip-bleed: 64px;
     display: grid;
     grid-template-columns: 250px minmax(0, 1fr);
     column-gap: 20px;
@@ -19,15 +25,14 @@
   }
 }
 
-.split {
-  --strip-bleed: 64px;
-  padding-right: var(--strip-bleed);
-}
-
 /* About three and a half days fit on screen, so the last one is cut and the strip reads as sideways */
 .strip {
   --day-column-width: clamp(180px, calc(100cqw / 3.5), 240px);
   margin-right: calc(-1 * var(--strip-bleed));
+
+  @media (max-width: 768px) {
+    margin-left: calc(-1 * var(--strip-bleed));
+  }
 }
 
 .hint {

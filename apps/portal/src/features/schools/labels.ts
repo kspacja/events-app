@@ -1,7 +1,7 @@
 export const SCHOOLS_LABELS = {
-  heading: 'Dla szkół',
+  heading: 'dla szkół',
   pageTitle: 'Dla szkół',
-  calendarShow: 'Pokaż kalendarz miesięczny',
+  calendarShow: 'Pokaż kalendarz',
   calendarHide: 'Ukryj kalendarz',
 } as const;
 

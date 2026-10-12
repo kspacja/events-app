@@ -18,6 +18,11 @@
     cursor: pointer;
   }
 
+  .panel {
+    order: 1;
+    width: 100%;
+  }
+
   .panel[data-expanded='false'] {
     display: none;
   }
