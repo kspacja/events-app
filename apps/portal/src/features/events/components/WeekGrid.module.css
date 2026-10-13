@@ -13,10 +13,7 @@
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
   scroll-padding-inline-start: var(--strip-bleed);
-
-  @media (max-width: 768px) {
-    margin-left: calc(-1 * var(--strip-bleed));
-  }
+  margin-left: calc(-1 * var(--strip-bleed-start));
 }
 
 .week {
@@ -28,8 +25,5 @@
   margin-top: 4px;
 
   margin-right: var(--strip-bleed);
-
-  @media (max-width: 768px) {
-    margin-left: var(--strip-bleed);
-  }
+  margin-left: var(--strip-bleed-start);
 }

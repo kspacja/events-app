@@ -1,16 +1,19 @@
+/* The week strip reaches into the left padding, so its start bleed equals it */
 .page {
   --strip-bleed: 64px;
+  --strip-bleed-start: 40px;
   box-sizing: border-box;
   max-width: calc(var(--day-column-width) * 7 + 80px);
   min-height: 100vh;
   margin: 0 auto;
-  padding: 28px 0 48px 40px;
+  padding: 28px 0 48px var(--strip-bleed-start);
 }
 
 @media (max-width: 768px) {
   .page {
     --strip-bleed: 30px;
-    padding: 16px 0 40px 30px;
+    --strip-bleed-start: 30px;
+    padding: 16px 0 40px var(--strip-bleed-start);
   }
 }
 

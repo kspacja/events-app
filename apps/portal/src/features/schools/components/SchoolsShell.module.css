@@ -5,7 +5,9 @@
 /* Desktop only: left column (calendar, map) and right column (summary, week); widths are set here */
 @media (min-width: 769px) {
   /* Wider right gutter that only the week strip reaches into, so the days read as running off the page */
+  /* The left column sits before the strip, so it has nothing to bleed into there */
   .split {
+    --strip-bleed-start: 0px;
     display: grid;
     grid-template-columns: 250px minmax(0, 1fr);
     column-gap: 20px;
