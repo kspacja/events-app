@@ -1,5 +1,5 @@
 .day {
-  --day-bg: var(--color-bg);
+  --day-bg: var(--color-bg-weekday);
   --day-number: var(--color-text);
 
   display: flex;
@@ -12,6 +12,8 @@
   padding: 20px 14px 24px;
   background: var(--day-bg);
   border-left: 1px solid var(--color-border);
+
+  box-shadow: 0 -2px 3px rgba(0,0,0, 0.1);
 }
 
 .day[data-weekend='true'] {
@@ -22,6 +24,14 @@
 .day[data-in-range='false'] {
   --day-bg: var(--color-bg-subtle);
   --day-number: var(--color-text-disabled);
+}
+
+.day:first-child {
+  border-radius: 20px 0 0 20px;
+}
+
+.day:last-child {
+  border-radius: 0 20px 20px 0;
 }
 
 .heading {

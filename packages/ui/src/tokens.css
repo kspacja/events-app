@@ -11,9 +11,11 @@
 
   --color-bg: #ffffff;
   --color-bg-subtle: #f5f4f1;
-  --color-bg-weekend: #fbf8f4;
 
-  --color-border: #e4e2dd;
+  --color-bg-weekday: #fbf8f4;
+  --color-bg-weekend: #f5eadc;
+
+  --color-border: #dbd8d3;
   --color-map-water: #bfd7ea;
 
   --category-music: #f3e3d8;

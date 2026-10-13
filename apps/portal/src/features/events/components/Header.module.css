@@ -8,6 +8,11 @@
   border-bottom: var(--rule-thickness) solid var(--color-text);
 }
 
+/* The page has no right padding so the week strip can run to the edge; the header keeps clear of it */
+.header:not(.split) {
+  margin-right: var(--strip-bleed);
+}
+
 .main {
   display: flex;
   flex: 1 1 560px;
@@ -159,9 +164,10 @@
 }
 
 .header.split .sidebar {
+  grid-column: 1;
+  grid-row: 2 / span 2;
   display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 28px;
   min-width: 0;
   padding-top: 28px;
@@ -175,6 +181,7 @@
 
 .header.split .map {
   flex: none;
+  width: 100%;
   position: relative;
 }
 
@@ -184,6 +191,9 @@
   }
 
   .header.split .sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
     gap: 12px;
     padding-top: 12px;
   }
