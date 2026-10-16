@@ -5,6 +5,7 @@ import {
   CONTROL_GROUPS,
   channelsToHex,
   hexToChannels,
+  parseHex,
   parseOverrides,
   parseTheme,
   slugify,
@@ -62,6 +63,21 @@ describe('slugify', () => {
 describe('themeCss', () => {
   it('renders a :root block to paste into tokens.css', () => {
     expect(themeCss({ '--space-unit': '5px' })).toBe(':root {\n  --space-unit: 5px;\n}\n');
+  });
+});
+
+describe('parseHex', () => {
+  it.each([
+    ['#1D4ED8', '#1d4ed8'],
+    ['1d4ed8', '#1d4ed8'],
+    ['#abc', '#aabbcc'],
+    [' #abc ', '#aabbcc'],
+  ])('reads %s', (input, expected) => {
+    expect(parseHex(input)).toBe(expected);
+  });
+
+  it.each(['', '#12', '#1234', 'red', '#ggg'])('rejects %s', (input) => {
+    expect(parseHex(input)).toBeNull();
   });
 });
 

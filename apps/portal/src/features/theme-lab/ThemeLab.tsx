@@ -11,6 +11,7 @@ import {
 import {
   CONTROL_GROUPS,
   asHexColor,
+  parseHex,
   channelsToHex,
   hexToChannels,
   slugify,
@@ -261,15 +262,11 @@ function ControlInput({ id, control, value, changed, onChange }: ControlInputPro
     }
     case 'color': {
       const hex = control.channels ? channelsToHex(value) : asHexColor(value);
+      const commit = (next: string) => onChange(control.channels ? hexToChannels(next) : next);
       return (
         <span className={styles.color}>
-          <input
-            id={id}
-            type="color"
-            value={hex}
-            onChange={(event) => onChange(control.channels ? hexToChannels(event.target.value) : event.target.value)}
-          />
-          <output htmlFor={id}>{hex}</output>
+          <input id={id} type="color" value={hex} onChange={(event) => commit(event.target.value)} />
+          <HexInput hex={hex} label={`${control.label} (hex)`} onCommit={commit} />
         </span>
       );
     }
@@ -301,4 +298,49 @@ function ControlInput({ id, control, value, changed, onChange }: ControlInputPro
       );
     }
   }
+}
+
+interface HexInputProps {
+  readonly hex: string;
+  readonly label: string;
+  readonly onCommit: (hex: string) => void;
+}
+
+function HexInput({ hex, label, onCommit }: HexInputProps) {
+  const [draft, setDraft] = useState(hex);
+  const [shown, setShown] = useState(hex);
+  // Follow outside changes (picker, reset, theme switch) without an effect
+  if (hex !== shown) {
+    setShown(hex);
+    setDraft(hex);
+  }
+
+  function finish() {
+    const parsed = parseHex(draft);
+    if (parsed && parsed !== hex) onCommit(parsed);
+    else setDraft(hex);
+  }
+
+  return (
+    <input
+      type="text"
+      className={styles.hex}
+      value={draft}
+      aria-label={label}
+      aria-invalid={parseHex(draft) === null}
+      spellCheck={false}
+      maxLength={7}
+      onChange={(event) => {
+        setDraft(event.target.value);
+        // Apply full six-digit values while typing; the short #abc form waits for Enter or blur
+        const parsed = parseHex(event.target.value);
+        if (parsed && event.target.value.replace('#', '').length === 6) onCommit(parsed);
+      }}
+      onBlur={finish}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') finish();
+        if (event.key === 'Escape') setDraft(hex);
+      }}
+    />
+  );
 }

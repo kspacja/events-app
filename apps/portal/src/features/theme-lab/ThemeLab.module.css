@@ -131,17 +131,28 @@
   min-width: 0;
 }
 
-.range output,
-.color output {
+.range output {
   min-width: 52px;
   font-family: ui-monospace, monospace;
   font-size: 11px;
   text-align: right;
 }
 
-.color input {
+.color input[type='color'] {
   width: 36px;
   height: 22px;
   padding: 0;
   border: 1px solid #c9c6c0;
+}
+
+.hex {
+  width: 76px;
+  padding: 2px 4px;
+  border: 1px solid #c9c6c0;
+  border-radius: 4px;
+  font: 11px ui-monospace, monospace;
+}
+
+.hex[aria-invalid='true'] {
+  border-color: #c2410c;
 }

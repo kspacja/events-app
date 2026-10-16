@@ -157,9 +157,14 @@ export function hexToChannels(hex: string): string {
   return [0, 2, 4].map((i) => parseInt(value.slice(i, i + 2), 16)).join(' ');
 }
 
+/** `#rrggbb` from typed hex (`#abc`, `aabbcc`, any case), or null. */
+export function parseHex(input: string): string | null {
+  const v = input.trim().toLowerCase().replace(/^#/, '');
+  if (/^[0-9a-f]{6}$/.test(v)) return `#${v}`;
+  if (/^[0-9a-f]{3}$/.test(v)) return `#${[...v].map((c) => c + c).join('')}`;
+  return null;
+}
+
 export function asHexColor(value: string): string {
-  const v = value.trim().toLowerCase();
-  if (/^#[0-9a-f]{6}$/.test(v)) return v;
-  if (/^#[0-9a-f]{3}$/.test(v)) return `#${[...v.slice(1)].map((c) => c + c).join('')}`;
-  return '#000000';
+  return parseHex(value) ?? '#000000';
 }
