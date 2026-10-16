@@ -4,14 +4,13 @@ import { describe, expect, it } from 'vitest';
 import {
   CONTROL_GROUPS,
   channelsToHex,
-  familyOf,
-  fontStack,
   hexToChannels,
   parseOverrides,
   parseTheme,
   slugify,
   themeCss,
 } from './themeTokens';
+import { FONT_OPTIONS, fontOf, fontOption, fontStack } from './fontOptions';
 
 const tokensCss = readFileSync(createRequire(import.meta.url).resolve('@events/ui/tokens.css'), 'utf8');
 
@@ -73,12 +72,18 @@ describe('colour conversions', () => {
   });
 });
 
-describe('familyOf', () => {
-  it('reads a family the panel offers', () => {
-    expect(familyOf(fontStack('Space Grotesk'))).toBe('Space Grotesk');
+describe('fontOf', () => {
+  it('reads back a font the panel wrote', () => {
+    const font = fontOption('Koulen');
+    expect(font && fontOf(fontStack(font))).toBe(font);
   });
 
   it('treats the original next/font stack as no override', () => {
-    expect(familyOf('var(--font-dm-sans), "Helvetica Neue", sans-serif')).toBeNull();
+    expect(fontOf('var(--font-dm-sans), "Helvetica Neue", sans-serif')).toBeUndefined();
+  });
+
+  it('lists every family once', () => {
+    const families = FONT_OPTIONS.map((font) => font.family);
+    expect(new Set(families).size).toBe(families.length);
   });
 });

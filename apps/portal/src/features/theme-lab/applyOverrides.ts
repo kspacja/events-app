@@ -1,5 +1,6 @@
 import { THEME_CHANGE_EVENT } from './themeChange';
-import { familyOf, googleFontsHref, slugify, type TokenOverrides } from './themeTokens';
+import { FONT_OPTIONS, fontOf, googleFontsHref, type FontOption } from './fontOptions';
+import { slugify, type TokenOverrides } from './themeTokens';
 
 export const STORAGE_KEY = 'theme-lab';
 
@@ -23,13 +24,17 @@ export function writeStoredState(state: StoredState): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-function ensureFont(family: string): void {
-  const id = `theme-lab-font-${slugify(family)}`;
+function fontLinkId(family: string): string {
+  return `theme-lab-font-${slugify(family)}`;
+}
+
+function ensureFont(font: FontOption): void {
+  const id = fontLinkId(font.family);
   if (document.getElementById(id)) return;
   const link = document.createElement('link');
   link.id = id;
   link.rel = 'stylesheet';
-  link.href = googleFontsHref(family);
+  link.href = googleFontsHref(font);
   document.head.append(link);
 }
 
@@ -43,8 +48,8 @@ export function applyOverrides(tokens: TokenOverrides): void {
   for (const name of customPropertiesOf(style)) style.removeProperty(name);
   for (const [name, value] of Object.entries(tokens)) {
     style.setProperty(name, value);
-    const family = familyOf(value);
-    if (family) ensureFont(family);
+    const font = fontOf(value);
+    if (font) ensureFont(font);
   }
   window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
 }
@@ -60,12 +65,12 @@ export function readOriginalValues(names: readonly string[]): Record<string, str
   return values;
 }
 
+const FONT_HREFS = Object.fromEntries(FONT_OPTIONS.map((font) => [font.family, [fontLinkId(font.family), googleFontsHref(font)]]));
+
 /** Runs inline in <head> before first paint, so a stored theme never flashes the original. */
 export const BOOTSTRAP_SCRIPT = `(function(){try{
 var s=JSON.parse(localStorage.getItem(${JSON.stringify(STORAGE_KEY)})||"null");if(!s||!s.tokens)return;
-var r=document.documentElement.style;
-for(var k in s.tokens){var v=s.tokens[k];r.setProperty(k,v);var m=/^"([^"]+)"/.exec(v);
-if(m){var l=document.createElement("link");l.id="theme-lab-font-"+m[1].toLowerCase().replace(/[^a-z0-9]+/g,"-");
-l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family="+m[1].replace(/ /g,"+")+":wght@400;500;600;700&display=swap";
-document.head.appendChild(l);}}
+var F=${JSON.stringify(FONT_HREFS)},r=document.documentElement.style;
+for(var k in s.tokens){var v=s.tokens[k];r.setProperty(k,v);var m=/^"([^"]+)"/.exec(v),f=m&&F[m[1]];
+if(f){var l=document.createElement("link");l.id=f[0];l.rel="stylesheet";l.href=f[1];document.head.appendChild(l);}}
 }catch(e){}})();`;

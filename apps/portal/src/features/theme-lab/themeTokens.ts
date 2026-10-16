@@ -1,3 +1,5 @@
+import type { FontKind } from './fontOptions';
+
 /** Token overrides on top of tokens.css — the original itself is never stored. */
 export type TokenOverrides = Readonly<Record<string, string>>;
 
@@ -29,6 +31,7 @@ export interface FontControl {
   readonly kind: 'font';
   readonly token: string;
   readonly label: string;
+  readonly kinds: readonly FontKind[];
 }
 
 export type Control = RangeControl | ColorControl | FontControl;
@@ -50,8 +53,8 @@ export const CONTROL_GROUPS: readonly ControlGroup[] = [
     controls: [
       { kind: 'range', token: '--text-base', label: 'Rozmiar bazowy', min: 11, max: 20, step: 0.25, unit: 'px' },
       { kind: 'range', token: '--text-ratio', label: 'Skala (ratio)', min: 1.05, max: 1.4, step: 0.005, unit: '' },
-      { kind: 'font', token: '--font-heading', label: 'Krój nagłówków' },
-      { kind: 'font', token: '--font-body', label: 'Krój tekstu' },
+      { kind: 'font', token: '--font-heading', label: 'Krój nagłówków', kinds: ['sans', 'serif', 'display'] },
+      { kind: 'font', token: '--font-body', label: 'Krój tekstu', kinds: ['sans'] },
     ],
   },
   {
@@ -95,32 +98,6 @@ export const CONTROL_GROUPS: readonly ControlGroup[] = [
     ),
   },
 ];
-
-/** Google Fonts offered in the panel; loaded on demand, dev only. */
-export const FONT_FAMILIES = [
-  'Inter',
-  'Manrope',
-  'Space Grotesk',
-  'Work Sans',
-  'Outfit',
-  'IBM Plex Sans',
-  'Fraunces',
-  'Playfair Display',
-] as const;
-
-export function fontStack(family: string): string {
-  return `"${family}", sans-serif`;
-}
-
-/** Family from a stack written by `fontStack`, or null for the original next/font stack. */
-export function familyOf(stack: string): string | null {
-  const match = /^"([^"]+)"/.exec(stack.trim());
-  return match && (FONT_FAMILIES as readonly string[]).includes(match[1]) ? match[1] : null;
-}
-
-export function googleFontsHref(family: string): string {
-  return `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family).replace(/%20/g, '+')}:wght@400;500;600;700&display=swap`;
-}
 
 export function slugify(name: string): string {
   return name

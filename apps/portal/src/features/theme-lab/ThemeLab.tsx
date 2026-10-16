@@ -10,11 +10,8 @@ import {
 } from './applyOverrides';
 import {
   CONTROL_GROUPS,
-  FONT_FAMILIES,
   asHexColor,
   channelsToHex,
-  familyOf,
-  fontStack,
   hexToChannels,
   slugify,
   themeCss,
@@ -22,6 +19,7 @@ import {
   type Theme,
   type TokenOverrides,
 } from './themeTokens';
+import { FONT_KIND_LABELS, FONT_OPTIONS, fontOf, fontOption, fontStack } from './fontOptions';
 import styles from './ThemeLab.module.css';
 
 const ENDPOINT = '/api/theme-lab';
@@ -229,7 +227,7 @@ function ControlRow({ control, value, changed, onChange, onReset }: ControlRowPr
           </button>
         )}
       </label>
-      <ControlInput id={id} control={control} value={value} onChange={onChange} />
+      <ControlInput id={id} control={control} value={value} changed={changed} onChange={onChange} />
     </div>
   );
 }
@@ -238,10 +236,11 @@ interface ControlInputProps {
   readonly id: string;
   readonly control: Control;
   readonly value: string;
+  readonly changed: boolean;
   readonly onChange: (value: string) => void;
 }
 
-function ControlInput({ id, control, value, onChange }: ControlInputProps) {
+function ControlInput({ id, control, value, changed, onChange }: ControlInputProps) {
   switch (control.kind) {
     case 'range': {
       const number = parseFloat(value);
@@ -274,21 +273,32 @@ function ControlInput({ id, control, value, onChange }: ControlInputProps) {
         </span>
       );
     }
-    case 'font':
+    case 'font': {
+      // The original stack resolves to a family name (e.g. DM Sans) that may also be on the list
+      const selectedFont = changed ? fontOf(value) : undefined;
       return (
         <select
           id={id}
           className={styles.select}
-          value={familyOf(value) ?? ''}
-          onChange={(event) => onChange(event.target.value ? fontStack(event.target.value) : '')}
+          value={selectedFont?.family ?? ''}
+          onChange={(event) => {
+            const font = fontOption(event.target.value);
+            onChange(font ? fontStack(font) : '');
+          }}
         >
           <option value="">Oryginał</option>
-          {FONT_FAMILIES.map((family) => (
-            <option key={family} value={family}>
-              {family}
-            </option>
+          {control.kinds.map((kind) => (
+            <optgroup key={kind} label={FONT_KIND_LABELS[kind]}>
+              {FONT_OPTIONS.filter((font) => font.kind === kind).map((font) => (
+                <option key={font.family} value={font.family}>
+                  {font.family}
+                  {font.noPolish ? ' (bez polskich znaków)' : ''}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </select>
       );
+    }
   }
 }
