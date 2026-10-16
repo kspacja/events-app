@@ -8,8 +8,8 @@ export interface RangeNavigation {
 }
 
 interface HeaderProps {
-  readonly sentence: ReactNode;
-  readonly sentencePlace?: 'below' | 'beside';
+  /** Stacked layout only; the split layout's page puts its title in the top bar. */
+  readonly sentence?: ReactNode;
   /** Shown under the heading, outside the <h1>, e.g. a calendar. */
   readonly controls?: ReactNode;
   readonly notice?: ReactNode;
@@ -27,7 +27,6 @@ interface HeaderProps {
 
 export function Header({
   sentence,
-  sentencePlace = 'below',
   controls,
   notice,
   rangeLabel,
@@ -41,9 +40,6 @@ export function Header({
   if (layout === 'split') {
     return (
       <header className={`${styles.header} ${styles.split}`}>
-        <div className={`${styles.title} ${sentencePlace === 'beside' ? styles.sentenceBeside : ''}`}>
-          <h1 className={styles.sentence}>{sentence}</h1>
-        </div>
         <div className={styles.sidebar}>
           {controls && controlsLabels ? (
             <CollapsiblePanel show={controlsLabels.show} hide={controlsLabels.hide}>

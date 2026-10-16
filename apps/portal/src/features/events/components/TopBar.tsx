@@ -4,7 +4,12 @@ import { SCHOOLS_LABELS } from '@/features/schools/labels';
 import { UI_LABELS } from '../labels';
 import styles from './TopBar.module.css';
 
-export function TopBar() {
+interface TopBarProps {
+  /** The page's <h1>, beside the logo. */
+  readonly title?: string;
+}
+
+export function TopBar({ title }: TopBarProps) {
   return (
     <div className={styles.bar}>
       <div className={styles.inner}>
@@ -14,9 +19,14 @@ export function TopBar() {
             .
           </span>
         </Link>
-        <Link href={SCHOOLS_PATH} className={styles.link}>
-          {SCHOOLS_LABELS.pageTitle}
-        </Link>
+        {/* Only the schools page has a title, and its link would point to itself */}
+        {title ? (
+          <h1 className={styles.title}>{title}</h1>
+        ) : (
+          <Link href={SCHOOLS_PATH} className={styles.link}>
+            {SCHOOLS_LABELS.pageTitle}
+          </Link>
+        )}
       </div>
     </div>
   );

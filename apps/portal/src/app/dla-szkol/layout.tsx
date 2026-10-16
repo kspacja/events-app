@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { connection } from 'next/server';
 import { currentEventDay } from '@events/time';
+import { TopBar } from '@/features/events/components/TopBar';
 import { BackToTop } from '@/features/events/components/BackToTop';
 import { SchoolsShell } from '@/features/schools/components/SchoolsShell';
 import { SCHOOLS_LABELS } from '@/features/schools/labels';
@@ -13,9 +14,12 @@ export const metadata: Metadata = { title: SCHOOLS_LABELS.pageTitle };
 export default async function SchoolsLayout({ children }: { readonly children: ReactNode }) {
   await connection();
   return (
-    <main className={styles.page}>
-      <SchoolsShell today={currentEventDay(new Date())}>{children}</SchoolsShell>
-      <BackToTop />
-    </main>
+    <>
+      <TopBar title={SCHOOLS_LABELS.heading} />
+      <main className={styles.page}>
+        <SchoolsShell today={currentEventDay(new Date())}>{children}</SchoolsShell>
+        <BackToTop />
+      </main>
+    </>
   );
 }
