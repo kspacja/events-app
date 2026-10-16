@@ -10,7 +10,7 @@
     --strip-bleed-start: 0px;
     display: grid;
     grid-template-columns: 250px minmax(0, 1fr);
-    column-gap: 20px;
+    column-gap: var(--space-5);
     align-items: start;
   }
 
@@ -37,8 +37,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0 0 8px;
-  font-size: 13px;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
   color: var(--color-text-tertiary);
 }
 
@@ -49,11 +49,11 @@
   align-items: center;
   text-align: center;
   font-family: var(--font-heading);
-  font-size: 20px;
+  font-size: var(--text-2xl);
 }
 
 .rangeLabel {
-  font-size: 13px;
+  font-size: var(--text-sm);
   color: var(--color-text-tertiary);
 }
 
@@ -72,7 +72,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 
   @media (max-width: 768px) {
     display: grid;

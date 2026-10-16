@@ -10,7 +10,7 @@
   border-radius: var(--radius-card);
   background: var(--color-bg);
   color: var(--color-text);
-  box-shadow: 0 12px 32px rgb(28 27 25 / 16%);
+  box-shadow: var(--shadow-lg);
 }
 
 .dialog:not([open]):not(:popover-open) {
@@ -25,11 +25,11 @@
     max-width: none;
     margin: 0;
     border: 0;
-    border-radius: 18px 18px 0 0;
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
     padding-bottom: env(safe-area-inset-bottom);
   }
 
   .dialog::backdrop {
-    background: rgb(28 27 25 / 40%);
+    background: var(--color-backdrop);
   }
 }

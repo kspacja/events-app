@@ -17,6 +17,7 @@ import {
 } from 'react-map-gl/maplibre';
 import type { FeatureCollection, Point } from 'geojson';
 import { MAP_CONTROL_LOCALE } from '../labels';
+import { onThemeChange } from '@/features/theme-lab/themeChange';
 import { viewFor, type MapPoint } from '../mapView';
 import styles from './EventsMap.module.css';
 
@@ -42,7 +43,7 @@ interface Palette {
   readonly halo: string;
 }
 
-// Layer paint can't read CSS variables, so resolve them from tokens.css once the map is up
+// Layer paint can't read CSS variables, so resolve them from tokens.css when the map is up and on theme change
 function readPalette(container: HTMLElement): Palette {
   const styles = getComputedStyle(container);
   // A missing token resolves to '' and MapLibre rejects an empty colour
@@ -109,7 +110,7 @@ interface EventsMapProps {
 export function EventsMap({ points, focus }: EventsMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [cursor, setCursor] = useState('');
-  // Built once on load so the layer props stay referentially stable
+  // Built on load and on theme change only, so the layer props stay referentially stable
   const [layers, setLayers] = useState<MapLayers | null>(null);
   const loaded = layers !== null;
   const selection = useOccurrenceSelection();
@@ -147,6 +148,12 @@ export function EventsMap({ points, focus }: EventsMapProps) {
     document.addEventListener('keydown', closeOnEscape);
     return () => document.removeEventListener('keydown', closeOnEscape);
   }, [hasPopup, selection]);
+
+  useEffect(() => {
+    const container = mapRef.current?.getContainer();
+    if (!loaded || !container) return;
+    return onThemeChange(() => setLayers(layersFor(readPalette(container))));
+  }, [loaded]);
 
   function handleLoad(event: MapEvent) {
     setLayers(layersFor(readPalette(event.target.getContainer())));

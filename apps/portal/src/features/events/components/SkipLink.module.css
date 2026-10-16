@@ -10,17 +10,17 @@
 
 .link:focus {
   z-index: 2;
-  top: 8px;
-  left: 8px;
+  top: var(--space-2);
+  left: var(--space-2);
   width: auto;
   height: auto;
   margin: 0;
-  padding: 8px 14px;
+  padding: var(--space-2) var(--space-3-5);
   overflow: visible;
   clip-path: none;
-  border-radius: 999px;
-  background: #fff;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
   color: var(--color-text);
-  font-size: 14px;
-  box-shadow: 0 2px 8px rgba(28, 27, 25, 0.25);
+  font-size: var(--text-md);
+  box-shadow: var(--shadow-sm);
 }

@@ -1,16 +1,29 @@
 :root {
+  /* Bases — every scale below is derived from these */
+  --space-unit: 4px;
+  --text-base: 14px;
+  --text-ratio: 1.125;
+  --radius-unit: 4px;
+  --shadow-color: 28 27 25;
+  --shadow-strength: 1;
+  --shadow-scale: 1;
+
   --color-text: #1c1b19;
   --color-text-secondary: #4a4844;
   --color-text-tertiary: #949189;
   --color-text-muted: #6b6862;
   --color-text-disabled: #b5b2ab;
+  --color-on-accent: #ffffff;
 
   --color-accent: #c2410c;
   --color-accent-strong: #9a3412;
   --color-accent-soft: #fdede4;
+  --color-accent-soft-hover: #fbe0d0;
 
   --color-bg: #ffffff;
   --color-bg-subtle: #f5f4f1;
+  --color-surface: #ffffff;
+  --color-backdrop: rgb(28 27 25 / 40%);
 
   --color-bg-weekday: #fbf8f4;
   --color-bg-weekend: #f5eadc;
@@ -28,11 +41,63 @@
   --category-comedy: #f1e6d2;
   --category-fallback: var(--color-bg-subtle);
 
-  --radius-card: 12px;
-  --radius-map: 18px;
-  --radius-chip: 10px 10px 3px 3px;
-  --radius-chip-top: 10px;
-  --radius-chip-bottom: 3px;
+  --space-0-5: calc(var(--space-unit) * 0.5);
+  --space-1: var(--space-unit);
+  --space-1-5: calc(var(--space-unit) * 1.5);
+  --space-2: calc(var(--space-unit) * 2);
+  --space-2-5: calc(var(--space-unit) * 2.5);
+  --space-3: calc(var(--space-unit) * 3);
+  --space-3-5: calc(var(--space-unit) * 3.5);
+  --space-4: calc(var(--space-unit) * 4);
+  --space-4-5: calc(var(--space-unit) * 4.5);
+  --space-5: calc(var(--space-unit) * 5);
+  --space-6: calc(var(--space-unit) * 6);
+  --space-7: calc(var(--space-unit) * 7);
+  --space-7-5: calc(var(--space-unit) * 7.5);
+  --space-9: calc(var(--space-unit) * 9);
+  --space-10: calc(var(--space-unit) * 10);
+  --space-12: calc(var(--space-unit) * 12);
+  --space-16: calc(var(--space-unit) * 16);
+
+  /* Modular scale: base × ratio^step */
+  --text-3xs: calc(var(--text-base) * pow(var(--text-ratio), -4));
+  --text-2xs: calc(var(--text-base) * pow(var(--text-ratio), -3));
+  --text-xs: calc(var(--text-base) * pow(var(--text-ratio), -2));
+  --text-sm: calc(var(--text-base) * pow(var(--text-ratio), -1));
+  --text-md: var(--text-base);
+  --text-lg: calc(var(--text-base) * var(--text-ratio));
+  --text-xl: calc(var(--text-base) * pow(var(--text-ratio), 2));
+  --text-2xl: calc(var(--text-base) * pow(var(--text-ratio), 3));
+  --text-3xl: calc(var(--text-base) * pow(var(--text-ratio), 4));
+  --text-4xl: calc(var(--text-base) * pow(var(--text-ratio), 5));
+  --text-5xl: calc(var(--text-base) * pow(var(--text-ratio), 6));
+  --text-6xl: calc(var(--text-base) * pow(var(--text-ratio), 7));
+  --text-display: calc(var(--text-base) * pow(var(--text-ratio), 13));
+
+  --radius-xs: calc(var(--radius-unit) * 0.75);
+  --radius-sm: var(--radius-unit);
+  --radius-md: calc(var(--radius-unit) * 2);
+  --radius-lg: calc(var(--radius-unit) * 2.5);
+  --radius-xl: calc(var(--radius-unit) * 3);
+  --radius-2xl: calc(var(--radius-unit) * 4.5);
+  --radius-3xl: calc(var(--radius-unit) * 5);
+  --radius-full: 999px;
+
+  --radius-card: var(--radius-xl);
+  --radius-map: var(--radius-2xl);
+  --radius-chip-top: var(--radius-lg);
+  --radius-chip-bottom: var(--radius-xs);
+  --radius-chip: var(--radius-chip-top) var(--radius-chip-top) var(--radius-chip-bottom) var(--radius-chip-bottom);
+
+  --shadow-sm: 0 calc(2px * var(--shadow-scale)) calc(8px * var(--shadow-scale))
+    rgb(var(--shadow-color) / calc(0.16 * var(--shadow-strength)));
+  --shadow-md: 0 calc(4px * var(--shadow-scale)) calc(14px * var(--shadow-scale))
+    rgb(var(--shadow-color) / calc(0.18 * var(--shadow-strength)));
+  --shadow-lg: 0 calc(12px * var(--shadow-scale)) calc(32px * var(--shadow-scale))
+    rgb(var(--shadow-color) / calc(0.16 * var(--shadow-strength)));
+  /* Upward shadow along a sticky edge */
+  --shadow-edge: 0 calc(-2px * var(--shadow-scale)) calc(3px * var(--shadow-scale))
+    rgb(var(--shadow-color) / calc(0.1 * var(--shadow-strength)));
 
   --rule-thickness: 4px;
   --day-column-width: 240px;

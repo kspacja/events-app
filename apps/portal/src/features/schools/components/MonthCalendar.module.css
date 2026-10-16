@@ -6,13 +6,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .title {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--text-md);
   font-weight: 800;
   letter-spacing: -0.02em;
 }
@@ -20,7 +20,7 @@
 .navigation {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 
 .arrow,
@@ -35,18 +35,18 @@
   justify-content: center;
   min-width: 44px;
   min-height: 44px;
-  padding: 0 10px;
+  padding: 0 var(--space-2-5);
   border-radius: var(--radius-chip-top);
   color: var(--color-text);
-  font-size: 25px;
+  font-size: var(--text-4xl);
   text-decoration: none;
 }
 
 /* Text link, not an arrow: small type, but the 44px box stays as the touch target */
 .todayLink {
   min-width: 0;
-  padding: 0 8px;
-  font-size: 13px;
+  padding: 0 var(--space-2);
+  font-size: var(--text-sm);
   font-weight: 600;
 }
 
@@ -73,10 +73,10 @@
 }
 
 .weekday {
-  padding: 0 0 6px;
+  padding: 0 0 var(--space-1-5);
   font-weight: 400;
   color: var(--color-text-muted);
-  font-size: 13px;
+  font-size: var(--text-sm);
   text-align: center;
 }
 
@@ -90,9 +90,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 2px;
+  gap: var(--space-0-5);
   min-height: 48px;
-  padding-top: 6px;
+  padding-top: var(--space-1-5);
   color: var(--color-text);
   font-variant-numeric: tabular-nums;
   text-decoration: none;
@@ -129,10 +129,10 @@
   &:before {
     content: "";
     position: absolute;
-    left: 8px;
-    right: 8px;
-    top: 6px;
-    bottom: 22px;
+    left: var(--space-2);
+    right: var(--space-2);
+    top: var(--space-1-5);
+    bottom: calc(var(--space-unit) * 5.5);
     outline: solid 1px var(--color-accent);
     border-radius: 50%;
   }

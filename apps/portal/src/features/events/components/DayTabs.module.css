@@ -1,8 +1,8 @@
 .tabs {
   display: grid;
   grid-template-columns: 45px repeat(7, minmax(0, 1fr)) 45px;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
 }
 
 .tab {
@@ -11,14 +11,14 @@
   align-items: center;
   justify-content: center;
   min-height: 44px;
-  padding: 4px 0;
+  padding: var(--space-1) 0;
   border: 0;
   border-radius: var(--radius-chip-top);
   background: none;
   color: var(--color-text-secondary);
   border: solid 1px var(--color-border);
   font: inherit;
-  font-size: 12px;
+  font-size: var(--text-sm);
   text-decoration: none;
   cursor: pointer;
 }
@@ -34,7 +34,7 @@
 
 .dots {
   display: flex;
-  gap: 2px;
+  gap: var(--space-0-5);
   min-height: 6px;
 }
 
@@ -47,14 +47,14 @@
 
 .number {
   font-family: var(--font-heading);
-  font-size: 16px;
+  font-size: var(--text-lg);
   font-weight: 700;
   color: var(--color-text);
 }
 
 .month {
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-text-tertiary);
 }

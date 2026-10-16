@@ -1,7 +1,7 @@
 /* At least as tall as the calendar and map column, so the grid does not shift the week row */
 .strip {
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   overflow: hidden;
 }
 
@@ -18,7 +18,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 52 / 34;
-  border-radius: 18px;
+  border-radius: var(--radius-2xl);
   background: var(--color-bg-subtle);
 }
 
