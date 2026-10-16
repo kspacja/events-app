@@ -92,6 +92,9 @@ interface SampleEventTemplate {
   readonly forSchools?: true;
 }
 
+// Placeholder photos for testing: seeded by event id, so each event keeps its own picture; 2× the card size
+const sampleImageUrl = (eventId: string) => `https://picsum.photos/seed/${eventId}/480/208`;
+
 // Order matters: the skip cycle below is keyed by the template index
 const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'wro-choir', title: 'Koncert chóralny w katedrze', categories: [MUSIC], venue: OSTROW_TUMSKI, dayOffset: 0, time: '19:00', price: free },
@@ -158,6 +161,7 @@ export function createSampleEvents(now: Date): EventsData {
     id: eventIdSchema.parse(id),
     title,
     categorySlugs: categories.map(({ slug }) => slug),
+    imageUrl: sampleImageUrl(id),
     forSchools,
   }));
 

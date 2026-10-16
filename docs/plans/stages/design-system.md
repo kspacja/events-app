@@ -11,6 +11,7 @@
   - cienie: poziomy `sm` / `md` / `lg` i `edge`; `--shadow-color`, `--shadow-strength` (mnożnik przezroczystości), `--shadow-scale` (mnożnik przesunięcia i rozmycia); ujednolicona przezroczystość w obrębie poziomu;
   - promienie: `--radius-unit` (4px) × mnożnik, `--radius-xs` … `--radius-3xl`, `--radius-full`; obecne tokeny (`--radius-card`, `--radius-chip-*`, `--radius-map`) wskazują na kroki skali.
 - Kolory wpisane na sztywno w modułach CSS zastępują tokeny; mapa odczytuje paletę ponownie po zmianie motywu.
+- Kolorów Kategorii nie ma; przykładowe Wydarzenia mają zdjęcia z picsum.photos (`seed` = id Wydarzenia), a karta bez zdjęcia ma tło `--color-bg-subtle`.
 - Breakpointy zostają w `@media` (CSS nie pozwala tam na zmienne).
 - Motyw = nazwa i różnice względem oryginału (JSON) w `packages/ui/src/themes/<slug>.json`. Zapis przez endpoint działający tylko pod `next dev` (w produkcji 404); slug czyszczony, zapis nie wychodzi poza katalog motywów.
 - Panel (`apps/portal/src/features/theme-lab/`) tylko pod `next dev`: suwaki baz, kroje z kilku fontów Google (doładowywane tylko w dev), kolory semantyczne, lista motywów (Oryginał / zapisane), zapis, duplikat, usunięcie, reset, eksport CSS. Wybrany motyw nakładany przed pierwszym renderem.

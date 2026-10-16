@@ -18,7 +18,7 @@
 - Testy integracyjne `apps/api` na osobnej bazie `events_test` w kontenerze z Docker Compose, poza zwykłym `pnpm test` (bez Testcontainers).
 - Seed z przykładowych danych z etapu 0.6, liczonych od dnia uruchomienia; gdy się zestarzeją, `db:seed` uruchamiamy ręcznie ponownie (bez seedowania przy starcie dev — od etapu 3 kasowałoby dane Studio).
 - `Venue.organizerId` dochodzi dopiero w etapie 2, razem z tabelą Organizatorów (najpierw `null`, potem uzupełnienie i `NOT NULL`); bez Organizatora technicznego.
-- Kategoria nie ma koloru w bazie: nowa Kategoria dostaje `--category-fallback`, własny kolor przez token CSS w `@events/ui`.
+- Kategoria nie ma koloru w bazie: nowa Kategoria dostaje `--category-fallback`, własny kolor przez token CSS w `@events/ui`. *Zastąpione (design system): kolorów Kategorii już nie ma, karta pokazuje zdjęcie Wydarzenia, a bez zdjęcia — `--color-bg-subtle`.*
 
 ## Kroki (szkic)
 

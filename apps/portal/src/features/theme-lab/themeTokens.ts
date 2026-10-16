@@ -91,18 +91,12 @@ export const CONTROL_GROUPS: readonly ControlGroup[] = [
       color('--color-map-water', 'Woda na mapie'),
     ],
   },
-  {
-    title: 'Kategorie',
-    controls: ['music', 'film', 'food', 'movement', 'workshops', 'art', 'meetups', 'comedy'].map((slug) =>
-      color(`--category-${slug}`, slug),
-    ),
-  },
 ];
 
 export function slugify(name: string): string {
   return name
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/ł/g, 'l')
     .replace(/Ł/g, 'L')
     .toLowerCase()

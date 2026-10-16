@@ -22,10 +22,7 @@ export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) 
       className={styles.card}
       data-muted={muted}
     >
-      <div
-        className={styles.image}
-        style={{ backgroundColor: `var(--category-${main.slug}, var(--category-fallback))` }}
-      >
+      <div className={styles.image}>
         {imageUrl ? (
           <Image
             src={imageUrl}
