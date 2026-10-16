@@ -54,7 +54,6 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - `console.*` w API (start, seed, błędy `/occurrences`) i w przeglądarce (start workera MSW) i brak identyfikatora korelacji w odpowiedzi 500 — dochodzą z loggerem w etapie 1.5.
 - Baza nie pilnuje formatu danych: format id i sluga, niepusta etykieta, niepuste `name` i `city` Miejsca (także w kontrakcie i modelu), powtórzone Kategorie w kontrakcie, `NaN` we współrzędnych i cenach, ceny z więcej niż 2 miejscami po przecinku (`numeric(10,2)` je zaokrągla) — dziś dane wchodzą tylko przez seed ze sprawdzonego modelu; wracamy, gdy Studio zacznie zapisywać (etap 3).
 - Tabele bez `created_at` / `updated_at` — dochodzą z pierwszymi zapisami w Studio (etap 3).
-- Strona `/dla-szkol` nie ma linku ze strony głównej — do projektu UI.
 - Cechy szkolne Wydarzenia (wiek, klasy) i filtry strony dla szkół — po researchu (etap 3.5, „Otwarte”).
 - Obwódka fokusu dni na skrajnych kolumnach Kalendarza miesiąca może być przycięta — sprawdzamy w Chrome na końcu planu.
 - Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.

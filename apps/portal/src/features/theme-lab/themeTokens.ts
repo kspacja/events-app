@@ -82,6 +82,7 @@ export const CONTROL_GROUPS: readonly ControlGroup[] = [
       color('--color-accent-soft', 'Akcent miękki'),
       color('--color-accent-soft-hover', 'Akcent miękki (hover)'),
       color('--color-on-accent', 'Na akcencie'),
+      color('--color-logo-dot', 'Kropka logo'),
       color('--color-bg', 'Tło'),
       color('--color-bg-subtle', 'Tło subtelne'),
       color('--color-surface', 'Powierzchnia'),

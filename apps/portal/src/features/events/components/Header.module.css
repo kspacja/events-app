@@ -22,23 +22,6 @@
   min-width: 0;
 }
 
-.logo {
-  font-family: var(--font-heading);
-  font-size: var(--text-3xl);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--color-text);
-  text-decoration: none;
-}
-
-.logo:hover {
-  color: var(--color-text);
-}
-
-.dot {
-  color: var(--color-accent);
-}
-
 .summary {
   display: flex;
   flex-wrap: wrap;

@@ -1,6 +1,4 @@
 import type { ReactNode } from 'react';
-import Link from 'next/link';
-import { UI_LABELS } from '../labels';
 import { CollapsiblePanel } from './CollapsiblePanel';
 import styles from './Header.module.css';
 
@@ -27,17 +25,6 @@ interface HeaderProps {
   readonly controlsLabels?: { readonly show: string; readonly hide: string };
 }
 
-function Logo() {
-  return (
-    <Link href="/" className={styles.logo} aria-label={UI_LABELS.logoLabel}>
-      {UI_LABELS.logo}
-      <span className={styles.dot} aria-hidden="true">
-        .
-      </span>
-    </Link>
-  );
-}
-
 export function Header({
   sentence,
   sentencePlace = 'below',
@@ -55,7 +42,6 @@ export function Header({
     return (
       <header className={`${styles.header} ${styles.split}`}>
         <div className={`${styles.title} ${sentencePlace === 'beside' ? styles.sentenceBeside : ''}`}>
-          <Logo />
           <h1 className={styles.sentence}>{sentence}</h1>
         </div>
         <div className={styles.sidebar}>
@@ -78,7 +64,6 @@ export function Header({
   return (
     <header className={styles.header}>
       <div className={styles.main}>
-        <Logo />
         <h1 className={styles.sentence}>{sentence}</h1>
         {controls}
         {notice ? <p className={styles.notice}>{notice}</p> : null}

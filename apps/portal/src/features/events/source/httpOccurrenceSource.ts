@@ -14,7 +14,8 @@ import {
 } from '@events/contract/source';
 
 const REQUEST_TIMEOUT_MS = 5000;
-const REVALIDATE_SECONDS = 300;
+// 0 in dev: changed sample data (MSW) or a reseeded API shows up on the next reload
+const REVALIDATE_SECONDS = process.env.NODE_ENV === 'development' ? 0 : 300;
 
 function splitIntoChunks(range: DateRange): DateRange[] {
   const chunks: DateRange[] = [];

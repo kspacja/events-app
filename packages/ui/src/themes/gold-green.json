@@ -1,0 +1,23 @@
+{
+  "name": "gold-green",
+  "tokens": {
+    "--font-body": "\"Albert Sans\", sans-serif",
+    "--font-heading": "\"Albert Sans\", sans-serif",
+    "--color-text-disabled": "#cdd7d6",
+    "--category-music": "#9bc1bc",
+    "--category-film": "#9bc1bc",
+    "--category-food": "#9bc1bc",
+    "--category-movement": "#9bc1bc",
+    "--category-workshops": "#9bc1bc",
+    "--category-art": "#9bc1bc",
+    "--category-meetups": "#9bc1bc",
+    "--category-comedy": "#9bc1bc",
+    "--color-bg-weekday": "#ffffff",
+    "--color-border": "#dd9b0e",
+    "--shadow-color": "107 73 0",
+    "--color-accent": "#4da167",
+    "--color-accent-strong": "#32814b",
+    "--shadow-strength": "2.6",
+    "--shadow-scale": "0.95"
+  }
+}

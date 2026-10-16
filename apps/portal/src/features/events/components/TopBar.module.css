@@ -1,0 +1,56 @@
+.bar {
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+}
+
+/* Same width and left padding as .page in app/page.module.css, so the logo lines up with the content */
+.inner {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-6);
+  box-sizing: border-box;
+  max-width: calc(var(--day-column-width) * 7 + 80px);
+  margin: 0 auto;
+  padding: var(--space-2) 0 var(--space-2) var(--space-10);
+}
+
+@media (max-width: 768px) {
+  .inner {
+    padding-left: var(--space-7-5);
+  }
+}
+
+.logo {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-on-accent);
+  text-decoration: none;
+}
+
+.logo:hover {
+  color: var(--color-on-accent);
+}
+
+.link {
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--color-on-accent);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--color-on-accent);
+  text-decoration: underline;
+}
+
+.logo:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--color-on-accent);
+  outline-offset: 2px;
+}
+
+.dot {
+  color: var(--color-logo-dot);
+}

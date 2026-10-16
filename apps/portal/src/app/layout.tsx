@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { BOOTSTRAP_SCRIPT } from "@/features/theme-lab/applyOverrides";
 import { ThemeLabLoader } from "@/features/theme-lab/ThemeLabLoader";
+import { TopBar } from "@/features/events/components/TopBar";
 
 // Theme lab writes into the repo, so it only ships with next dev
 const themeLab = process.env.NODE_ENV === "development";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </head>
       )}
       <body>
+        <TopBar />
         {children}
         {themeLab && <ThemeLabLoader />}
       </body>
