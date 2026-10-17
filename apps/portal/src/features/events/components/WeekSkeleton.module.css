@@ -1,14 +1,16 @@
-/* At least as tall as the calendar and map column, so the grid does not shift the week row */
+/* The loaded week's footprint (WeekGrid: section and week margins; DayColumn: min height), so nothing jumps when it arrives */
 .strip {
   display: flex;
-  gap: var(--space-2);
+  gap: 1px;
+  margin-top: calc(var(--space-2) + var(--space-4));
+  margin-bottom: var(--space-8);
   overflow: hidden;
+  border-radius: var(--radius-3xl) 0 0 var(--radius-3xl);
 }
 
 .day {
   flex: 0 0 var(--day-column-width, 180px);
-  height: 480px;
-  border-radius: var(--radius-chip-top);
+  height: 620px;
   background: var(--color-bg-subtle);
   animation: pulse 1.4s ease-in-out infinite;
 }
@@ -17,7 +19,7 @@
 .map {
   position: relative;
   width: 100%;
-  aspect-ratio: 52 / 34;
+  aspect-ratio: 52 / 21;
   border-radius: var(--radius-2xl);
   background: var(--color-bg-subtle);
 }
@@ -29,9 +31,12 @@
   }
 }
 
+/* Phones keep the map behind a button, so the skeleton is the button's pill */
 @media (max-width: 768px) {
   .map {
-    height: 240px;
+    width: 112px;
+    height: 44px;
+    border-radius: var(--radius-full);
   }
 }
 

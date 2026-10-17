@@ -88,6 +88,7 @@
 .options {
   display: flex;
   gap: var(--space-1-5);
+  scrollbar-width: none;
 }
 
 .filters[data-placement='main'] .options{
@@ -157,6 +158,7 @@
     grid-auto-flow: row;
     /* Full width, so a long row scrolls inside it instead of running off the screen */
     grid-auto-columns: minmax(0, 1fr);
+    gap: var(--space-2);
   }
 
   .filters[data-placement='main'] .group {
