@@ -82,7 +82,12 @@ function ShellContent({ today, children }: SchoolsShellProps) {
             {formatDay(week, 'LLLL yyyy')}
             <span className={styles.rangeLabel}>
               {formatRangeLabel(range)}
-              {count !== null && !pending ? ` · ${formatCount(count)}` : null}
+              {count !== null && !pending ? (
+                <>
+                  {' · '}
+                  <span className={styles.count}>{formatCount(count)}</span>
+                </>
+              ) : null}
             </span>
           </span>
           <WeekArrow direction={1} week={week} onNavigate={navigate} />

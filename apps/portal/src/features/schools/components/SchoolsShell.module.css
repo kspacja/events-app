@@ -41,6 +41,11 @@
   color: var(--color-text-tertiary);
 }
 
+.count {
+  color: var(--color-accent-strong);
+  font-weight: 600;
+}
+
 /* The week strip alone is the edge area, so the controls never cover the week arrows above it */
 .strip {
   position: relative;

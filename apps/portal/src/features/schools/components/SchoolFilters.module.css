@@ -190,10 +190,13 @@
   }
 
     /* Compact chips on phones: the rows scroll sideways, so more of each fits on screen */
+  /* A fixed height, so the larger type does not grow the chip */
   .option {
-    min-height: 30px;
+    height: 30px;
+    min-height: 0;
     padding: 0 var(--space-2-5);
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
+    line-height: 1;
   }
 }
 
