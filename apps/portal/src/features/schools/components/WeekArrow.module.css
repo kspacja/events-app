@@ -50,3 +50,26 @@
     font-size: var(--text-xl);
   }
 }
+
+/* Beside the phone week row: a small filled square */
+.compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+  font-size: var(--text-2xl);
+  text-decoration: none;
+}
+
+.compact:hover {
+  background: var(--color-accent);
+}
+
+.compact:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}

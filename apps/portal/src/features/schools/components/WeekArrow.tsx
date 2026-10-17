@@ -15,10 +15,12 @@ interface WeekArrowProps {
   readonly week: CalendarDay;
   /** Takes over the click, so the page can react before the next week arrives. */
   readonly onNavigate?: (week: CalendarDay) => void;
+  /** Only the sign, in a small filled square; the label stays for screen readers. */
+  readonly compact?: boolean;
 }
 
 /** Moves the shown week by one; the scroll position stays put. */
-export function WeekArrow({ direction, week, onNavigate }: WeekArrowProps) {
+export function WeekArrow({ direction, week, onNavigate, compact = false }: WeekArrowProps) {
   const target = shiftWeek(week, direction);
   const filtersQuery = useFiltersQuery();
 
@@ -30,9 +32,16 @@ export function WeekArrow({ direction, week, onNavigate }: WeekArrowProps) {
   }
 
   return (
-    <Link href={schoolsHref(target, undefined, filtersQuery)} scroll={false} className={styles.arrow} onClick={handleClick}>
+    <Link
+      href={schoolsHref(target, undefined, filtersQuery)}
+      scroll={false}
+      className={compact ? styles.compact : styles.arrow}
+      onClick={handleClick}
+    >
       <span className={styles.sign} aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>
-      <span className={styles.label}>{direction < 0 ? CALENDAR_LABELS.previousWeek : CALENDAR_LABELS.nextWeek}</span>
+      <span className={compact ? 'visually-hidden' : styles.label}>
+        {direction < 0 ? CALENDAR_LABELS.previousWeek : CALENDAR_LABELS.nextWeek}
+      </span>
     </Link>
   );
 }

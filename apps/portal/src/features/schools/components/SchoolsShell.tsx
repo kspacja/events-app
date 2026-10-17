@@ -46,7 +46,11 @@ function PhoneWeekPicker({ today, leading }: { readonly today: CalendarDay; read
         {expanded ? (
           <MonthCalendar week={week} today={today} onNavigate={navigate} />
         ) : (
-          <WeekRow week={week} today={today} onNavigate={navigate} />
+          <div className={styles.weekRowNav}>
+            <WeekArrow direction={-1} week={week} onNavigate={navigate} compact />
+            <WeekRow week={week} today={today} onNavigate={navigate} />
+            <WeekArrow direction={1} week={week} onNavigate={navigate} compact />
+          </div>
         )}
       </div>
     </div>

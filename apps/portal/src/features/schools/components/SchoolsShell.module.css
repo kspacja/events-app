@@ -56,19 +56,12 @@
   @media (max-width: 768px) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) max-content;
-    grid-template-areas:
-      "currentMonth map"
-      "previous next";
-    row-gap: var(--space-3);
+    grid-template-areas: "currentMonth map";
 
-    & > :nth-child(1) {
-      grid-area: previous;
-      justify-self: start;
-    }
-
+    /* The week arrows move beside the week row on phones */
+    & > :nth-child(1),
     & > :nth-child(3) {
-      grid-area: next;
-      justify-self: end;
+      display: none;
     }
 
     .currentMonth {
@@ -106,6 +99,22 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
+  }
+
+  /* Week arrows on both ends of the week row, level with the day numbers */
+  .weekRowNav {
+    /* Above the strip's overlay, whose end fade reaches 25px over the strip */
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr) max-content;
+    align-items: end;
+    gap: var(--space-2);
+  }
+
+  /* Less room under the row: the strip keeps only its shadow's margin */
+  .strip {
+    margin-top: calc(-1 * var(--space-2));
   }
 
   .calendarToggle {

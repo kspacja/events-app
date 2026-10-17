@@ -102,6 +102,18 @@
   font-weight: 700;
 }
 
+/* The phone week row: shorter cells, the dots sit right under the number */
+.weekRow .day {
+  min-height: 36px;
+  padding-top: var(--space-1);
+}
+
+/* The today ring, refitted to the shorter cell */
+.weekRow .today:before {
+  top: var(--space-0-5);
+  bottom: calc(var(--space-unit) * 3.5);
+}
+
 .week[data-selected] {
   position: relative;
   z-index: 2;
