@@ -184,7 +184,12 @@
     display: none;
   }
 
-  /* Compact chips on phones: the rows scroll sideways, so more of each fits on screen */
+  /* No "clear" on phones: chips are toggled off one by one */
+  .clear {
+    display: none;
+  }
+
+    /* Compact chips on phones: the rows scroll sideways, so more of each fits on screen */
   .option {
     min-height: 30px;
     padding: 0 var(--space-2-5);
