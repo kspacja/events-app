@@ -184,8 +184,11 @@
     display: none;
   }
 
+  /* Compact chips on phones: the rows scroll sideways, so more of each fits on screen */
   .option {
-    min-height: 40px;
+    min-height: 30px;
+    padding: 0 var(--space-2-5);
+    font-size: var(--text-xs);
   }
 }
 

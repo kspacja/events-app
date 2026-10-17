@@ -40,3 +40,13 @@
   position: relative;
   top: -2px;
 }
+
+/* Phones: a compact pair, so the week header takes less height */
+@media (max-width: 768px) {
+  .arrow {
+    gap: var(--space-1-5);
+    min-height: 36px;
+    padding: 0 var(--space-2-5);
+    font-size: var(--text-xl);
+  }
+}
