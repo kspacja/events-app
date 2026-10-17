@@ -6,7 +6,7 @@ import type { CalendarDay } from '@events/time';
 import { CALENDAR_LABELS } from '../labels';
 import { schoolsHref } from '../schoolsHref';
 import { useFiltersQuery } from '../filtersQueryContext';
-import { shiftWeek } from '../weekShift';
+import { isPastWeek, shiftWeek } from '../weekShift';
 import styles from './WeekArrow.module.css';
 
 interface WeekArrowProps {
@@ -17,10 +17,12 @@ interface WeekArrowProps {
   readonly onNavigate?: (week: CalendarDay) => void;
   /** Only the sign, in a small filled square; the label stays for screen readers. */
   readonly compact?: boolean;
+  /** With today, a week that has fully passed cannot be reached: the arrow is shown disabled. */
+  readonly today?: CalendarDay;
 }
 
 /** Moves the shown week by one; the scroll position stays put. */
-export function WeekArrow({ direction, week, onNavigate, compact = false }: WeekArrowProps) {
+export function WeekArrow({ direction, week, onNavigate, compact = false, today }: WeekArrowProps) {
   const target = shiftWeek(week, direction);
   const filtersQuery = useFiltersQuery();
 
@@ -31,6 +33,18 @@ export function WeekArrow({ direction, week, onNavigate, compact = false }: Week
     onNavigate(target);
   }
 
+  const sign = <span className={styles.sign} aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>;
+  const label = direction < 0 ? CALENDAR_LABELS.previousWeek : CALENDAR_LABELS.nextWeek;
+
+  if (today && isPastWeek(target, today)) {
+    return (
+      <span className={`${compact ? styles.compact : styles.arrow} ${styles.disabled}`} aria-disabled="true">
+        {sign}
+        <span className={compact ? 'visually-hidden' : styles.label}>{label}</span>
+      </span>
+    );
+  }
+
   return (
     <Link
       href={schoolsHref(target, undefined, filtersQuery)}
@@ -38,10 +52,8 @@ export function WeekArrow({ direction, week, onNavigate, compact = false }: Week
       className={compact ? styles.compact : styles.arrow}
       onClick={handleClick}
     >
-      <span className={styles.sign} aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>
-      <span className={compact ? 'visually-hidden' : styles.label}>
-        {direction < 0 ? CALENDAR_LABELS.previousWeek : CALENDAR_LABELS.nextWeek}
-      </span>
+      {sign}
+      <span className={compact ? 'visually-hidden' : styles.label}>{label}</span>
     </Link>
   );
 }

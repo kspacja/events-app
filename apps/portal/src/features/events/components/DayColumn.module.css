@@ -15,6 +15,11 @@
   border-left: 1px solid var(--color-border);
 }
 
+/* A day that has passed: still there, but faded */
+.day[data-past] > * {
+  opacity: 0.4;
+}
+
 .day[data-weekend='true'] {
   --day-bg: var(--color-bg-weekend);
   --day-number: var(--color-accent);

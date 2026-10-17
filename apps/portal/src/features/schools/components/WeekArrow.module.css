@@ -32,8 +32,18 @@
   outline-offset: 2px;
 }
 
+/* A week that has fully passed: shown, but not a link */
 .disabled {
-  color: var(--color-text-disabled);
+  opacity: 0.35;
+  cursor: default;
+}
+
+.arrow.disabled:hover {
+  background: none;
+}
+
+.compact.disabled:hover {
+  background: var(--color-accent-strong);
 }
 
 .sign {

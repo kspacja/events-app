@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { currentEventDay, type CalendarDay } from '@events/time';
+import { currentEventDay, mondayOf, type CalendarDay } from '@events/time';
 import { StripControls } from '@/features/events/components/StripControls';
 import { WeekGrid } from '@/features/events/components/WeekGrid';
 import { WeekCount, WeekMapPoints } from '@/features/schools/components/WeekNavigation';
@@ -7,6 +7,7 @@ import { loadWeekSchedule } from '@/features/schools/weekSchedule';
 import type { Schedule } from '@/features/events/schedule';
 import { schoolsHref } from '@/features/schools/schoolsHref';
 import { weekFromPath } from '@/features/schools/weekParam';
+import { isPastWeek } from '@/features/schools/weekShift';
 import { filtersQuery, parseFilters } from '@/features/schools/schoolFilters';
 
 /** Active events per day, the same numbers the day markers show. */
@@ -19,8 +20,11 @@ function dayCountsOf(schedule: Schedule): Record<string, number> {
 export default async function WeekPage({ params, searchParams }: PageProps<'/dla-szkol/[week]'>) {
   const { week: raw } = await params;
   const query = filtersQuery(parseFilters(await searchParams));
-  const { week, valid } = weekFromPath(raw, currentEventDay(new Date()));
+  const today = currentEventDay(new Date());
+  const { week, valid } = weekFromPath(raw, today);
   if (!valid || raw !== week) redirect(schoolsHref(week, undefined, query));
+  // A week that has fully passed has nothing to show: go to the current one
+  if (isPastWeek(week, today)) redirect(schoolsHref(mondayOf(today), undefined, query));
 
   const schedule = await loadWeekSchedule(week as CalendarDay, query);
   
@@ -34,7 +38,7 @@ export default async function WeekPage({ params, searchParams }: PageProps<'/dla
         days={dayCountsOf(schedule)}
       />
       <StripControls days={schedule.weeks.flat().map(({ day }) => day)} />
-      <WeekGrid schedule={schedule} />
+      <WeekGrid schedule={schedule} today={today} />
     </>
   );
 }

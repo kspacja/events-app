@@ -59,14 +59,14 @@ function PhoneWeekPicker({ today, leading }: { readonly today: CalendarDay; read
           <MonthCalendar week={week} today={today} onNavigate={navigate} />
         ) : (
           <div className={styles.weekRowNav}>
-            <WeekArrow direction={-1} week={week} onNavigate={navigate} compact />
+            <WeekArrow direction={-1} week={week} onNavigate={navigate} today={today} compact />
             <WeekRow
               week={week}
               today={today}
               onNavigate={navigate}
               dayCounts={fits ? weekCounts.days : undefined}
             />
-            <WeekArrow direction={1} week={week} onNavigate={navigate} compact />
+            <WeekArrow direction={1} week={week} onNavigate={navigate} today={today} compact />
           </div>
         )}
       </div>
@@ -98,7 +98,7 @@ function ShellContent({ today, children }: SchoolsShellProps) {
       />
       <div className={styles.program}>
         <div className={styles.weekArrows}>
-          <WeekArrow direction={-1} week={week} onNavigate={navigate} />
+          <WeekArrow direction={-1} week={week} onNavigate={navigate} today={today} />
           <span className={styles.currentMonth}>
             {formatDay(week, 'LLLL yyyy')}
             <span className={styles.rangeLabel}>
@@ -111,7 +111,7 @@ function ShellContent({ today, children }: SchoolsShellProps) {
               ) : null}
             </span>
           </span>
-          <WeekArrow direction={1} week={week} onNavigate={navigate} />
+          <WeekArrow direction={1} week={week} onNavigate={navigate} today={today} />
           <span className={styles.phoneMap}>
             <MapButton variant="icon" />
           </span>
