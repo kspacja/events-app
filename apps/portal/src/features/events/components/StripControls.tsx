@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CalendarDay } from '@events/time';
 import { STRIP_LABELS } from '../labels';
 import { dayDomId } from '../scheduleDom';
@@ -9,6 +9,7 @@ import styles from './StripControls.module.css';
 
 // Sub-pixel rounding can leave the strip a pixel short of its edge
 const EDGE_TOLERANCE = 1;
+const STEP_IN_DAYS = 2;
 
 interface StripControlsProps {
   /** The days of the week, in order. */
@@ -24,17 +25,14 @@ function stripOf(anchor: HTMLElement | null): HTMLElement | null {
   return anchor?.parentElement?.querySelector<HTMLElement>('[data-day-strip]') ?? null;
 }
 
-/** Floating controls over the week strip: a fade and day buttons on the right, day buttons on the left. Never blocks the strip itself. */
+/** Floating controls over the week strip: a fade on the right and arrows in the bleeds that scroll by three days. Never blocks the strip itself. */
 export function StripControls({ days }: StripControlsProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState<Edges>({ atStart: true, atEnd: false });
-  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    const overlay = ref.current;
-    const area = overlay?.parentElement;
-    const element = stripOf(overlay);
-    if (!overlay || !area || !element) return;
+    const element = stripOf(ref.current);
+    if (!element) return;
 
     function update() {
       if (!element) return;
@@ -44,20 +42,24 @@ export function StripControls({ days }: StripControlsProps) {
         previous.atStart === atStart && previous.atEnd === atEnd ? previous : { atStart, atEnd },
       );
     }
-    const enter = () => setHovered(true);
-    const leave = () => setHovered(false);
 
     update();
     element.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
-    area.addEventListener('pointerenter', enter);
-    area.addEventListener('pointerleave', leave);
     return () => {
       element.removeEventListener('scroll', update);
       window.removeEventListener('resize', update);
-      area.removeEventListener('pointerenter', enter);
-      area.removeEventListener('pointerleave', leave);
     };
+  }, []);
+
+  // Arrows sit in the middle of the strip's visible part: low while the strip enters, at mid-screen while it fills it.
+  // A layout effect places them before the first paint; until then CSS keeps them hidden, so they never jump.
+  useLayoutEffect(() => {
+    const overlay = ref.current;
+
+    if (overlay) {
+      overlay.dataset.placed = '';
+    }
   }, []);
 
   function scrollBehavior(): ScrollBehavior {
@@ -83,48 +85,44 @@ export function StripControls({ days }: StripControlsProps) {
     return best;
   }
 
-  function stepTo(index: number) {
+  function step(direction: 1 | -1) {
+    const index = Math.min(Math.max(shownIndex() + STEP_IN_DAYS * direction, 0), days.length - 1);
     scrollStripToDay(days[index], scrollBehavior());
   }
 
   return (
-    <div ref={ref} className={styles.overlay} data-hovered={hovered || undefined}>
+    <div ref={ref} className={styles.overlay}>
       <div className={styles.fadeEnd} data-hidden={edges.atEnd || undefined} />
-      <div className={styles.start} data-hidden={edges.atStart || undefined}>
+      <div className={`${styles.rail} ${styles.railStart}`}>
         <button
           type="button"
-          className={styles.button}
-          
-          data-sign="◀"
-          onClick={() => stepTo(Math.max(shownIndex() - 1, 0))}
+          className={`${styles.arrow} ${styles['arrow-left']}`}
+          data-hidden={edges.atStart || undefined}
+          aria-label={STRIP_LABELS.earlierDays}
+          onClick={() => step(-1)}
         >
-          <span className={styles['hidden-label']}>{STRIP_LABELS.previousDay}</span>
-        </button>
-        <button type="button" data-sign="◀◀" className={styles.button} aria-label={STRIP_LABELS.firstDay} onClick={() => stepTo(0)}>
-          <span className={styles['hidden-label']}>{STRIP_LABELS.firstDay}</span>
+          <ArrowIcon flipped />
         </button>
       </div>
-      <div className={styles.end} data-hidden={edges.atEnd || undefined}>
+      <div className={`${styles.rail} ${styles.railEnd}`}>
         <button
           type="button"
-          data-sign="▶"
-          className={styles.button}
-          aria-label={STRIP_LABELS.nextDay}
-          onClick={() => stepTo(Math.min(shownIndex() + 1, days.length - 1))}
+          className={`${styles.arrow} ${styles['arrow-right']}`}
+          data-hidden={edges.atEnd || undefined}
+          aria-label={STRIP_LABELS.laterDays}
+          onClick={() => step(1)}
         >
-          <span className={styles['hidden-label']}>{STRIP_LABELS.nextDay}</span>
-          
-        </button>
-        <button
-          type="button"
-          data-sign="▶▶"
-          className={styles.button}
-          aria-label={STRIP_LABELS.lastDay}
-          onClick={() => stepTo(days.length - 1)}
-        >
-          <span className={styles['hidden-label']}>{STRIP_LABELS.lastDay}</span>
+          <ArrowIcon />
         </button>
       </div>
     </div>
+  );
+}
+
+function ArrowIcon({ flipped = false }: { readonly flipped?: boolean }) {
+  return (
+    <svg viewBox="0 0 16 16" width="25" height="25" aria-hidden="true" style={flipped ? { transform: 'scaleX(-1)' } : undefined}>
+      <path d="M2 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" strokeWidth="2" />
+    </svg>
   );
 }

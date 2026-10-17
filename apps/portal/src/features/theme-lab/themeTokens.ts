@@ -63,6 +63,7 @@ export const CONTROL_GROUPS: readonly ControlGroup[] = [
       { kind: 'range', token: '--shadow-strength', label: 'Siła', min: 0, max: 3, step: 0.05, unit: '' },
       { kind: 'range', token: '--shadow-scale', label: 'Zasięg', min: 0, max: 3, step: 0.05, unit: '' },
       { kind: 'color', token: '--shadow-color', label: 'Kolor', channels: true },
+      { kind: 'color', token: '--shadow-edge-color', label: 'Kolor (tydzień)', channels: true },
     ],
   },
   {

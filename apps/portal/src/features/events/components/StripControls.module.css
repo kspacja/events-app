@@ -1,3 +1,8 @@
+/* Positions the overlay over a strip that has no positioned wrapper of its own */
+.area {
+  position: relative;
+}
+
 /* Covers the strip and lets every click through; only the buttons catch them, and only while shown */
 .overlay {
   position: absolute;
@@ -7,122 +12,112 @@
 }
 
 .fadeEnd {
+  --eased-gradient: linear-gradient(
+      to right,
+      hsla(0, 0%, 100%, 0) 0%,
+      hsla(0, 0%, 100%, 0.009) 8.1%,
+      hsla(0, 0%, 100%, 0.035) 15.5%,
+      hsla(0, 0%, 100%, 0.076) 22.5%,
+      hsla(0, 0%, 100%, 0.128) 29%,
+      hsla(0, 0%, 100%, 0.189) 35.3%,
+      hsla(0, 0%, 100%, 0.257) 41.2%,
+      hsla(0, 0%, 100%, 0.329) 47.1%,
+      hsla(0, 0%, 100%, 0.401) 52.9%,
+      hsla(0, 0%, 100%, 0.473) 58.8%,
+      hsla(0, 0%, 100%, 0.541) 64.7%,
+      hsla(0, 0%, 100%, 0.652) 71%,
+      hsla(0, 0%, 100%, 0.8) 77.5%,
+      hsla(0, 0%, 100%, 0.9) 84.5%,
+      hsla(0, 0%, 100%, 1) 91.9%,
+      hsla(0, 0%, 100%, 1) 100%
+    );
+
+
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 20px;
-  background: linear-gradient(to right, transparent, var(--color-bg));
+  width: 110px;
+  background: var(--eased-gradient);
   transition: opacity 200ms ease;
-  opacity: 0.8;
 }
 
 .fadeEnd[data-hidden] {
   opacity: 0;
 }
 
-.start,
-.end {
+/* Full-height columns in the bleeds; StripControls sets --arrow-top to the middle of the strip's visible part */
+.rail {
+  --arrow-size: 50px;
+
   position: absolute;
+  top: 0;
+  bottom: 0;
   z-index: 2;
-  display: flex;
+  width: var(--arrow-size);
 }
 
-/* Hidden for now; delete this rule to bring the buttons back */
-.start,
-.end {
-  display: none;
-}
-
-/* Left pair sits right under the "poprzedni tydzień" button */
-.start {
-  top: 0;
-  left: 0;
-}
-
-/* Right pair hangs at the top of the right shadow */
-.end {
-  top: 0;
-  right: 0;
-}
-
-/* At the strip's edge the side is gone, buttons included, so nothing is focusable there */
-.start[data-hidden],
-.end[data-hidden] {
+/* Server HTML and the first render have no position yet */
+.overlay:not([data-placed]) .rail {
   visibility: hidden;
 }
 
-.button {
+/* Centred in the bleed; where the bleed is narrower than the arrow, flush with the strip's edge */
+.railStart {
+  left: 0;
+}
+
+.railEnd {
+  right: 20px;
+}
+
+.arrow {
+  --arrow-top: 175px;
+
+  position: sticky;
+  top: var(--arrow-top, 0);
+  /* Starts level with the day number: the overlay's 25px overhang, the week's top margin, the day's top padding and the day name */
+  margin-top: calc(25px + var(--space-4) + var(--space-5) + var(--text-sm) * 1.2);
+  right: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  
-  opacity: 0;
-  pointer-events: none;
+  width: var(--arrow-size);
+  height: var(--arrow-size);
+  padding: 0;
+  border-radius: var(--radius-md);
+  border: solid 1px rgba(255, 255, 255, 0.75);
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
   cursor: pointer;
-  
-  background: none;
-  border: none;
-
-  &:before {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    content: attr(data-sign);
-    width: 30px;
-    height: 30px;
-    padding: 1px var(--space-2) 0;
-    border: 1px solid var(--color-border);
-    border-radius: 50%;
-    background: var(--color-bg);
-    color: var(--color-text);
-    font: inherit;
-    font-size: var(--text-3xs);
-    white-space: nowrap;
-    box-shadow: var(--shadow-sm);
-
-    transition:
-      opacity 150ms ease,
-      background-color 150ms ease,
-      color 150ms ease,
-      transform 150ms ease;
-  }
-
-  .hidden-label {
-    display: none;
-  }
-}
-
-/* Shown while the pointer is over the strip or a button has keyboard focus */
-.overlay[data-hovered] .button,
-.overlay:focus-within .button {
-  opacity: 1;
   pointer-events: auto;
+  transition: background-color 150ms ease;
 }
 
-.button:hover:before {
-  background: var(--color-text);
-  border-color: var(--color-text);
-  color: var(--color-bg);
-  box-shadow: var(--shadow-md);
+.arrow:hover {
+  background: var(--color-accent);
 }
 
-.button:focus-visible {
+.arrow:focus-visible {
   outline: 2px solid var(--color-text);
   outline-offset: 2px;
 }
 
+/* At the strip's edge the arrow is gone, so nothing is focusable there */
+.arrow[data-hidden] {
+  visibility: hidden;
+}
+
+/* Phones scroll the strip by swiping */
+@media (max-width: 768px) {
+  .rail {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fadeEnd,
-  .button {
+  .arrow {
     transition: none;
-  }
-
-  .button:hover {
-    transform: none;
   }
 }

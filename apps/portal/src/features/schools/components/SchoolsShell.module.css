@@ -5,9 +5,10 @@
 /* Desktop only: left column (calendar, map) and right column (summary, week); widths are set here */
 @media (min-width: 769px) {
   /* Wider right gutter that only the week strip reaches into, so the days read as running off the page */
-  /* The left column sits before the strip, so it has nothing to bleed into there */
+  /* The strip bleeds into the column gap, right up to the left column; that gap is room enough for the week's shadow */
   .split {
-    --strip-bleed-start: 0px;
+    --strip-bleed-start: var(--space-5);
+    --strip-shadow-room: 0px;
     display: grid;
     grid-template-columns: 250px minmax(0, 1fr);
     column-gap: var(--space-5);
@@ -17,29 +18,11 @@
   .program {
     grid-column: 2;
     grid-row: 2;
-    container-type: inline-size;
-  }
-
-  .hint {
-    display: block;
   }
 }
 
-/* About three and a half days fit on screen, so the last one is cut and the strip reads as sideways */
 .strip {
-  --day-column-width: clamp(180px, calc(100cqw / 3.5), 240px);
   margin-right: calc(-1 * var(--strip-bleed));
-}
-
-.hint {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-text-tertiary);
 }
 
 .currentMonth {
@@ -49,18 +32,13 @@
   align-items: center;
   text-align: center;
   font-family: var(--font-heading);
+  font-weight: 600;
   font-size: var(--text-2xl);
 }
 
 .rangeLabel {
   font-size: var(--text-sm);
   color: var(--color-text-tertiary);
-}
-
-@media (max-width: 768px) {
-  .hint {
-    display: none;
-  }
 }
 
 /* The week strip alone is the edge area, so the controls never cover the week arrows above it */

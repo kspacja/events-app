@@ -22,11 +22,7 @@ export function TopBar({ title }: TopBarProps) {
         {/* Only the schools page has a title, and its link would point to itself */}
         {title ? (
           <h1 className={styles.title}>{title}</h1>
-        ) : (
-          <Link href={SCHOOLS_PATH} className={styles.link}>
-            {SCHOOLS_LABELS.pageTitle}
-          </Link>
-        )}
+        ) : null}
       </div>
     </div>
   );

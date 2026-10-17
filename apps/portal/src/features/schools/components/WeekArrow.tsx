@@ -29,7 +29,7 @@ export function WeekArrow({ direction, week, onNavigate }: WeekArrowProps) {
 
   return (
     <Link href={schoolsHref(target)} scroll={false} className={styles.arrow} onClick={handleClick}>
-      <span aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>
+      <span className={styles.sign} aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>
       <span className={styles.label}>{direction < 0 ? CALENDAR_LABELS.previousWeek : CALENDAR_LABELS.nextWeek}</span>
     </Link>
   );

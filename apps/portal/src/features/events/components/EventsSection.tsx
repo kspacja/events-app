@@ -44,7 +44,7 @@ export function EventsSection({ source, range, time, sentence, notice }: EventsS
         }
       />
       <Suspense fallback={<StripSkeleton />}>
-        <WeekStrip schedule={schedule} withControls={false} />
+        <WeekStrip schedule={schedule} />
       </Suspense>
     </OccurrenceSelectionProvider>
   );

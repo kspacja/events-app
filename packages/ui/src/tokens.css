@@ -5,7 +5,8 @@
   --text-ratio: 1.125;
   --radius-unit: 4px;
   --shadow-color: 28 27 25;
-  --shadow-strength: 1;
+  --shadow-edge-color: 0 0 0;
+  --shadow-strength: 1.2;
   --shadow-scale: 1;
 
   --color-text: #1c1b19;
@@ -45,6 +46,7 @@
   --space-6: calc(var(--space-unit) * 6);
   --space-7: calc(var(--space-unit) * 7);
   --space-7-5: calc(var(--space-unit) * 7.5);
+  --space-8: calc(var(--space-unit) * 8);
   --space-9: calc(var(--space-unit) * 9);
   --space-10: calc(var(--space-unit) * 10);
   --space-12: calc(var(--space-unit) * 12);
@@ -86,9 +88,12 @@
     rgb(var(--shadow-color) / calc(0.18 * var(--shadow-strength)));
   --shadow-lg: 0 calc(12px * var(--shadow-scale)) calc(32px * var(--shadow-scale))
     rgb(var(--shadow-color) / calc(0.16 * var(--shadow-strength)));
-  /* Upward shadow along a sticky edge */
-  --shadow-edge: 0 calc(-2px * var(--shadow-scale)) calc(3px * var(--shadow-scale))
-    rgb(var(--shadow-color) / calc(0.1 * var(--shadow-strength)));
+  /* Elevation of the week strip: a crisp contact edge plus a soft drop below */
+  --shadow-edge:
+    0 calc(-1px * var(--shadow-scale)) calc(3px * var(--shadow-scale))
+      rgb(var(--shadow-edge-color) / calc(0.12 * var(--shadow-strength))),
+    0 calc(8px * var(--shadow-scale)) calc(24px * var(--shadow-scale))
+      rgb(var(--shadow-edge-color) / calc(0.18 * var(--shadow-strength)));
 
   --rule-thickness: 4px;
   --day-column-width: 240px;

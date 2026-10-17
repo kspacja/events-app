@@ -4,6 +4,7 @@ import { MapToggle } from './MapToggle';
 import { SkipLink } from './SkipLink';
 import { StripControls } from './StripControls';
 import { WeekGrid } from './WeekGrid';
+import stripStyles from './StripControls.module.css';
 
 // Each part awaits the same promise, so the week is requested once and each part streams in on its own
 interface WeekPartProps {
@@ -26,18 +27,12 @@ export async function WeekMap({ schedule }: WeekPartProps) {
   );
 }
 
-interface WeekStripProps extends WeekPartProps {
-  readonly withControls: boolean;
-}
-
-export async function WeekStrip({ schedule, withControls }: WeekStripProps) {
+export async function WeekStrip({ schedule }: WeekPartProps) {
   const resolved = await schedule;
-  const grid = <WeekGrid schedule={resolved} />;
-  if (!withControls) return grid;
   return (
-    <>
+    <div className={stripStyles.area}>
       <StripControls days={resolved.weeks.flat().map(({ day }) => day)} />
-      {grid}
-    </>
+      <WeekGrid schedule={resolved} />
+    </div>
   );
 }

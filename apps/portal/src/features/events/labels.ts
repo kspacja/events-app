@@ -8,13 +8,8 @@ export const COUNT_LABELS = {
 export const DAY_SHORT_NAMES = ['pon', 'wt', 'śr', 'czw', 'pt', 'sob', 'niedz'] as const;
 
 export const STRIP_LABELS = {
-  previousDay: 'Poprzedni dzień',
-  firstDay: 'Początek tygodnia',
-  nextDay: 'Następny dzień',
-  lastDay: 'Koniec tygodnia',
-  weekHint: 'Tydzień',
-  scrollHint: 'przewiń →',
-  scrollBackHint: '← przewiń',
+  earlierDays: 'Przewiń o 3 dni wstecz',
+  laterDays: 'Przewiń o 3 dni dalej',
 } as const;
 
 export const DAY_NAMES = [

@@ -13,7 +13,9 @@
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
   scroll-padding-inline-start: var(--strip-bleed);
-  margin-left: calc(-1 * var(--strip-bleed-start));
+  /* The strip scrolls, so it clips anything outside it; the padding gives the week's shadow room, the margin undoes the shift */
+  margin-left: calc(-1 * (var(--strip-bleed-start) + var(--strip-shadow-room, var(--space-4))));
+  padding-left: var(--strip-shadow-room, var(--space-4));
 }
 
 .week {
@@ -22,8 +24,13 @@
   padding: 0;
   list-style: none;
 
-  margin-top: var(--space-1);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-8);
 
   margin-right: var(--strip-bleed);
   margin-left: var(--strip-bleed-start);
+
+  /* On the whole week, not each day, so the shadow only shows outside it; the radius matches the end days */
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-edge);
 }
