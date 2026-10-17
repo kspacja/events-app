@@ -16,4 +16,21 @@ export async function register() {
 
   const { createMockServer } = await import('./mocks/node');
   createMockServer(config.eventsApiUrl).listen({ onUnhandledFrame: 'bypass' });
+  keepMockedFetch(globalThis.fetch);
+}
+
+/**
+ * On every server reload next dev puts back the plain fetch it saw at startup, which silently drops MSW.
+ * A plain fetch carries no __nextPatched mark, so any such assignment gets MSW's fetch instead;
+ * Next's own wrapper (marked) passes through and ends up wrapping MSW's fetch.
+ */
+function keepMockedFetch(mockedFetch: typeof fetch) {
+  let current = mockedFetch;
+  Object.defineProperty(globalThis, 'fetch', {
+    configurable: true,
+    get: () => current,
+    set: (value: typeof fetch & { __nextPatched?: boolean }) => {
+      current = value.__nextPatched ? value : mockedFetch;
+    },
+  });
 }
