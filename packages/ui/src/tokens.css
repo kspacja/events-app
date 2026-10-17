@@ -4,7 +4,7 @@
   --text-base: 14px;
   --text-ratio: 1.125;
   --radius-unit: 4px;
-  --shadow-color: 28 27 25;
+  --shadow-color: 107 73 0;
   --shadow-edge-color: 0 0 0;
   --shadow-strength: 1.2;
   --shadow-scale: 1;
@@ -13,11 +13,11 @@
   --color-text-secondary: #4a4844;
   --color-text-tertiary: #949189;
   --color-text-muted: #6b6862;
-  --color-text-disabled: #b5b2ab;
+  --color-text-disabled: #cdd7d6;
   --color-on-accent: #ffffff;
 
-  --color-accent: #c2410c;
-  --color-accent-strong: #9a3412;
+  --color-accent: #4da167;
+  --color-accent-strong: #32814b;
   --color-accent-soft: #fdede4;
   --color-accent-soft-hover: #fbe0d0;
   --color-logo-dot: #dd9b0e;
@@ -27,10 +27,10 @@
   --color-surface: #ffffff;
   --color-backdrop: rgb(28 27 25 / 40%);
 
-  --color-bg-weekday: #fbf8f4;
-  --color-bg-weekend: #f5eadc;
+  --color-bg-weekday: #ffffff;
+  --color-bg-weekend: #fff4e5;
 
-  --color-border: #dbd8d3;
+  --color-border: #dd9b0e;
   --color-map-water: #bfd7ea;
 
   --space-0-5: calc(var(--space-unit) * 0.5);
@@ -98,6 +98,6 @@
   --rule-thickness: 4px;
   --day-column-width: 240px;
 
-  --font-heading: var(--font-bricolage), "DM Sans", sans-serif;
-  --font-body: var(--font-dm-sans), "Helvetica Neue", sans-serif;
+  --font-heading: var(--font-albert-sans), "Helvetica Neue", sans-serif;
+  --font-body: var(--font-albert-sans), "Helvetica Neue", sans-serif;
 }

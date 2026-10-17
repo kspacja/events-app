@@ -95,7 +95,7 @@ describe('fontOf', () => {
   });
 
   it('treats the original next/font stack as no override', () => {
-    expect(fontOf('var(--font-dm-sans), "Helvetica Neue", sans-serif')).toBeUndefined();
+    expect(fontOf('var(--font-albert-sans), "Helvetica Neue", sans-serif')).toBeUndefined();
   });
 
   it('lists every family once', () => {

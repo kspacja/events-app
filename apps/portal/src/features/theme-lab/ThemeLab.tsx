@@ -271,7 +271,7 @@ function ControlInput({ id, control, value, changed, onChange }: ControlInputPro
       );
     }
     case 'font': {
-      // The original stack resolves to a family name (e.g. DM Sans) that may also be on the list
+      // The original stack resolves to a family name (e.g. Albert Sans) that may also be on the list
       const selectedFont = changed ? fontOf(value) : undefined;
       return (
         <select

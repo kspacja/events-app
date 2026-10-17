@@ -31,8 +31,8 @@ const POINT_LAYER_ID = 'event-points';
 // One past clusterMaxZoom so a requested point is never inside a cluster
 const SELECTED_MIN_ZOOM = 15;
 
-const FALLBACK_ACCENT = '#c2410c';
-const FALLBACK_MUTED = '#b5b2ab';
+const FALLBACK_ACCENT = '#4da167';
+const FALLBACK_MUTED = '#cdd7d6';
 const FALLBACK_HALO = '#ffffff';
 
 const hasActive: maplibregl.ExpressionSpecification = ['>', ['get', 'activeCount'], 0];
