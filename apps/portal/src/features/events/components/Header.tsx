@@ -21,6 +21,8 @@ interface HeaderProps {
   readonly map?: ReactNode;
   /** Split layout only: more sidebar content between the controls and the map, e.g. filters. */
   readonly aside?: ReactNode;
+  /** Split layout only: false hides the whole sidebar on phones, when the page shows its parts elsewhere. */
+  readonly sidebarOnPhones?: boolean;
   /** `split`: the heading on top, controls and map in a left column, the summary in the right one. */
   readonly layout?: 'stacked' | 'split';
   /** Split layout only: on mobile the controls sit behind a button with these labels. */
@@ -37,13 +39,14 @@ export function Header({
   countLabel,
   map,
   aside,
+  sidebarOnPhones = true,
   layout = 'stacked',
   controlsLabels,
 }: HeaderProps) {
   if (layout === 'split') {
     return (
       <header className={`${styles.header} ${styles.split}`}>
-        <div className={styles.sidebar}>
+        <div className={styles.sidebar} data-phones={sidebarOnPhones ? undefined : 'hidden'}>
           {controls && controlsLabels ? (
             <CollapsiblePanel show={controlsLabels.show} hide={controlsLabels.hide}>
               {controls}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { mondayOf, type CalendarDay } from '@events/time';
 import { formatDay } from '@/lib/format';
 import { DAY_NAMES } from '@/features/events/labels';
@@ -10,6 +10,7 @@ import { CALENDAR_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import {
   buildMonthCalendar,
   firstDayOf,
+  monthOf,
   monthOfWeek,
   type CalendarCell,
   type CalendarMonth,
@@ -19,9 +20,6 @@ import { schoolsHref } from '../schoolsHref';
 import { useFiltersQuery } from '../filtersQueryContext';
 import { DayMarkers } from './DayMarkers';
 import styles from './MonthCalendar.module.css';
-
-// One calendar per page, so a fixed id is enough to label its table
-const TITLE_ID = 'month-calendar-title';
 
 interface MonthCalendarProps {
   /** Monday of the shown week. */
@@ -94,11 +92,13 @@ export function MonthCalendar({ week, today, onNavigate }: MonthCalendarProps) {
   const calendar = buildMonthCalendar({ month, today, selectedWeek: week });
   const { weeks, previous, next } = calendar;
   const move = (target: CalendarMonth) => setShown({ week, month: target });
+  // The page renders the calendar twice (desktop sidebar, phone panel), so the title id must be unique
+  const titleId = useId();
 
   return (
     <nav className={styles.calendar} aria-label={CALENDAR_LABELS.region}>
       <div className={styles.toolbar}>
-        <h2 id={TITLE_ID} className={styles.title}>
+        <h2 id={titleId} className={styles.title}>
           {formatDay(firstDayOf(month), 'LLLL yyyy')}
         </h2>
         <div className={styles.navigation}>
@@ -126,7 +126,7 @@ export function MonthCalendar({ week, today, onNavigate }: MonthCalendarProps) {
           </button>
         </div>
       </div>
-      <table className={styles.grid} aria-labelledby={TITLE_ID}>
+      <table className={styles.grid} aria-labelledby={titleId}>
         <thead>
           <tr>
             {WEEKDAY_SHORT_NAMES.map((name, index) => (
@@ -155,5 +155,45 @@ export function MonthCalendar({ week, today, onNavigate }: MonthCalendarProps) {
         </tbody>
       </table>
     </nav>
+  );
+}
+
+const WEEK_DAYS = 7;
+
+/** Phones: only the shown week's row of the calendar, each day with its own month's markers. */
+export function WeekRow({ week, today, onNavigate }: MonthCalendarProps) {
+  const calendar = buildMonthCalendar({ month: monthOfWeek(week), today, selectedWeek: week });
+  const calendarWeek = calendar.weeks.find((candidate) => candidate.isSelected);
+  if (!calendarWeek || calendarWeek.days.length !== WEEK_DAYS) return null;
+
+  return (
+    <table className={`${styles.grid} ${styles.weekRow}`} aria-label={formatDay(week, "'Tydzień od' d MMMM")}>
+      <thead>
+        <tr>
+          {WEEKDAY_SHORT_NAMES.map((name, index) => (
+            <th key={name} scope="col" className={styles.weekday}>
+              <span aria-hidden="true">{name}</span>
+              <span className="visually-hidden">{DAY_NAMES[index]}</span>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        <tr className={styles.week} data-current={calendarWeek.isCurrent || undefined}>
+          {calendarWeek.days.map((cell) => (
+            <td key={cell.day} className={styles.cell}>
+              {/* A week across two months: every day counts as in its own month */}
+              <DayCell
+                cell={{ ...cell, inMonth: true }}
+                week={calendarWeek}
+                shownWeek={week}
+                month={monthOf(cell.day)}
+                onNavigate={onNavigate}
+              />
+            </td>
+          ))}
+        </tr>
+      </tbody>
+    </table>
   );
 }

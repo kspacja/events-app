@@ -1,15 +1,26 @@
 'use client';
 
-import { createContext, startTransition, useContext, useEffect, useOptimistic, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  startTransition,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useOptimistic,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import type { CalendarDay } from '@events/time';
 import { EventsMapLoader } from '@/features/events/components/EventsMapLoader';
-import { MapToggle } from '@/features/events/components/MapToggle';
-import { SkipLink } from '@/features/events/components/SkipLink';
+import { MAP_LABELS } from '@/features/events/labels';
+import { useOccurrenceSelection, useOccurrenceSelectionInstructions } from '@/features/events/OccurrenceSelectionProvider';
 import { StripSkeleton } from '@/features/events/components/WeekSkeleton';
 import type { MapPoint } from '@/features/events/mapView';
 import { schoolsHref } from '../schoolsHref';
 import { useFiltersQuery } from '../filtersQueryContext';
+import styles from './WeekMap.module.css';
 import { weekFromPath } from '../weekParam';
 
 interface WeekMapState {
@@ -27,6 +38,11 @@ interface WeekNavigationValue {
   readonly navigate: (week: CalendarDay, anchor?: string) => void;
   readonly map: WeekMapState;
   readonly setMap: (map: WeekMapState) => void;
+  /** Events in the shown week after the filters; null until the week page reports it. */
+  readonly count: number | null;
+  readonly setCount: (count: number) => void;
+  readonly mapOpen: boolean;
+  readonly setMapOpen: (open: boolean) => void;
 }
 
 const WeekNavigationContext = createContext<WeekNavigationValue | null>(null);
@@ -49,6 +65,8 @@ export function WeekNavigationProvider({ today, children }: WeekNavigationProvid
   const [week, setOptimisticWeek] = useOptimistic(weekFromPath(typeof raw === 'string' ? raw : '', today).week);
   const [pending, setPending] = useOptimistic(false);
   const [map, setMap] = useState(NO_POINTS);
+  const [count, setCount] = useState<number | null>(null);
+  const [mapOpen, setMapOpen] = useState(false);
   const filtersQuery = useFiltersQuery();
 
   // Both optimistic values hold until the navigation commits the new week
@@ -61,7 +79,9 @@ export function WeekNavigationProvider({ today, children }: WeekNavigationProvid
   }
 
   return (
-    <WeekNavigationContext value={{ week, pending, navigate, map, setMap }}>{children}</WeekNavigationContext>
+    <WeekNavigationContext value={{ week, pending, navigate, map, setMap, count, setCount, mapOpen, setMapOpen }}>
+      {children}
+    </WeekNavigationContext>
   );
 }
 
@@ -85,16 +105,80 @@ export function WeekArea({ children }: { readonly children: ReactNode }) {
   return pending && slow ? <StripSkeleton /> : children;
 }
 
-/** The map stays mounted across weeks; each week page only hands it new points. */
-export function WeekMap() {
-  const { map } = useWeekNavigation();
+/** One map dialog for the page, opened by any MapButton or by a card's pin; it stays mounted across weeks. */
+export function WeekMapDialog() {
+  const { map, mapOpen, setMapOpen } = useWeekNavigation();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const selection = useOccurrenceSelection();
+  const { expandMap } = useOccurrenceSelectionInstructions();
+
+  useEffect(() => {
+    if (!expandMap) return;
+    selection.done('expandMap');
+    setMapOpen(true);
+  }, [expandMap, selection, setMapOpen]);
+
+  // Opens before the lazily loaded map mounts, so it measures a visible container
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (mapOpen && !dialog.open) dialog.showModal();
+    if (!mapOpen && dialog.open) dialog.close();
+  }, [mapOpen]);
+
   return (
-    <>
-      <SkipLink />
-      <MapToggle desktop="dialog">
-        <EventsMapLoader points={map.points} focus={map.focus} />
-      </MapToggle>
-    </>
+    <dialog
+      ref={dialogRef}
+      className={styles.dialog}
+      aria-label={MAP_LABELS.region}
+      onClose={() => setMapOpen(false)}
+      onClick={(event) => {
+        // A click on the backdrop lands on the dialog itself
+        if (event.target === event.currentTarget) setMapOpen(false);
+      }}
+    >
+      <button type="button" className={styles.close} onClick={() => setMapOpen(false)}>
+        {MAP_LABELS.close}
+      </button>
+      <figure className={styles.panel}>
+        {mapOpen ? <EventsMapLoader points={map.points} focus={map.focus} /> : null}
+      </figure>
+    </dialog>
+  );
+}
+
+/** Opens the map dialog: with its label in the desktop sidebar, as an icon beside the month on phones. */
+export function MapButton({ variant }: { readonly variant: 'label' | 'icon' }) {
+  const { setMapOpen } = useWeekNavigation();
+  return (
+    <button
+      type="button"
+      className={variant === 'icon' ? styles.iconButton : styles.labelButton}
+      aria-label={variant === 'icon' ? MAP_LABELS.open : undefined}
+      onClick={() => setMapOpen(true)}
+    >
+      <MapIcon />
+      {variant === 'label' ? MAP_LABELS.open : null}
+    </button>
+  );
+}
+
+function MapIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z" />
+      <path d="M9 4v14M15 6v14" />
+    </svg>
   );
 }
 
@@ -103,5 +187,14 @@ export function WeekMapPoints({ points, focus }: WeekMapState) {
   useEffect(() => {
     setMap({ points, focus });
   }, [points, focus, setMap]);
+  return null;
+}
+
+/** The week page reports its filtered event count to the week header, which outlives week changes. */
+export function WeekCount({ count }: { readonly count: number }) {
+  const { setCount } = useWeekNavigation();
+  useEffect(() => {
+    setCount(count);
+  }, [count, setCount]);
   return null;
 }

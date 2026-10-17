@@ -156,7 +156,11 @@
     gap: var(--space-3);
   }
 
-  /* Like the map: a toggle button inside joins the button row and its panel stacks below */
+  .header.split .sidebar[data-phones='hidden'] {
+    display: none;
+  }
+
+    /* Like the map: a toggle button inside joins the button row and its panel stacks below */
   .header.split .aside {
     display: contents;
   }

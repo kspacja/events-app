@@ -1,18 +1,19 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { addDays, type CalendarDay } from '@events/time';
 import { Header } from '@/features/events/components/Header';
 import { OccurrenceSelectionProvider } from '@/features/events/OccurrenceSelectionProvider';
 import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatDay } from '@/lib/format';
+import { formatCount } from '@/features/events/schedule';
 import { SCHOOLS_LABELS } from '../labels';
 import { FiltersQueryContext } from '../filtersQueryContext';
 import { filtersQuery, parseFilters } from '../schoolFilters';
-import { MonthCalendar } from './MonthCalendar';
+import { MonthCalendar, WeekRow } from './MonthCalendar';
 import { AdvancedFiltersSheet, SchoolFilters } from './SchoolFilters';
-import { WeekArea, WeekMap, WeekNavigationProvider, useWeekNavigation } from './WeekNavigation';
+import { MapButton, WeekArea, WeekMapDialog, WeekNavigationProvider, useWeekNavigation } from './WeekNavigation';
 import { WeekArrow } from './WeekArrow';
 import styles from './SchoolsShell.module.css';
 
@@ -22,8 +23,35 @@ interface SchoolsShellProps {
   readonly children: ReactNode;
 }
 
-function ShellContent({ today, children }: SchoolsShellProps) {
+/** Phones: the shown week's row of the calendar, swapped for the whole month on demand. */
+function PhoneWeekPicker({ today }: { readonly today: CalendarDay }) {
   const { week, navigate } = useWeekNavigation();
+  const [expanded, setExpanded] = useState(false);
+  const panelId = useId();
+  return (
+    <div className={styles.weekPicker}>
+      <button
+        type="button"
+        className={styles.calendarToggle}
+        aria-expanded={expanded}
+        aria-controls={panelId}
+        onClick={() => setExpanded((value) => !value)}
+      >
+        {expanded ? SCHOOLS_LABELS.calendarHide : SCHOOLS_LABELS.calendarShow}
+      </button>
+      <div id={panelId}>
+        {expanded ? (
+          <MonthCalendar week={week} today={today} onNavigate={navigate} />
+        ) : (
+          <WeekRow week={week} today={today} onNavigate={navigate} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ShellContent({ today, children }: SchoolsShellProps) {
+  const { week, navigate, count, pending } = useWeekNavigation();
   const range = { from: week, to: addDays(week, 6) };
   return (
     <div className={styles.split}>
@@ -32,29 +60,37 @@ function ShellContent({ today, children }: SchoolsShellProps) {
         controls={<MonthCalendar week={week} today={today} onNavigate={navigate} />}
         rangeLabel={formatRangeLabel(range)}
         countLabel={null}
-        map={<WeekMap />}
+        map={<MapButton variant="label" />}
         aside={
           <div className={styles.advancedFilters}>
             <SchoolFilters placement="advanced" />
           </div>
         }
-        controlsLabels={{ show: SCHOOLS_LABELS.calendarShow, hide: SCHOOLS_LABELS.calendarHide }}
+        sidebarOnPhones={false}
       />
       <div className={styles.program}>
         <div className={styles.weekArrows}>
           <WeekArrow direction={-1} week={week} onNavigate={navigate} />
           <span className={styles.currentMonth}>
             {formatDay(week, 'LLLL yyyy')}
-            <span className={styles.rangeLabel}>{formatRangeLabel(range)}</span>
+            <span className={styles.rangeLabel}>
+              {formatRangeLabel(range)}
+              {count !== null && !pending ? ` · ${formatCount(count)}` : null}
+            </span>
           </span>
           <WeekArrow direction={1} week={week} onNavigate={navigate} />
+          <span className={styles.phoneMap}>
+            <MapButton variant="icon" />
+          </span>
         </div>
         <SchoolFilters placement="main" />
         <AdvancedFiltersSheet />
+        <PhoneWeekPicker today={today} />
         <div className={styles.strip}>
           <WeekArea>{children}</WeekArea>
         </div>
       </div>
+      <WeekMapDialog />
     </div>
   );
 }

@@ -33,7 +33,7 @@
   text-align: center;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: var(--text-2xl);
+  font-size: var(--text-3xl);
 }
 
 .rangeLabel {
@@ -52,16 +52,74 @@
   align-items: center;
   margin-bottom: var(--space-2);
 
+  /* Phones: month and range on the left with the map icon beside them, the week arrows below */
   @media (max-width: 768px) {
     display: grid;
-    grid-template-columns: max-content max-content;
-    grid-template-rows: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    grid-template-areas:
+      "currentMonth map"
+      "previous next";
+    row-gap: var(--space-3);
 
-    justify-content: space-between;
+    & > :nth-child(1) {
+      grid-area: previous;
+      justify-self: start;
+    }
 
-    grid-template-areas: 
-      "currentMonth currentMonth"
-      ". ."
+    & > :nth-child(3) {
+      grid-area: next;
+      justify-self: end;
+    }
+
+    .currentMonth {
+      align-items: flex-start;
+      text-align: left;
+    }
+  }
+}
+
+/* The map icon only shows on phones; desktop has the labelled button in the sidebar */
+.phoneMap {
+  display: none;
+  grid-area: map;
+  /* The column is as wide as the "next week" arrow below, so the icon pushes to its right edge */
+  justify-self: end;
+}
+
+.weekPicker {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .phoneMap {
+    display: block;
+  }
+
+  .weekPicker {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--space-4);
+  }
+
+  /* A text button on the right, above the week row (or the whole month) */
+  .calendarToggle {
+    align-self: flex-end;
+    min-height: 40px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-accent-strong);
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .calendarToggle:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
   }
 }
 
