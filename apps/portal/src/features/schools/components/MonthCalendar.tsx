@@ -41,12 +41,14 @@ function DayCell({
   week,
   shownWeek,
   month,
+  count,
   onNavigate,
 }: {
   readonly cell: CalendarCell;
   readonly week: CalendarWeek;
   readonly shownWeek: CalendarDay;
   readonly month: CalendarMonth;
+  readonly count?: number;
   readonly onNavigate?: (week: CalendarDay, anchor: string) => void;
 }) {
   const filtersQuery = useFiltersQuery();
@@ -76,7 +78,7 @@ function DayCell({
     >
       <span className="visually-hidden">{date}</span>
       <span aria-hidden="true">{number}</span>
-      <DayMarkers day={cell.day} month={month} />
+      <DayMarkers day={cell.day} month={month} count={count} />
       {state.length > 0 ? <span className="visually-hidden">{`, ${state.join(', ')}`}</span> : null}
     </DayJump>
   );
@@ -160,8 +162,13 @@ export function MonthCalendar({ week, today, onNavigate }: MonthCalendarProps) {
 
 const WEEK_DAYS = 7;
 
+interface WeekRowProps extends MonthCalendarProps {
+  /** Event counts per day of this week, when the week's page already has them. */
+  readonly dayCounts?: Readonly<Record<string, number>>;
+}
+
 /** Phones: only the shown week's row of the calendar, each day with its own month's markers. */
-export function WeekRow({ week, today, onNavigate }: MonthCalendarProps) {
+export function WeekRow({ week, today, onNavigate, dayCounts }: WeekRowProps) {
   const calendar = buildMonthCalendar({ month: monthOfWeek(week), today, selectedWeek: week });
   const calendarWeek = calendar.weeks.find((candidate) => candidate.isSelected);
   if (!calendarWeek || calendarWeek.days.length !== WEEK_DAYS) return null;
@@ -188,6 +195,7 @@ export function WeekRow({ week, today, onNavigate }: MonthCalendarProps) {
                 week={calendarWeek}
                 shownWeek={week}
                 month={monthOf(cell.day)}
+                count={dayCounts?.[cell.day]}
                 onNavigate={onNavigate}
               />
             </td>

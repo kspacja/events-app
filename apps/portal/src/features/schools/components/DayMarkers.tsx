@@ -12,6 +12,8 @@ import styles from './DayMarkers.module.css';
 interface DayMarkersProps {
   readonly day: CalendarDay;
   readonly month: CalendarMonth;
+  /** Already known (from the shown week's page), so the dots need not wait for the month's counts. */
+  readonly count?: number;
 }
 
 function useMonthCounts(month: CalendarMonth): MonthCounts | null {
@@ -29,11 +31,17 @@ function useMonthCounts(month: CalendarMonth): MonthCounts | null {
   return counts;
 }
 
-/** The day's dots and event count, loaded in the browser; empty until they arrive. */
-export function DayMarkers({ day, month }: DayMarkersProps) {
+/** The day's dots and event count: the known count at once, otherwise loaded in the browser and empty until it arrives. */
+export function DayMarkers({ day, month, count }: DayMarkersProps) {
+  return count === undefined ? <LoadedMarkers day={day} month={month} /> : <Markers count={count} />;
+}
+
+function LoadedMarkers({ day, month }: { readonly day: CalendarDay; readonly month: CalendarMonth }) {
   const counts = useMonthCounts(month);
-  if (!counts) return null;
-  const count = counts[day] ?? 0;
+  return counts ? <Markers count={counts[day] ?? 0} /> : null;
+}
+
+function Markers({ count }: { readonly count: number }) {
   const marker = dayMarker(count);
   return (
     <>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { addDays, type CalendarDay } from '@events/time';
 import { Header } from '@/features/events/components/Header';
@@ -9,7 +9,10 @@ import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatDay } from '@/lib/format';
 import { formatCount } from '@/features/events/schedule';
 import { SCHOOLS_LABELS } from '../labels';
-import { FiltersQueryContext } from '../filtersQueryContext';
+import { FiltersQueryContext, useFiltersQuery } from '../filtersQueryContext';
+import { monthOf } from '../monthCalendar';
+import { loadMonthCounts } from '../monthCounts';
+import { shiftWeek } from '../weekShift';
 import { filtersQuery, parseFilters } from '../schoolFilters';
 import { MonthCalendar, WeekRow } from './MonthCalendar';
 import { AdvancedFiltersSheet, SchoolFilters } from './SchoolFilters';
@@ -25,9 +28,17 @@ interface SchoolsShellProps {
 
 /** Phones: the shown week's row of the calendar, swapped for the whole month on demand; `leading` shares the button row. */
 function PhoneWeekPicker({ today, leading }: { readonly today: CalendarDay; readonly leading?: ReactNode }) {
-  const { week, navigate } = useWeekNavigation();
+  const { week, navigate, dayCounts } = useWeekNavigation();
+  const filtersQuery = useFiltersQuery();
   const [expanded, setExpanded] = useState(false);
   const panelId = useId();
+
+  // Warm the month counts around the shown week, so the next or previous week's dots show at once
+  useEffect(() => {
+    const weeks = [shiftWeek(week, -1), week, shiftWeek(week, 1)];
+    const months = new Set(weeks.flatMap((monday) => [monthOf(monday), monthOf(addDays(monday, 6))]));
+    for (const month of months) void loadMonthCounts(month, filtersQuery);
+  }, [week, filtersQuery]);
   return (
     <div className={styles.weekPicker}>
       <div className={styles.pickerBar}>
@@ -48,7 +59,12 @@ function PhoneWeekPicker({ today, leading }: { readonly today: CalendarDay; read
         ) : (
           <div className={styles.weekRowNav}>
             <WeekArrow direction={-1} week={week} onNavigate={navigate} compact />
-            <WeekRow week={week} today={today} onNavigate={navigate} />
+            <WeekRow
+              week={week}
+              today={today}
+              onNavigate={navigate}
+              dayCounts={dayCounts?.week === week ? dayCounts.counts : undefined}
+            />
             <WeekArrow direction={1} week={week} onNavigate={navigate} compact />
           </div>
         )}
