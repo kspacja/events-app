@@ -30,9 +30,12 @@ interface WeekMapState {
 
 const NO_POINTS: WeekMapState = { points: [], focus: [] };
 
-export interface WeekDayCounts {
+export interface WeekCounts {
   readonly week: CalendarDay;
-  readonly counts: Readonly<Record<string, number>>;
+  /** The filters' query the counts were made with, so a filter change does not show the old numbers. */
+  readonly filtersQuery: string;
+  readonly total: number;
+  readonly days: Readonly<Record<string, number>>;
 }
 
 interface WeekNavigationValue {
@@ -43,12 +46,9 @@ interface WeekNavigationValue {
   readonly navigate: (week: CalendarDay, anchor?: string) => void;
   readonly map: WeekMapState;
   readonly setMap: (map: WeekMapState) => void;
-  /** Events in the shown week after the filters; null until the week page reports it. */
-  readonly count: number | null;
-  readonly setCount: (count: number) => void;
-  /** Per-day counts of the week the page last reported; the week tells whether they fit the one on screen. */
-  readonly dayCounts: WeekDayCounts | null;
-  readonly setDayCounts: (dayCounts: WeekDayCounts) => void;
+  /** Filtered event counts of the week the page last reported; its week tells whether they fit the one on screen. */
+  readonly weekCounts: WeekCounts | null;
+  readonly setWeekCounts: (weekCounts: WeekCounts) => void;
   readonly mapOpen: boolean;
   readonly setMapOpen: (open: boolean) => void;
 }
@@ -73,8 +73,7 @@ export function WeekNavigationProvider({ today, children }: WeekNavigationProvid
   const [week, setOptimisticWeek] = useOptimistic(weekFromPath(typeof raw === 'string' ? raw : '', today).week);
   const [pending, setPending] = useOptimistic(false);
   const [map, setMap] = useState(NO_POINTS);
-  const [count, setCount] = useState<number | null>(null);
-  const [dayCounts, setDayCounts] = useState<WeekDayCounts | null>(null);
+  const [weekCounts, setWeekCounts] = useState<WeekCounts | null>(null);
   const [mapOpen, setMapOpen] = useState(false);
   const filtersQuery = useFiltersQuery();
 
@@ -88,7 +87,7 @@ export function WeekNavigationProvider({ today, children }: WeekNavigationProvid
   }
 
   return (
-    <WeekNavigationContext value={{ week, pending, navigate, map, setMap, count, setCount, dayCounts, setDayCounts, mapOpen, setMapOpen }}>
+    <WeekNavigationContext value={{ week, pending, navigate, map, setMap, weekCounts, setWeekCounts, mapOpen, setMapOpen }}>
       {children}
     </WeekNavigationContext>
   );
@@ -199,18 +198,11 @@ export function WeekMapPoints({ points, focus }: WeekMapState) {
   return null;
 }
 
-interface WeekCountProps {
-  readonly week: CalendarDay;
-  readonly count: number;
-  readonly dayCounts: Readonly<Record<string, number>>;
-}
-
 /** The week page reports its filtered event counts to the week header and the phone week row, which outlive week changes. */
-export function WeekCount({ week, count, dayCounts }: WeekCountProps) {
-  const { setCount, setDayCounts } = useWeekNavigation();
+export function WeekCount({ week, filtersQuery, total, days }: WeekCounts) {
+  const { setWeekCounts } = useWeekNavigation();
   useEffect(() => {
-    setCount(count);
-    setDayCounts({ week, counts: dayCounts });
-  }, [week, count, dayCounts, setCount, setDayCounts]);
+    setWeekCounts({ week, filtersQuery, total, days });
+  }, [week, filtersQuery, total, days, setWeekCounts]);
   return null;
 }

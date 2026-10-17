@@ -11,7 +11,7 @@ import { formatCount } from '@/features/events/schedule';
 import { SCHOOLS_LABELS } from '../labels';
 import { FiltersQueryContext, useFiltersQuery } from '../filtersQueryContext';
 import { monthOf } from '../monthCalendar';
-import { loadMonthCounts } from '../monthCounts';
+import { cachedWeekTotal, loadMonthCounts } from '../monthCounts';
 import { shiftWeek } from '../weekShift';
 import { filtersQuery, parseFilters } from '../schoolFilters';
 import { MonthCalendar, WeekRow } from './MonthCalendar';
@@ -28,8 +28,9 @@ interface SchoolsShellProps {
 
 /** Phones: the shown week's row of the calendar, swapped for the whole month on demand; `leading` shares the button row. */
 function PhoneWeekPicker({ today, leading }: { readonly today: CalendarDay; readonly leading?: ReactNode }) {
-  const { week, navigate, dayCounts } = useWeekNavigation();
+  const { week, navigate, weekCounts } = useWeekNavigation();
   const filtersQuery = useFiltersQuery();
+  const fits = weekCounts?.week === week && weekCounts.filtersQuery === filtersQuery;
   const [expanded, setExpanded] = useState(false);
   const panelId = useId();
 
@@ -63,7 +64,7 @@ function PhoneWeekPicker({ today, leading }: { readonly today: CalendarDay; read
               week={week}
               today={today}
               onNavigate={navigate}
-              dayCounts={dayCounts?.week === week ? dayCounts.counts : undefined}
+              dayCounts={fits ? weekCounts.days : undefined}
             />
             <WeekArrow direction={1} week={week} onNavigate={navigate} compact />
           </div>
@@ -74,7 +75,11 @@ function PhoneWeekPicker({ today, leading }: { readonly today: CalendarDay; read
 }
 
 function ShellContent({ today, children }: SchoolsShellProps) {
-  const { week, navigate, count, pending } = useWeekNavigation();
+  const { week, navigate, weekCounts } = useWeekNavigation();
+  const filtersQuery = useFiltersQuery();
+  // The page's count once it reports this week; until then, optimistically, the sum of month counts already in the browser
+  const fits = weekCounts?.week === week && weekCounts.filtersQuery === filtersQuery;
+  const count = fits ? weekCounts.total : cachedWeekTotal(week, filtersQuery);
   const range = { from: week, to: addDays(week, 6) };
   return (
     <div className={styles.split}>
@@ -98,7 +103,7 @@ function ShellContent({ today, children }: SchoolsShellProps) {
             {formatDay(week, 'LLLL yyyy')}
             <span className={styles.rangeLabel}>
               {formatRangeLabel(range)}
-              {count !== null && !pending ? (
+              {count !== null ? (
                 <>
                   {' · '}
                   <span className={styles.count}>{formatCount(count)}</span>

@@ -27,7 +27,12 @@ export default async function WeekPage({ params, searchParams }: PageProps<'/dla
   return (
     <>
       <WeekMapPoints points={schedule.mapPoints} focus={schedule.mapFocus} />
-      <WeekCount week={week as CalendarDay} count={schedule.activeCount} dayCounts={dayCountsOf(schedule)} />
+      <WeekCount
+        week={week as CalendarDay}
+        filtersQuery={query}
+        total={schedule.activeCount}
+        days={dayCountsOf(schedule)}
+      />
       <StripControls days={schedule.weeks.flat().map(({ day }) => day)} />
       <WeekGrid schedule={schedule} />
     </>
