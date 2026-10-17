@@ -98,12 +98,18 @@
   .weekPicker {
     display: flex;
     flex-direction: column;
-    margin-bottom: var(--space-4);
   }
 
-  /* A text button on the right, above the week row (or the whole month) */
+  /* "Więcej filtrów" on the left and "Pokaż kalendarz" on the right, above the week row (or the whole month) */
+  .pickerBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
   .calendarToggle {
-    align-self: flex-end;
+    margin-left: auto;
     min-height: 40px;
     padding: 0;
     border: 0;

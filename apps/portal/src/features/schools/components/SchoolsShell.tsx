@@ -23,22 +23,25 @@ interface SchoolsShellProps {
   readonly children: ReactNode;
 }
 
-/** Phones: the shown week's row of the calendar, swapped for the whole month on demand. */
-function PhoneWeekPicker({ today }: { readonly today: CalendarDay }) {
+/** Phones: the shown week's row of the calendar, swapped for the whole month on demand; `leading` shares the button row. */
+function PhoneWeekPicker({ today, leading }: { readonly today: CalendarDay; readonly leading?: ReactNode }) {
   const { week, navigate } = useWeekNavigation();
   const [expanded, setExpanded] = useState(false);
   const panelId = useId();
   return (
     <div className={styles.weekPicker}>
-      <button
-        type="button"
-        className={styles.calendarToggle}
-        aria-expanded={expanded}
-        aria-controls={panelId}
-        onClick={() => setExpanded((value) => !value)}
-      >
-        {expanded ? SCHOOLS_LABELS.calendarHide : SCHOOLS_LABELS.calendarShow}
-      </button>
+      <div className={styles.pickerBar}>
+        {leading}
+        <button
+          type="button"
+          className={styles.calendarToggle}
+          aria-expanded={expanded}
+          aria-controls={panelId}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? SCHOOLS_LABELS.calendarHide : SCHOOLS_LABELS.calendarShow}
+        </button>
+      </div>
       <div id={panelId}>
         {expanded ? (
           <MonthCalendar week={week} today={today} onNavigate={navigate} />
@@ -84,8 +87,7 @@ function ShellContent({ today, children }: SchoolsShellProps) {
           </span>
         </div>
         <SchoolFilters placement="main" />
-        <AdvancedFiltersSheet />
-        <PhoneWeekPicker today={today} />
+        <PhoneWeekPicker today={today} leading={<AdvancedFiltersSheet />} />
         <div className={styles.strip}>
           <WeekArea>{children}</WeekArea>
         </div>
