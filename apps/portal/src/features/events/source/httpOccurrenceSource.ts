@@ -58,10 +58,16 @@ async function readChunk(url: string, cache?: RequestCache) {
   return occurrencesResponseSchema.safeParse(body);
 }
 
-async function fetchChunk(eventsApiUrl: string, range: DateRange, forSchools: boolean): Promise<OccurrenceListing[]> {
+async function fetchChunk(
+  eventsApiUrl: string,
+  range: DateRange,
+  forSchools: boolean,
+  filters: Readonly<Record<string, readonly string[]>>,
+): Promise<OccurrenceListing[]> {
   const params = new URLSearchParams({ from: range.from, to: range.to });
   // Only set when needed, so general-programme URLs (and their cache entries) stay as they were
   if (forSchools) params.set('forSchools', 'true');
+  for (const [param, values] of Object.entries(filters)) params.set(param, values.join(','));
   const url = `${eventsApiUrl}/occurrences?${params}`;
 
   try {
@@ -88,16 +94,18 @@ async function fetchChunk(eventsApiUrl: string, range: DateRange, forSchools: bo
 
 export interface HttpOccurrenceSourceOptions {
   readonly forSchools?: boolean;
+  /** Prototype: school filters as extra query params; only MSW applies them, the real API ignores them. */
+  readonly filters?: Readonly<Record<string, readonly string[]>>;
 }
 
 export function createHttpOccurrenceSource(
   eventsApiUrl: string,
-  { forSchools = false }: HttpOccurrenceSourceOptions = {},
+  { forSchools = false, filters = {} }: HttpOccurrenceSourceOptions = {},
 ): OccurrenceSource {
   return {
     async listOccurrences(range) {
       const chunks = await Promise.all(
-        splitIntoChunks(range).map((chunk) => fetchChunk(eventsApiUrl, chunk, forSchools)),
+        splitIntoChunks(range).map((chunk) => fetchChunk(eventsApiUrl, chunk, forSchools, filters)),
       );
       return dedupeByOccurrenceId(chunks.flat()).sort(compareListings);
     },

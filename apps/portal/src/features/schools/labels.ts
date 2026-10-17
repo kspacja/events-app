@@ -5,6 +5,13 @@ export const SCHOOLS_LABELS = {
   calendarHide: 'Ukryj kalendarz',
 } as const;
 
+export const FILTER_LABELS = {
+  main: 'Filtry',
+  advanced: 'Więcej filtrów',
+  clear: 'Wyczyść filtry',
+  done: 'Gotowe',
+} as const;
+
 export const CALENDAR_LABELS = {
   region: 'Kalendarz miesiąca',
   previousMonth: 'Poprzedni miesiąc',

@@ -156,6 +156,11 @@
     gap: var(--space-3);
   }
 
+  /* Like the map: a toggle button inside joins the button row and its panel stacks below */
+  .header.split .aside {
+    display: contents;
+  }
+
   /* The map's button and panel join the sidebar row, so both buttons sit side by side and the panels stack below */
   .header.split .map {
     display: contents;

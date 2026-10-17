@@ -19,6 +19,8 @@ interface HeaderProps {
   readonly timeLabel?: string;
   readonly countLabel: ReactNode;
   readonly map?: ReactNode;
+  /** Split layout only: more sidebar content between the controls and the map, e.g. filters. */
+  readonly aside?: ReactNode;
   /** `split`: the heading on top, controls and map in a left column, the summary in the right one. */
   readonly layout?: 'stacked' | 'split';
   /** Split layout only: on mobile the controls sit behind a button with these labels. */
@@ -34,6 +36,7 @@ export function Header({
   timeLabel,
   countLabel,
   map,
+  aside,
   layout = 'stacked',
   controlsLabels,
 }: HeaderProps) {
@@ -48,6 +51,7 @@ export function Header({
           ) : (
             controls
           )}
+          {aside ? <div className={styles.aside}>{aside}</div> : null}
           {map ? <div className={styles.map}>{map}</div> : null}
         </div>
         <div className={styles.main}>

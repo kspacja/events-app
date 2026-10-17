@@ -13,7 +13,7 @@ const NOW = new Date('2030-01-09T12:00:00Z');
 const FIRST_MONDAY = mondayOf('2030-01-09');
 const WEEK = { from: FIRST_MONDAY, to: addDays(FIRST_MONDAY, 6) };
 const WEEKS = 5;
-const OCCURRENCES_IN_FIVE_WEEKS = 124;
+const OCCURRENCES_IN_FIVE_WEEKS = 164;
 const ALL_IN_FIRST_WEEK = SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK + SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK;
 
 const listingsIn = (data: EventsData, range: DateRange) =>

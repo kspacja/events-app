@@ -16,6 +16,7 @@ import {
   type CalendarWeek,
 } from '../monthCalendar';
 import { schoolsHref } from '../schoolsHref';
+import { useFiltersQuery } from '../filtersQueryContext';
 import { DayMarkers } from './DayMarkers';
 import styles from './MonthCalendar.module.css';
 
@@ -50,6 +51,7 @@ function DayCell({
   readonly month: CalendarMonth;
   readonly onNavigate?: (week: CalendarDay, anchor: string) => void;
 }) {
+  const filtersQuery = useFiltersQuery();
   const number = formatDay(cell.day, 'd');
   const date = formatDay(cell.day, 'EEEE, d MMMM');
   const className = [styles.day, cell.inMonth ? '' : styles.outside, cell.isToday ? styles.today : '']
@@ -69,7 +71,7 @@ function DayCell({
     <DayJump
       day={cell.day}
       shownWeek={shownWeek}
-      href={schoolsHref(mondayOf(cell.day), dayDomId(cell.day))}
+      href={schoolsHref(mondayOf(cell.day), dayDomId(cell.day), filtersQuery)}
       onNavigate={onNavigate ? () => onNavigate(mondayOf(cell.day), dayDomId(cell.day)) : undefined}
       className={className}
       aria-current={cell.isToday ? 'date' : undefined}

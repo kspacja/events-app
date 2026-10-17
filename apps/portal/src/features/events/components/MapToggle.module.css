@@ -46,3 +46,66 @@
     display: none;
   }
 }
+
+/* Desktop dialog mode: the button is always there and the map opens in a modal */
+.dialogButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-md);
+  cursor: pointer;
+}
+
+.dialogButton:hover {
+  border-color: var(--color-accent);
+}
+
+.dialog {
+  width: min(1100px, 90vw);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.dialog::backdrop {
+  background: var(--color-backdrop);
+}
+
+.dialogPanel {
+  position: relative;
+  height: min(720px, 80vh);
+  margin: 0;
+  background: var(--color-bg-subtle);
+}
+
+.close {
+  position: absolute;
+  z-index: 2;
+  top: var(--space-3);
+  left: var(--space-3);
+  height: 36px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.dialogButton:focus-visible,
+.close:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}

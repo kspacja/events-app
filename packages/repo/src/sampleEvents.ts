@@ -132,6 +132,17 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'wro-school-walk', title: 'Spacer historyczny po Rynku', categories: [MOVEMENT], venue: RYNEK, dayOffset: 2, time: '12:30', price: free, forSchools: true },
   { id: 'gdn-school-port', title: 'Lekcja w porcie', categories: [MOVEMENT], venue: DLUGIE_POBRZEZE, dayOffset: 3, time: '09:30', forSchools: true },
   { id: 'poz-school-photo', title: 'Fotografia dla klas 7–8', categories: [WORKSHOPS, ART], venue: GALERIA_JEZYCE, dayOffset: 4, time: '11:00', price: paid(10), forSchools: true },
+  // More school events, so the schools page filters have something to narrow down
+  { id: 'wro-school-theatre', title: 'Teatrzyk dla przedszkolaków', categories: [ART], venue: OLBIN, dayOffset: 0, time: '09:30', price: free, forSchools: true },
+  { id: 'wro-school-botany', title: 'Lekcja biologii nad Odrą', categories: [MOVEMENT], venue: WYSPA_SLODOWA, dayOffset: 0, time: '11:00', price: free, forSchools: true },
+  { id: 'krk-school-maths', title: 'Matematyka w grach planszowych', categories: [WORKSHOPS], venue: KAZIMIERZ, dayOffset: 1, time: '11:00', price: paid(8), forSchools: true },
+  { id: 'gdn-school-physics', title: 'Fizyka na plaży: fale i dźwięk', categories: [WORKSHOPS], venue: PLAZA_JELITKOWO, dayOffset: 1, time: '10:00', price: free, forSchools: true },
+  { id: 'gdn-school-film', title: 'Kino szkolne: historia Gdańska', categories: [FILM], venue: DLUGIE_POBRZEZE, dayOffset: 1, time: '12:00', price: paid(12), forSchools: true },
+  { id: 'wro-school-sports', title: 'Dzień sportu szkolnego', categories: [MOVEMENT], venue: OSTROW_TUMSKI_BRZEG, dayOffset: 3, time: '09:00', price: free, forSchools: true },
+  { id: 'wro-school-coding', title: 'Programowanie robotów', categories: [WORKSHOPS], venue: SRODMIESCIE, dayOffset: 3, time: '10:00', price: paid(20), forSchools: true },
+  { id: 'poz-school-writing', title: 'Warsztaty pisarskie z poetką', categories: [MEETUPS], venue: STARY_RYNEK, dayOffset: 3, time: '12:00', price: free, forSchools: true },
+  { id: 'wro-school-chemistry', title: 'Pokazy chemiczne', categories: [WORKSHOPS], venue: HALA_STULECIA, dayOffset: 4, time: '09:00', price: paid(10), forSchools: true },
+  { id: 'krk-school-english', title: 'Spacer po Krakowie po angielsku', categories: [MOVEMENT], venue: PLAC_NOWY, dayOffset: 4, time: '10:30', price: paid(15), forSchools: true },
 ];
 
 // Every template occurs in the first week, so these are the first week's sizes

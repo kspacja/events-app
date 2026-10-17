@@ -1,0 +1,294 @@
+.filtersContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+/* Advanced filters stack, with "clear" under them; the filters keep the full width so a long row scrolls inside it */
+.filtersContainer:has([data-placement='advanced']) {
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 0;
+}
+
+.filtersContainer:has([data-placement='advanced']) .clear {
+  align-self: flex-start;
+}
+
+/* Main filters: the filters, then "clear" right after them; on wide screens both stay packed at the start */
+.filtersContainer:has([data-placement='main']) {
+  display: grid;
+  /* max-content, not auto: an auto column would soak up the spare width and push "clear" away */
+  grid-template-columns: minmax(0, max-content) max-content;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  transition: opacity 150ms ease;
+}
+
+.filters[data-pending] {
+  opacity: 0.6;
+}
+
+/* A column per main filter, at its natural width while it fits; when space runs short every column shrinks alike */
+.filters[data-placement='main'] {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, max-content);
+  gap: var(--space-3);
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filters[data-placement='main'] .group {
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--space-3);
+
+  &:after {
+    content: '';
+    display: block;
+    height: 5px;
+    width: 5px;
+    border-radius: 50%;
+    background: var(--color-accent-strong);
+  }
+
+  &:last-child:after {
+    display: none;
+  }
+}
+
+.legend {
+  float: left;
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.options {
+  display: flex;
+  gap: var(--space-1-5);
+}
+
+.filters[data-placement='main'] .options{
+  overflow-x: auto;
+}
+
+/* Chips that do not fit fade out at the right edge until the row is scrolled to its end */
+.options[data-fade] {
+  mask-image: linear-gradient(to right, #000 calc(100% - var(--space-10)), transparent);
+}
+
+.filters[data-placement='advanced'] .options {
+  flex-wrap: wrap;
+}
+
+.option {
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  white-space: nowrap;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.option:hover {
+  border-color: var(--color-accent);
+}
+
+.option[aria-pressed='true'] {
+  border-color: var(--color-accent-strong);
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+}
+
+.option:focus-visible,
+.clear:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.clear {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent-strong);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .filtersContainer:has([data-placement='main']) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .filters[data-placement='main'] {
+    grid-auto-flow: row;
+    /* Full width, so a long row scrolls inside it instead of running off the screen */
+    grid-auto-columns: minmax(0, 1fr);
+  }
+
+  .filters[data-placement='main'] .group {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  /* The row takes the group's width and scrolls inside it, instead of running off the screen */
+  .filters {
+    min-width: 0;
+  }
+
+  .filters[data-placement] .group {
+    align-items: stretch;
+  }
+
+  /* On phones every filter is a single scrolling row, the advanced ones too */
+  .filters[data-placement='advanced'] .options {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  /* Stacked groups need no separator dot */
+  .filters[data-placement='main'] .group::after {
+    display: none;
+  }
+
+  .option {
+    min-height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filters,
+  .option {
+    transition: none;
+  }
+}
+
+/* Advanced filters in a bottom sheet: phones only */
+.sheetButton {
+  display: none;
+}
+
+.count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--space-1-5);
+  border-radius: var(--radius-full);
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+  font-size: var(--text-xs);
+}
+
+.sheet {
+  position: fixed;
+  inset: auto 0 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 85vh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.sheet[open] {
+  animation: slide-up 200ms ease-out;
+}
+
+.sheet::backdrop {
+  background: var(--color-backdrop);
+}
+
+.sheetBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom));
+}
+
+.done {
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sheetButton:focus-visible,
+.done:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (max-width: 768px) {
+  /* A text button; the min-height keeps a comfortable tap target */
+  .sheetButton {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    align-self: flex-start;
+    min-height: 40px;
+    margin-bottom: var(--space-4);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-accent-strong);
+    font: inherit;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet[open] {
+    animation: none;
+  }
+}

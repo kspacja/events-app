@@ -9,6 +9,7 @@ import { SkipLink } from '@/features/events/components/SkipLink';
 import { StripSkeleton } from '@/features/events/components/WeekSkeleton';
 import type { MapPoint } from '@/features/events/mapView';
 import { schoolsHref } from '../schoolsHref';
+import { useFiltersQuery } from '../filtersQueryContext';
 import { weekFromPath } from '../weekParam';
 
 interface WeekMapState {
@@ -48,13 +49,14 @@ export function WeekNavigationProvider({ today, children }: WeekNavigationProvid
   const [week, setOptimisticWeek] = useOptimistic(weekFromPath(typeof raw === 'string' ? raw : '', today).week);
   const [pending, setPending] = useOptimistic(false);
   const [map, setMap] = useState(NO_POINTS);
+  const filtersQuery = useFiltersQuery();
 
   // Both optimistic values hold until the navigation commits the new week
   function navigate(target: CalendarDay, anchor?: string) {
     startTransition(() => {
       setOptimisticWeek(target);
       setPending(true);
-      router.push(schoolsHref(target, anchor), { scroll: false });
+      router.push(schoolsHref(target, anchor, filtersQuery), { scroll: false });
     });
   }
 
@@ -89,7 +91,7 @@ export function WeekMap() {
   return (
     <>
       <SkipLink />
-      <MapToggle>
+      <MapToggle desktop="dialog">
         <EventsMapLoader points={map.points} focus={map.focus} />
       </MapToggle>
     </>

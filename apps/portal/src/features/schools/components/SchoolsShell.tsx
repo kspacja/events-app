@@ -1,13 +1,17 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { addDays, type CalendarDay } from '@events/time';
 import { Header } from '@/features/events/components/Header';
 import { OccurrenceSelectionProvider } from '@/features/events/OccurrenceSelectionProvider';
 import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatDay } from '@/lib/format';
 import { SCHOOLS_LABELS } from '../labels';
+import { FiltersQueryContext } from '../filtersQueryContext';
+import { filtersQuery, parseFilters } from '../schoolFilters';
 import { MonthCalendar } from './MonthCalendar';
+import { AdvancedFiltersSheet, SchoolFilters } from './SchoolFilters';
 import { WeekArea, WeekMap, WeekNavigationProvider, useWeekNavigation } from './WeekNavigation';
 import { WeekArrow } from './WeekArrow';
 import styles from './SchoolsShell.module.css';
@@ -29,6 +33,11 @@ function ShellContent({ today, children }: SchoolsShellProps) {
         rangeLabel={formatRangeLabel(range)}
         countLabel={null}
         map={<WeekMap />}
+        aside={
+          <div className={styles.advancedFilters}>
+            <SchoolFilters placement="advanced" />
+          </div>
+        }
         controlsLabels={{ show: SCHOOLS_LABELS.calendarShow, hide: SCHOOLS_LABELS.calendarHide }}
       />
       <div className={styles.program}>
@@ -40,6 +49,8 @@ function ShellContent({ today, children }: SchoolsShellProps) {
           </span>
           <WeekArrow direction={1} week={week} onNavigate={navigate} />
         </div>
+        <SchoolFilters placement="main" />
+        <AdvancedFiltersSheet />
         <div className={styles.strip}>
           <WeekArea>{children}</WeekArea>
         </div>
@@ -50,11 +61,14 @@ function ShellContent({ today, children }: SchoolsShellProps) {
 
 /** Everything on the schools page except the week itself; it stays mounted while the week changes. */
 export function SchoolsShell({ today, children }: SchoolsShellProps) {
+  const query = filtersQuery(parseFilters(new URLSearchParams(useSearchParams())));
   return (
-    <WeekNavigationProvider today={today}>
-      <OccurrenceSelectionProvider>
-        <ShellContent today={today}>{children}</ShellContent>
-      </OccurrenceSelectionProvider>
-    </WeekNavigationProvider>
+    <FiltersQueryContext value={query}>
+      <WeekNavigationProvider today={today}>
+        <OccurrenceSelectionProvider>
+          <ShellContent today={today}>{children}</ShellContent>
+        </OccurrenceSelectionProvider>
+      </WeekNavigationProvider>
+    </FiltersQueryContext>
   );
 }

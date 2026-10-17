@@ -5,6 +5,7 @@ import type { MouseEvent } from 'react';
 import type { CalendarDay } from '@events/time';
 import { CALENDAR_LABELS } from '../labels';
 import { schoolsHref } from '../schoolsHref';
+import { useFiltersQuery } from '../filtersQueryContext';
 import { shiftWeek } from '../weekShift';
 import styles from './WeekArrow.module.css';
 
@@ -19,6 +20,7 @@ interface WeekArrowProps {
 /** Moves the shown week by one; the scroll position stays put. */
 export function WeekArrow({ direction, week, onNavigate }: WeekArrowProps) {
   const target = shiftWeek(week, direction);
+  const filtersQuery = useFiltersQuery();
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     const isModified = event.metaKey || event.ctrlKey || event.shiftKey;
@@ -28,7 +30,7 @@ export function WeekArrow({ direction, week, onNavigate }: WeekArrowProps) {
   }
 
   return (
-    <Link href={schoolsHref(target)} scroll={false} className={styles.arrow} onClick={handleClick}>
+    <Link href={schoolsHref(target, undefined, filtersQuery)} scroll={false} className={styles.arrow} onClick={handleClick}>
       <span className={styles.sign} aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>
       <span className={styles.label}>{direction < 0 ? CALENDAR_LABELS.previousWeek : CALENDAR_LABELS.nextWeek}</span>
     </Link>

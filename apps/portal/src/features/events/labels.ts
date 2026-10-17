@@ -46,6 +46,8 @@ export const MAP_LABELS = {
   region: 'Mapa wydarzeń',
   show: 'Mapa',
   hide: 'Ukryj mapę',
+  open: 'Pokaż mapę',
+  close: 'Zamknij mapę',
   description: 'Te same wydarzenia są dostępne na liście poniżej.',
   skipToList: 'Przejdź do listy wydarzeń',
 } as const;

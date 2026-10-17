@@ -2,14 +2,15 @@ import type { CalendarMonth } from './monthCalendar';
 
 export type MonthCounts = Readonly<Record<string, number>>;
 
-// One request per month, shared by every day of the grid and by later visits within the page
-const cache = new Map<CalendarMonth, Promise<MonthCounts>>();
+// One request per month and filters, shared by every day of the grid and by later visits within the page
+const cache = new Map<string, Promise<MonthCounts>>();
 
 /** Browser only: the markers are missing, not broken, when the counts cannot be loaded. */
-export function loadMonthCounts(month: CalendarMonth): Promise<MonthCounts> {
-  const cached = cache.get(month);
+export function loadMonthCounts(month: CalendarMonth, filtersQuery = ''): Promise<MonthCounts> {
+  const key = `${month}${filtersQuery}`;
+  const cached = cache.get(key);
   if (cached) return cached;
-  const url = new URL('/api/school-counts', window.location.origin);
+  const url = new URL(`/api/school-counts${filtersQuery}`, window.location.origin);
   url.searchParams.set('month', month);
   const loaded = fetch(url)
     .then((response) => {
@@ -17,9 +18,9 @@ export function loadMonthCounts(month: CalendarMonth): Promise<MonthCounts> {
       return response.json() as Promise<MonthCounts>;
     })
     .catch(() => {
-      cache.delete(month);
+      cache.delete(key);
       return {};
     });
-  cache.set(month, loaded);
+  cache.set(key, loaded);
   return loaded;
 }

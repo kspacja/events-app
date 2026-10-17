@@ -6,6 +6,7 @@ import { formatCount } from '@/features/events/schedule';
 import { CALENDAR_LABELS } from '../labels';
 import { dayMarker, type CalendarMonth } from '../monthCalendar';
 import { loadMonthCounts, type MonthCounts } from '../monthCounts';
+import { useFiltersQuery } from '../filtersQueryContext';
 import styles from './DayMarkers.module.css';
 
 interface DayMarkersProps {
@@ -14,16 +15,17 @@ interface DayMarkersProps {
 }
 
 function useMonthCounts(month: CalendarMonth): MonthCounts | null {
+  const filtersQuery = useFiltersQuery();
   const [counts, setCounts] = useState<MonthCounts | null>(null);
   useEffect(() => {
     let active = true;
-    void loadMonthCounts(month).then((loaded) => {
+    void loadMonthCounts(month, filtersQuery).then((loaded) => {
       if (active) setCounts(loaded);
     });
     return () => {
       active = false;
     };
-  }, [month]);
+  }, [month, filtersQuery]);
   return counts;
 }
 
