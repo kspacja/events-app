@@ -10,7 +10,7 @@
     --strip-bleed-start: var(--space-5);
     --strip-shadow-room: 0px;
     display: grid;
-    grid-template-columns: 250px minmax(0, 1fr);
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
     /* The sidebar spans both rows; a flexible second row takes its extra height, so a short week (the skeleton) never pushes the week header down */
     grid-template-rows: auto 1fr;
     column-gap: var(--space-5);

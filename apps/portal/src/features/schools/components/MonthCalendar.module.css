@@ -149,3 +149,19 @@
     border-radius: 50%;
   }
 }
+
+/* Narrow desktops: shorter cells so the sidebar fits more under the calendar */
+@media (min-width: 769px) and (max-width: 1280px) {
+  .day {
+    min-height: 40px;
+    padding-top: var(--space-1);
+  }
+
+  /* The cells are narrower too, so the ring is sized from the centre to stay a circle */
+  .today:before {
+    left: calc(50% - 11px);
+    right: calc(50% - 11px);
+    top: var(--space-0-5);
+    bottom: calc(var(--space-unit) * 4.5);
+  }
+}

@@ -29,7 +29,9 @@
 
 .image {
   position: relative;
-  height: 104px;
+  /* Shrinks with a narrower day column; 212/104 is the size at the full 240px column */
+  aspect-ratio: 212 / 104;
+  max-height: 104px;
   overflow: hidden;
   border-radius: var(--radius-card);
   background: var(--color-bg-subtle);

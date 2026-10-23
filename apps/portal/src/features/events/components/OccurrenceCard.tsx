@@ -16,6 +16,8 @@ export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) 
   const { title, imageUrl } = event;
   const main = mainCategory(event);
 
+  console.log(event);
+
   return (
     <article
       id={occurrenceDomId(occurrenceId)}
