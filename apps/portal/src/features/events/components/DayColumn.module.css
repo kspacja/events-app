@@ -17,7 +17,8 @@
 
 /* A day that has passed: still there, but faded */
 .day[data-past] > * {
-  opacity: 0.4;
+  opacity: 0.1;
+  filter: grayscale(100%);
 }
 
 .day[data-weekend='true'] {

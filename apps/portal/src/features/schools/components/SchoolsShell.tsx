@@ -122,7 +122,7 @@ function ShellContent({ today, children }: SchoolsShellProps) {
           <WeekArea>{children}</WeekArea>
         </div>
       </div>
-      <WeekMapDialog />
+      <WeekMapDialog today={today} />
     </div>
   );
 }

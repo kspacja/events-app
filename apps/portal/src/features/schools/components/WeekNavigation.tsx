@@ -12,16 +12,21 @@ import {
   type ReactNode,
 } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import type { CalendarDay } from '@events/time';
+import { addDays, type CalendarDay } from '@events/time';
+import type { OccurrenceId } from '@events/contract/listing';
 import { EventsMapLoader } from '@/features/events/components/EventsMapLoader';
+import { revealOccurrence } from '@/features/events/components/DayStrip';
 import { MAP_LABELS } from '@/features/events/labels';
 import { useOccurrenceSelection, useOccurrenceSelectionInstructions } from '@/features/events/OccurrenceSelectionProvider';
 import { StripSkeleton } from '@/features/events/components/WeekSkeleton';
 import type { MapPoint } from '@/features/events/mapView';
+import { formatRangeLabel } from '@/features/search/dateRange';
+import { formatDay } from '@/lib/format';
 import { schoolsHref } from '../schoolsHref';
 import { useFiltersQuery } from '../filtersQueryContext';
 import styles from './WeekMap.module.css';
 import { weekFromPath } from '../weekParam';
+import { WeekArrow } from './WeekArrow';
 
 interface WeekMapState {
   readonly points: readonly MapPoint[];
@@ -114,8 +119,8 @@ export function WeekArea({ children }: { readonly children: ReactNode }) {
 }
 
 /** One map dialog for the page, opened by any MapButton or by a card's pin; it stays mounted across weeks. */
-export function WeekMapDialog() {
-  const { map, mapOpen, setMapOpen } = useWeekNavigation();
+export function WeekMapDialog({ today }: { readonly today: CalendarDay }) {
+  const { week, pending, navigate, map, mapOpen, setMapOpen } = useWeekNavigation();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const selection = useOccurrenceSelection();
   const { expandMap } = useOccurrenceSelectionInstructions();
@@ -134,6 +139,13 @@ export function WeekMapDialog() {
     if (!mapOpen && dialog.open) dialog.close();
   }, [mapOpen]);
 
+  function showInWeek(occurrenceId: OccurrenceId) {
+    selection.close();
+    setMapOpen(false);
+    // After the closed dialog has handed focus back to its opener
+    requestAnimationFrame(() => revealOccurrence(occurrenceId));
+  }
+
   return (
     <dialog
       ref={dialogRef}
@@ -145,11 +157,21 @@ export function WeekMapDialog() {
         if (event.target === event.currentTarget) setMapOpen(false);
       }}
     >
-      <button type="button" className={styles.close} onClick={() => setMapOpen(false)}>
-        {MAP_LABELS.close}
-      </button>
-      <figure className={styles.panel}>
-        {mapOpen ? <EventsMapLoader points={map.points} focus={map.focus} /> : null}
+      <div className={styles.bar}>
+        <button type="button" className={styles.close} onClick={() => setMapOpen(false)}>
+          {MAP_LABELS.close}
+        </button>
+        <div className={styles.weekNav}>
+          <WeekArrow direction={-1} week={week} onNavigate={navigate} today={today} compact />
+          <span className={styles.week} aria-live="polite">
+            {formatDay(week, 'LLLL yyyy')}
+            <span className={styles.range}>{formatRangeLabel({ from: week, to: addDays(week, 6) })}</span>
+          </span>
+          <WeekArrow direction={1} week={week} onNavigate={navigate} today={today} compact />
+        </div>
+      </div>
+      <figure className={styles.panel} aria-busy={pending}>
+        {mapOpen ? <EventsMapLoader points={map.points} focus={map.focus} onShowInWeek={showInWeek} /> : null}
       </figure>
     </dialog>
   );

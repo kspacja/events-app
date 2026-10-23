@@ -4,6 +4,29 @@
   gap: var(--space-1);
 }
 
+.card:focus {
+  outline: none;
+}
+
+/* A card reached from the map flashes once, so the eye finds it */
+.card[data-revealed='true'] {
+  animation: revealed 2s ease-out;
+  outline-offset: 8px;
+}
+
+@keyframes revealed {
+  0%,
+  40% {
+    border-radius: var(--radius-card);
+    outline: 2px solid var(--color-accent);
+  }
+
+  100% {
+    border-radius: var(--radius-card);
+    outline: 2px solid transparent;
+  }
+}
+
 .image {
   position: relative;
   height: 104px;

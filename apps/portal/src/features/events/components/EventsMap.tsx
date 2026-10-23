@@ -16,7 +16,8 @@ import {
   type MapRef,
 } from 'react-map-gl/maplibre';
 import type { FeatureCollection, Point } from 'geojson';
-import { MAP_CONTROL_LOCALE } from '../labels';
+import { MAP_CONTROL_LOCALE, MAP_LABELS } from '../labels';
+import type { OccurrenceId } from '@events/contract/listing';
 import { onThemeChange } from '@/features/theme-lab/themeChange';
 import { viewFor, type MapPoint } from '../mapView';
 import styles from './EventsMap.module.css';
@@ -105,9 +106,11 @@ type MapLayers = ReturnType<typeof layersFor>;
 interface EventsMapProps {
   readonly points: readonly MapPoint[];
   readonly focus: readonly MapPoint[];
+  /** Makes the popup's title a button that takes the user to the occurrence in the list. */
+  readonly onShowInWeek?: (occurrenceId: OccurrenceId) => void;
 }
 
-export function EventsMap({ points, focus }: EventsMapProps) {
+export function EventsMap({ points, focus, onShowInWeek }: EventsMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [cursor, setCursor] = useState('');
   // Built on load and on theme change only, so the layer props stay referentially stable
@@ -231,7 +234,16 @@ export function EventsMap({ points, focus }: EventsMapProps) {
           className={styles.popup}
         >
           <div role="dialog" aria-label={selected.title}>
-            <p className={styles.title}>{selected.title}</p>
+            <p className={styles.title}>
+              {onShowInWeek ? (
+                <button type="button" className={styles.titleButton} onClick={() => onShowInWeek(selected.occurrenceId)}>
+                  {selected.title}
+                  <span className="visually-hidden">{`, ${MAP_LABELS.showInWeek}`}</span>
+                </button>
+              ) : (
+                selected.title
+              )}
+            </p>
             <p className={styles.when}>
               {selected.date} · {selected.time}
             </p>

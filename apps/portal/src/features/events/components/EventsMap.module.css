@@ -23,6 +23,28 @@
   color: var(--color-text);
 }
 
+.titleButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.titleButton:hover {
+  color: var(--color-accent-strong);
+}
+
+.titleButton:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
 .when {
   margin: var(--space-1) 0 0;
   font-size: var(--text-sm);

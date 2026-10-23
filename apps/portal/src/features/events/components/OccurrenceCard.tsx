@@ -19,6 +19,7 @@ export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) 
   return (
     <article
       id={occurrenceDomId(occurrenceId)}
+      tabIndex={-1}
       className={styles.card}
       data-muted={muted}
     >

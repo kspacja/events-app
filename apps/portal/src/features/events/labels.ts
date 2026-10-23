@@ -48,6 +48,7 @@ export const MAP_LABELS = {
   hide: 'Ukryj mapę',
   open: 'Pokaż mapę',
   close: 'Zamknij mapę',
+  showInWeek: 'pokaż w programie tygodnia',
   description: 'Te same wydarzenia są dostępne na liście poniżej.',
   skipToList: 'Przejdź do listy wydarzeń',
 } as const;
