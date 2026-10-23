@@ -3,11 +3,11 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["EVENTS_API_URL", "API_MOCKING"],
+      "env": ["EVENTS_API_URL", "API_MOCKING", "ALLOW_PRODUCTION_MOCKING"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"]
     },
     "dev": {
-      "env": ["EVENTS_API_URL", "API_MOCKING"]
+      "env": ["EVENTS_API_URL", "API_MOCKING", "ALLOW_PRODUCTION_MOCKING"]
     }
   }
 }

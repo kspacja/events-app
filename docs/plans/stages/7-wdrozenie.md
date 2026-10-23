@@ -11,6 +11,11 @@
 - Projekt Vercel: Root Directory `apps/portal`, włączone „Include source files outside Root Directory” (pnpm workspace).
 - Zmienne w Vercelu, tylko dla Preview: `EVENTS_API_URL`, `API_MOCKING`. Pliki `.env*` lokalne nie trafiają na Vercel.
 
+## Zmiana decyzji (2026-10-23)
+
+- Produkcja (gałąź `main`) też stoi na mockach MSW. Reguła z `runtimeConfig.ts` przepuszcza `API_MOCKING=enabled` przy `VERCEL_ENV=production` tylko z osobną flagą `ALLOW_PRODUCTION_MOCKING=yes`; bez niej nadal 500.
+- Zmienne w Vercelu dla Production: `EVENTS_API_URL=http://api.events.local`, `API_MOCKING=enabled`, `ALLOW_PRODUCTION_MOCKING=yes`.
+
 ## Kroki
 
 1. Commit zmian etapu 3.5 (bez pusha, po zgodzie właściciela repo).

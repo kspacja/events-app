@@ -9,6 +9,7 @@ describe('parseRuntimeConfig', () => {
     ['a URL with mocking', { EVENTS_API_URL: API_URL, API_MOCKING: 'enabled' }, { eventsApiUrl: API_URL, mocking: true }],
     ['mocking is only the exact value "enabled"', { EVENTS_API_URL: API_URL, API_MOCKING: 'true' }, { eventsApiUrl: API_URL, mocking: false }],
     ['a URL in production', { EVENTS_API_URL: API_URL, VERCEL_ENV: 'production' }, { eventsApiUrl: API_URL, mocking: false }],
+    ['mocking in production when allowed', { EVENTS_API_URL: API_URL, API_MOCKING: 'enabled', VERCEL_ENV: 'production', ALLOW_PRODUCTION_MOCKING: 'yes' }, { eventsApiUrl: API_URL, mocking: true }],
     ['mocking outside production', { EVENTS_API_URL: API_URL, API_MOCKING: 'enabled', VERCEL_ENV: 'development' }, { eventsApiUrl: API_URL, mocking: true }],
   ];
 
@@ -22,6 +23,7 @@ describe('parseRuntimeConfig', () => {
     ['an invalid URL', { EVENTS_API_URL: 'not-a-url' }, 'EVENTS_API_URL'],
     ['a non-http URL', { EVENTS_API_URL: 'ftp://api.events.local' }, 'EVENTS_API_URL'],
     ['mocking in production', { EVENTS_API_URL: API_URL, API_MOCKING: 'enabled', VERCEL_ENV: 'production' }, 'API_MOCKING'],
+    ['mocking in production allowed only by the exact value "yes"', { EVENTS_API_URL: API_URL, API_MOCKING: 'enabled', VERCEL_ENV: 'production', ALLOW_PRODUCTION_MOCKING: 'true' }, 'API_MOCKING'],
   ];
 
   it.each(rejected)('rejects %s', (_name, env, variable) => {

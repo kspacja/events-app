@@ -33,10 +33,10 @@ function problemsOf(error: z.ZodError): string[] {
   return error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`);
 }
 
-// Production (VERCEL_ENV, not NODE_ENV: local `next start` is also production) must never serve mocked data
+// Production (VERCEL_ENV, not NODE_ENV: local `next start` is also production) serves mocked data only on an explicit opt-in
 function productionProblems(env: Readonly<Record<string, string | undefined>>): string[] {
-  if (env.VERCEL_ENV === 'production' && env.API_MOCKING === 'enabled') {
-    return ['API_MOCKING: enabled is not allowed in production'];
+  if (env.VERCEL_ENV === 'production' && env.API_MOCKING === 'enabled' && env.ALLOW_PRODUCTION_MOCKING !== 'yes') {
+    return ['API_MOCKING: enabled is not allowed in production without ALLOW_PRODUCTION_MOCKING=yes'];
   }
   return [];
 }

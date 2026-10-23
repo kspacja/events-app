@@ -66,10 +66,11 @@ Domyślnie portal działa na MSW i nie potrzebuje bazy. Żeby czytał Terminy z 
 | --- | --- | --- |
 | `EVENTS_API_URL` | `http://api.events.local` (MSW) albo `http://localhost:3001` (lokalne `apps/api`) | adres API, z którego portal pobiera Terminy. Wymagany, musi być poprawnym adresem http(s). Brak wartości domyślnej. |
 | `API_MOCKING` | `enabled` | uruchamia MSW, który w procesie odpowiada pod `EVENTS_API_URL`. Bez tego portal pyta prawdziwe API pod `EVENTS_API_URL` — zob. „Portal na lokalnym API”. |
+| `ALLOW_PRODUCTION_MOCKING` | `yes` | tylko na produkcji Vercela (`VERCEL_ENV=production`): pozwala na `API_MOCKING=enabled`. Poza produkcją bez znaczenia. |
 
 Konfiguracja jest walidowana przy starcie serwera, w hooku instrumentacji (`apps/portal/src/config/runtimeConfig.ts`). Błędna konfiguracja nie zatrzymuje serwera (Next 16): serwer działa dalej i odpowiada 500, a w logu jest czytelny komunikat z nazwami zmiennych (bez ich wartości). Na Vercel błąd ujawni się więc w czasie działania (po deployu), nie podczas builda.
 
-Reguła produkcyjna: gdy `VERCEL_ENV=production`, wartość `API_MOCKING=enabled` jest odrzucana (500 z komunikatem), żeby błędny deploy nie serwował po cichu przykładowych danych. Reguła nie opiera się na `NODE_ENV`, bo lokalny `next start` też jest „produkcyjny”.
+Reguła produkcyjna: gdy `VERCEL_ENV=production`, wartość `API_MOCKING=enabled` jest odrzucana (500 z komunikatem), żeby błędny deploy nie serwował po cichu przykładowych danych — chyba że ustawiono też `ALLOW_PRODUCTION_MOCKING=yes` (produkcja świadomie na mockach). Reguła nie opiera się na `NODE_ENV`, bo lokalny `next start` też jest „produkcyjny”.
 
 Mock serwuje przykładowe dane (`@events/repo`: Kategorie, Miejsca, Wydarzenia i Terminy) względem bieżącego tygodnia (i 4 następnych), więc dane zawsze są „aktualne”. Mock tylko wybiera Terminy z Dób wydarzeń w zakresie; nie odtwarza logiki backendu. `@events/repo` to model Wydarzeń bez frameworka i bez bazy; tabele są w `apps/api` (schemat Postgresa `events`).
 
