@@ -27,3 +27,10 @@
 .disabled:hover {
   background: none;
 }
+
+/* Phones: the day row over the week has its own arrows */
+@media (max-width: 768px) {
+  .arrow {
+    display: none;
+  }
+}

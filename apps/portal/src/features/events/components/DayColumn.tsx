@@ -1,6 +1,7 @@
 import { DAY_NAMES, UI_LABELS } from '../labels';
 import type { ScheduleDay } from '../schedule';
 import { dayDomId } from '../scheduleDom';
+import { dayMarker } from '../dayMarker';
 import { OccurrenceCard } from './OccurrenceCard';
 import styles from './DayColumn.module.css';
 
@@ -16,6 +17,7 @@ export function DayColumn({
   isToday = false,
 }: DayColumnProps) {
   const dayOfMonth = String(Number(day.slice(8)));
+  const marker = dayMarker(entries.filter(({ active }) => active).length);
 
   return (
     <li
@@ -31,9 +33,20 @@ export function DayColumn({
           {DAY_NAMES[weekdayIndex]}
           {isToday ? <span className={styles.today}>{UI_LABELS.today}</span> : null}
         </span>
-        <time dateTime={day} className={styles.number}>
-          {dayOfMonth}
-        </time>
+        <span className={styles.numberRow}>
+          <time dateTime={day} className={styles.number}>
+            {dayOfMonth}
+          </time>
+          {/* The same dots as the month calendar; the list below says it in words */}
+          {marker ? (
+            <span className={styles.marker} aria-hidden="true">
+              {Array.from({ length: marker.dots }, (_, index) => (
+                <span key={index} className={styles.dot} />
+              ))}
+              {marker.more > 0 ? <span className={styles.more}>+{marker.more}</span> : null}
+            </span>
+          ) : null}
+        </span>
       </h2>
       {entries.length > 0 ? (
         <ul className={styles.events}>

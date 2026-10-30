@@ -1,6 +1,7 @@
 import type { CalendarDay } from '@events/time';
 import { formatCount, type Schedule } from '../schedule';
-import { DayTabs } from './DayTabs';
+import type { RangeLinks } from '@/features/search/components/RangeArrows';
+import { PhoneDayRow } from './PhoneDayRow';
 import { EventsMapLoader } from './EventsMapLoader';
 import { MapToggle } from './MapToggle';
 import { SkipLink } from './SkipLink';
@@ -30,16 +31,18 @@ export async function WeekMap({ schedule }: WeekPartProps) {
   );
 }
 
-export async function WeekStrip({ schedule, today }: WeekPartProps & { readonly today: CalendarDay }) {
+interface WeekStripProps extends WeekPartProps {
+  readonly today: CalendarDay;
+  readonly rangeLinks?: RangeLinks;
+}
+
+export async function WeekStrip({ schedule, today, rangeLinks }: WeekStripProps) {
   const resolved = await schedule;
   const days = resolved.weeks.flat();
   return (
     <>
       <div className={styles.phoneTabs}>
-        <DayTabs
-          days={days.map(({ day, weekdayIndex, entries }) => ({ day, weekdayIndex, count: entries.length }))}
-          today={today}
-        />
+        <PhoneDayRow weeks={resolved.weeks} today={today} links={rangeLinks} />
       </div>
       <div className={stripStyles.area}>
         <StripControls days={days.map(({ day }) => day)} />

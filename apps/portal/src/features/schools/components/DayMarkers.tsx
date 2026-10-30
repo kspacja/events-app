@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import type { CalendarDay } from '@events/time';
 import { formatCount } from '@/features/events/schedule';
 import { CALENDAR_LABELS } from '../labels';
-import { dayMarker, type CalendarMonth } from '../monthCalendar';
+import { calendarDayMarker } from '@/features/events/dayMarker';
+import type { CalendarMonth } from '../monthCalendar';
 import { loadMonthCounts, type MonthCounts } from '../monthCounts';
 import { useFiltersQuery } from '../filtersQueryContext';
 import styles from './DayMarkers.module.css';
@@ -42,7 +43,7 @@ function LoadedMarkers({ day, month }: { readonly day: CalendarDay; readonly mon
 }
 
 function Markers({ count }: { readonly count: number }) {
-  const marker = dayMarker(count);
+  const marker = calendarDayMarker(count);
   return (
     <>
       {marker ? (
@@ -51,6 +52,12 @@ function Markers({ count }: { readonly count: number }) {
             <span key={index} className={styles.dot} />
           ))}
           {marker.more > 0 ? <span className={styles.more}>+{marker.more}</span> : null}
+        </span>
+      ) : null}
+      {count > 0 ? (
+        <span className={styles.total} aria-hidden="true">
+          <span className={styles.smallDot} />
+          {count}
         </span>
       ) : null}
       <span className="visually-hidden">{`, ${count === 0 ? CALENDAR_LABELS.noEvents : formatCount(count)}`}</span>

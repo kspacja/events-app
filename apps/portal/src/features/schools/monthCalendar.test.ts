@@ -1,22 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { CalendarDay } from '@events/time';
-import { addMonths, buildMonthCalendar, countByDay, dayMarker, isCalendarMonth, monthOfWeek, weeksOf } from './monthCalendar';
+import { addMonths, buildMonthCalendar, countByDay, isCalendarMonth, monthOfWeek, weeksOf } from './monthCalendar';
 
 // Wednesday; October 2026 starts on a Thursday
 const TODAY: CalendarDay = '2026-10-14';
 const CURRENT_WEEK: CalendarDay = '2026-10-12';
-
-describe('dayMarker', () => {
-  it.each([
-    [0, null],
-    [1, { dots: 1, more: 0 }],
-    [4, { dots: 4, more: 0 }],
-    [5, { dots: 3, more: 2 }],
-    [12, { dots: 3, more: 9 }],
-  ])('marks %i events as %o', (count, marker) => {
-    expect(dayMarker(count)).toEqual(marker);
-  });
-});
 
 describe('months', () => {
   it.each(['2026-10', '2030-01'])('accepts %s', (value) => {

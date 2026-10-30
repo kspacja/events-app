@@ -64,10 +64,10 @@ describe('MonthCalendar', () => {
     );
   });
 
-  it('shows 3 dots and the rest as a number from 5 events on', async () => {
+  it('shows 1 dot and the rest as a number from 4 events on', async () => {
     await renderCalendar();
 
-    expect(await screen.findByRole('link', { name: /21 października/ })).toHaveTextContent('21+3');
+    expect(await screen.findByRole('link', { name: /21 października/ })).toHaveTextContent('21+5');
   });
 
   it('cannot go before the current month', async () => {

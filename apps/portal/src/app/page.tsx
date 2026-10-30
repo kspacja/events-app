@@ -6,7 +6,7 @@ import { EventsSection } from '@/features/events/components/EventsSection';
 import { createHttpOccurrenceSource } from '@/features/events/source/httpOccurrenceSource';
 import { parseSearchQuery } from '@/features/search/searchQuery';
 import { SearchSentence } from '@/features/search/components/SearchSentence';
-import { rangeArrows } from '@/features/search/components/RangeArrows';
+import { rangeArrows, rangeLinks } from '@/features/search/components/RangeArrows';
 import styles from './page.module.css';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
@@ -14,6 +14,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
   const now = new Date();
   const { date, time, notice } = parseSearchQuery(params, now);
   const today = currentEventDay(now);
+  const links = rangeLinks({ range: date.range, params, now });
 
   return (
     <>
@@ -23,7 +24,8 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
           source={createHttpOccurrenceSource(getRuntimeConfig().eventsApiUrl)}
           range={date.range}
           today={today}
-          rangeNavigation={rangeArrows({ range: date.range, params, now })}
+          rangeNavigation={rangeArrows(links)}
+          rangeLinks={links}
           time={time.window}
           sentence={<SearchSentence date={date} time={time} />}
           notice={notice}

@@ -1,0 +1,7 @@
+/* Arrows on both ends of the day rows, level with the last row's numbers, as on the schools page */
+.nav {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  align-items: end;
+  gap: var(--space-2);
+}

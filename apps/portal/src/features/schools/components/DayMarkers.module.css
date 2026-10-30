@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-0-5);
-  min-height: 8px;
+  height: 8px;
 }
 
 .dot {
@@ -16,4 +16,32 @@
   color: var(--color-accent-strong);
   font-size: var(--text-xs);
   font-weight: 600;
+}
+
+/* Narrow desktops: the calendar's cells are too tight for dots, so a small dot and the day's total */
+.total {
+  display: none;
+}
+
+@media (min-width: 769px) and (max-width: 1280px) {
+  .marker {
+    display: none;
+  }
+
+  .total {
+    display: flex;
+    align-items: center;
+    gap: var(--space-0-5);
+    height: 8px;
+    color: var(--color-accent-strong);
+    font-size: var(--text-xs);
+    font-weight: 600;
+  }
+}
+
+.smallDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-accent-strong);
 }

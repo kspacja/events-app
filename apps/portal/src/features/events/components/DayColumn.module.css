@@ -65,6 +65,33 @@
 }
 
 
+.numberRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Mid-height of the digits: on the baseline the dots read as a full stop or an ellipsis */
+.marker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.more {
+  color: var(--color-accent-strong);
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: 1;
+}
+
 .number {
   font-family: var(--font-heading);
   font-size: var(--text-display);
@@ -93,6 +120,11 @@
 }
 
 @media (max-width: 768px) {
+  /* Phones show the dots in the day row over the week instead */
+  .marker {
+    display: none;
+  }
+
   .day,
   .day:first-child,
   .day:last-child {

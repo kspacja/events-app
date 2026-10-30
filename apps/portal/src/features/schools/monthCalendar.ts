@@ -4,8 +4,6 @@ export type CalendarMonth = `${number}-${number}`;
 
 const MONTH_FORMAT = /^(\d{4})-(0[1-9]|1[0-2])$/;
 const THURSDAY_OFFSET = 3;
-const MAX_DOTS = 3;
-const DOT_PER_EVENT_UP_TO = 4;
 
 export function isCalendarMonth(value: string): value is CalendarMonth {
   return MONTH_FORMAT.test(value);
@@ -28,18 +26,6 @@ export function addMonths(month: CalendarMonth, amount: number): CalendarMonth {
 
 export function firstDayOf(month: CalendarMonth): CalendarDay {
   return `${month}-01` as CalendarDay;
-}
-
-/** Znacznik dnia: one dot per event up to 4; from 5 on, 3 dots and the rest as a number. */
-export interface DayMarker {
-  readonly dots: number;
-  readonly more: number;
-}
-
-export function dayMarker(count: number): DayMarker | null {
-  if (count <= 0) return null;
-  if (count <= DOT_PER_EVENT_UP_TO) return { dots: count, more: 0 };
-  return { dots: MAX_DOTS, more: count - MAX_DOTS };
 }
 
 export interface CalendarCell {

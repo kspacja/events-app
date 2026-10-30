@@ -6,6 +6,7 @@ import { isDayInRange, type CalendarDay, type DateRange } from '@events/time';
 import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatTimeWindow, type TimeWindow } from '@/features/search/timeRange';
 import { buildSchedule, scheduleSpan } from '../schedule';
+import type { RangeLinks } from '@/features/search/components/RangeArrows';
 import { Header, type RangeNavigation } from './Header';
 import { OccurrenceSelectionProvider } from '../OccurrenceSelectionProvider';
 import { MapSkeleton, StripSkeleton } from './WeekSkeleton';
@@ -16,13 +17,24 @@ interface EventsSectionProps {
   readonly range: DateRange;
   readonly today: CalendarDay;
   readonly rangeNavigation?: RangeNavigation;
+  /** The phone day row's arrows. */
+  readonly rangeLinks?: RangeLinks;
   readonly time: TimeWindow | null;
   readonly sentence: ReactNode;
   readonly notice?: ReactNode;
 }
 
 /** The one-column programme (home page): the summary and map on top, the week below. */
-export function EventsSection({ source, range, today, rangeNavigation, time, sentence, notice }: EventsSectionProps) {
+export function EventsSection({
+  source,
+  range,
+  today,
+  rangeNavigation,
+  rangeLinks,
+  time,
+  sentence,
+  notice,
+}: EventsSectionProps) {
   const schedule = source
     .listOccurrences(scheduleSpan(range))
     .then((listings) =>
@@ -49,7 +61,7 @@ export function EventsSection({ source, range, today, rangeNavigation, time, sen
         }
       />
       <Suspense fallback={<StripSkeleton />}>
-        <WeekStrip schedule={schedule} today={today} />
+        <WeekStrip schedule={schedule} today={today} rangeLinks={rangeLinks} />
       </Suspense>
     </OccurrenceSelectionProvider>
   );

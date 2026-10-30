@@ -7,10 +7,16 @@ import { RANGE_NAVIGATION_LABELS } from '../labels';
 import { hrefFor } from '../searchQuery';
 import styles from './RangeArrows.module.css';
 
-interface RangeArrowsProps {
+interface RangeLinksInput {
   readonly range: DateRange;
   readonly params: SearchParamsInput;
   readonly now: Date;
+}
+
+export interface RangeLinks {
+  /** Null when the earlier range has fully passed. */
+  readonly previous: string | null;
+  readonly next: string;
 }
 
 /** A shifted range that matches a preset links to the preset, so the sentence reads e.g. "w przyszłym tygodniu". */
@@ -23,36 +29,30 @@ function asPreset(range: DateRange, now: Date): DatePreset | DateRange {
   );
 }
 
-/** Arrows beside the range label that move the range a step back or forward; none back into the past. */
-export function rangeArrows({ range, params, now }: RangeArrowsProps): RangeNavigation {
+/** Where the range goes a step back or forward; never back into the past. */
+export function rangeLinks({ range, params, now }: RangeLinksInput): RangeLinks {
   const current = toSearchParams(params);
-  const today = currentEventDay(now);
   const previous = shiftRange(range, -1);
-  const next = shiftRange(range, 1);
-
   return {
-    previous:
-      previous.to >= today ? (
-        <Link
-          href={hrefFor('/', current, { date: asPreset(previous, now) })}
-          scroll={false}
-          className={styles.arrow}
-          aria-label={RANGE_NAVIGATION_LABELS.previous}
-        >
-          ‹
-        </Link>
-      ) : (
-        <span className={`${styles.arrow} ${styles.disabled}`} aria-hidden="true">
-          ‹
-        </span>
-      ),
+    previous: previous.to >= currentEventDay(now) ? hrefFor('/', current, { date: asPreset(previous, now) }) : null,
+    next: hrefFor('/', current, { date: asPreset(shiftRange(range, 1), now) }),
+  };
+}
+
+/** Arrows beside the range label in the header. */
+export function rangeArrows(links: RangeLinks): RangeNavigation {
+  return {
+    previous: links.previous ? (
+      <Link href={links.previous} scroll={false} className={styles.arrow} aria-label={RANGE_NAVIGATION_LABELS.previous}>
+        ‹
+      </Link>
+    ) : (
+      <span className={`${styles.arrow} ${styles.disabled}`} aria-hidden="true">
+        ‹
+      </span>
+    ),
     next: (
-      <Link
-        href={hrefFor('/', current, { date: asPreset(next, now) })}
-        scroll={false}
-        className={styles.arrow}
-        aria-label={RANGE_NAVIGATION_LABELS.next}
-      >
+      <Link href={links.next} scroll={false} className={styles.arrow} aria-label={RANGE_NAVIGATION_LABELS.next}>
         ›
       </Link>
     ),
