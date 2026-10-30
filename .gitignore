@@ -45,3 +45,6 @@ next-env.d.ts
 # project-specific
 .claude/loop*
 apps/portal/public/maplibre/
+
+# design-taste-frontend inspector output
+.taste-skill/

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recenzja designu portalu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-step: #f5f4f1;
+    --ink: #1c1b19;
+    --ink-2: #4a4844;
+    --line: #e7e5e0;
+    --accent: #32814b;
+    --crit: #b3261e;
+    --crit-bg: #fbe9e7;
+    --imp: #8a5a00;
+    --imp-bg: #fdf1dc;
+    --minor: #4a4844;
+    --minor-bg: #efeeea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --bg-step: #1f1e1c; --ink: #f1efe9; --ink-2: #c4c1b8; --line: #2e2d2a;
+      --accent: #7cc68f; --crit: #ff8a80; --crit-bg: #3a1c1a; --imp: #f2c46d; --imp-bg: #33290f;
+      --minor: #c4c1b8; --minor-bg: #262522;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141413; --bg-step: #1f1e1c; --ink: #f1efe9; --ink-2: #c4c1b8; --line: #2e2d2a;
+    --accent: #7cc68f; --crit: #ff8a80; --crit-bg: #3a1c1a; --imp: #f2c46d; --imp-bg: #33290f;
+    --minor: #c4c1b8; --minor-bg: #262522;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.55 "Albert Sans", "Helvetica Neue", sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 48px 24px 120px; }
+  h1 { font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 8px; }
+  h2 { font-size: 28px; line-height: 1.2; letter-spacing: -0.01em; margin: 72px 0 16px; }
+  h3 { font-size: 20px; line-height: 1.3; margin: 0 0 8px; }
+  p { margin: 0 0 12px; }
+  .meta { color: var(--ink-2); margin-bottom: 32px; }
+  .summary { font-size: 19px; background: var(--bg-step); padding: 24px 28px; border-radius: 8px; }
+  .scores { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 20px; }
+  .scores div { padding: 12px 0; }
+  .scores b { display: block; font-size: 28px; font-variant-numeric: tabular-nums; }
+  .scores span { color: var(--ink-2); font-size: 14px; }
+  .finding { padding: 28px 0; border-top: 1px solid var(--line); }
+  h2 + .finding { border-top: 0; }
+  .tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px 10px; border-radius: 999px; margin-right: 8px; vertical-align: 2px; }
+  .crit .tag { background: var(--crit-bg); color: var(--crit); }
+  .imp .tag { background: var(--imp-bg); color: var(--imp); }
+  .minor .tag { background: var(--minor-bg); color: var(--minor); }
+  .where { color: var(--ink-2); font-size: 15px; margin-bottom: 12px; }
+  code { font-size: 14px; background: var(--bg-step); padding: 1px 5px; border-radius: 4px; }
+  .summary code { background: var(--bg); }
+  .rec { border-left: 3px solid var(--accent); padding-left: 14px; }
+  .rec b { color: var(--accent); }
+  figure { margin: 16px 0 0; display: grid; gap: 12px; }
+  figure.two { grid-template-columns: 1fr 1fr; }
+  figure.phone { grid-template-columns: repeat(3, minmax(0, 220px)); }
+  figure a { display: block; }
+  figure img { width: 100%; height: auto; display: block; border-radius: 6px; background: var(--bg-step); border: 1px solid var(--line); }
+  figcaption { grid-column: 1 / -1; color: var(--ink-2); font-size: 14px; }
+  ul.plain { padding-left: 20px; }
+  ul.plain li { margin-bottom: 8px; }
+  ol.top li { margin-bottom: 14px; }
+  ol.top b { display: block; }
+  .note { color: var(--ink-2); font-size: 15px; }
+  @media (max-width: 720px) {
+    main { padding: 32px 16px 80px; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 24px; margin-top: 56px; }
+    .summary { padding: 20px 16px; font-size: 17px; }
+    .scores { grid-template-columns: 1fr 1fr; }
+    figure.two, figure.phone { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Recenzja designu portalu wydarzeń</h1>
+<p class="meta">30.10.2026 · <code>apps/portal</code> na MSW (dev, localhost:3000) · strony <code>/</code> i <code>/dla-szkol/[week]</code> · szerokości 1440, 1280, 390 · metoda: tasteskill <code>design-taste-frontend</code>, reguły ekranów aplikacji (kalendarz, lista z filtrami) i pomiary <code>inspect.mjs --app</code></p>
+
+<h2 style="margin-top:0">Podsumowanie</h2>
+<div class="summary">
+  <p>Portal ma czytelny szkielet: tydzień jako pas kolumn z dużymi numerami dni, karta „godzina · kategoria / tytuł / miejsce” i mapa, która przelatuje do wybranego wydarzenia. Na desktopie wygląda to porządnie. Słabnie, gdy tydzień się nie mieści: na 1440 i 1280 niedziela jest za krawędzią, a strzałka leży na treści. Na telefonie strona główna rozpada się w długie, puste kolumny. Strona dla szkół pokazuje w bieżącym tygodniu głównie dni, które minęły, i pusty weekend. Obie strony mówią dwoma różnymi językami UI (zdanie-filtr kontra sidebar z chipami). Mocne złote obwódki, cztery style przycisków i angielskie nazwy na mapie odbierają spójności więcej niż jakikolwiek pojedynczy element.</p>
+  <div class="scores">
+    <div><b>6,5</b><span>design (40%)</span></div>
+    <div><b>6,0</b><span>użyteczność (30%)</span></div>
+    <div><b>7,0</b><span>pomysł (20%)</span></div>
+    <div><b>6,5</b><span>treść (10%)</span></div>
+    <div><b>6,4</b><span>ogółem</span></div>
+  </div>
+  <p class="note" style="margin-top:8px">Inspektor: <code>/</code> 5 FAIL / 6 WARN, <code>/dla-szkol</code> 3 FAIL / 6 WARN. Zdjęcia kart pochodzą z mocków, więc ich dopasowanie do tematów nie jest oceniane. Przycisk „Motyw” i znaczek Next.js to narzędzia deweloperskie, też pominięte.</p>
+</div>
+
+<h2>Krytyczne</h2>
+
+<div class="finding crit">
+  <h3><span class="tag">krytyczne</span>Telefon, strona główna: tydzień to pas pustych kolumn</h3>
+  <p class="where"><code>/</code> · 390 px · <code>features/events/components/WeekGrid.module.css</code>, <code>DayColumn.module.css</code></p>
+  <p>Na 390 px widać jedną kolumnę dnia i skrawek następnej. Wszystkie kolumny mają wysokość najdłuższego dnia (piątek, 6 wydarzeń), więc pod jedynym wydarzeniem poniedziałku jest ok. 1100 px pustej ramki. Kto przewija w dół, ogląda pustkę. Żeby zobaczyć kolejny dzień, trzeba przewinąć w bok. Nie ma paska dni, a na <code>/dla-szkol</code> taki pasek jest. Inspektor: <code>panel-void</code> 970 px w poniedziałku (desktop), <code>edge-text</code>, ucięte tytuły („Wystawa: mi…”).</p>
+  <p class="rec"><b>Rekomendacja:</b> do ok. 768 px pokazuj dni pionowo, jeden pod drugim: nagłówek dnia jako sticky, pod nim karty. Rzędy kart w poziomie są tu zbędne. Możesz też przenieść pasek dni z <code>/dla-szkol</code> (pn–nd z kropkami) i pokazywać jeden dzień naraz. Niezależnie od wariantu kolumny nie powinny się rozciągać: <code>align-items: start</code>.</p>
+  <figure class="phone">
+    <a href="screenshots/home-390-fold.png"><img src="screenshots/home-390-fold.png" alt="Strona główna na 390 px, pierwszy ekran"></a>
+    <a href="screenshots/home-390-cala.jpg"><img src="screenshots/home-390-cala.jpg" alt="Cała strona główna na 390 px z pustą kolumną poniedziałku"></a>
+    <a href="screenshots/szkoly-390-fold.png"><img src="screenshots/szkoly-390-fold.png" alt="Strona dla szkół na 390 px z paskiem dni"></a>
+    <figcaption>Od lewej: pierwszy ekran, cała strona (pusta kolumna poniedziałku), dla porównania /dla-szkol z paskiem dni.</figcaption>
+  </figure>
+</div>
+
+<div class="finding crit">
+  <h3><span class="tag">krytyczne</span>Tydzień nie mieści się na desktopie, a strzałka przykrywa treść</h3>
+  <p class="where"><code>/</code> i <code>/dla-szkol</code> · 1440 i 1280 · <code>StripControls.module.css</code>, <code>WeekGrid.module.css</code></p>
+  <p>Na 1440 widać 6 dni (niedziela za krawędzią), na 1280 pięć i pół. Zielony przycisk strzałki leży na kolumnie: na sobocie „31”, po przewinięciu na numerze „27”, na <code>/dla-szkol</code> na zdjęciu piątku. Pas wychodzi poza prawy margines, a lewy zostaje, więc ramka strony jest nierówna. Prawa krawędź gaśnie w gradiencie, który ścina też czarną linię nagłówka. Na kalendarzu tygodnia każdy dzień jest tak samo ważny, więc chowanie niedzieli to błąd.</p>
+  <p class="rec"><b>Rekomendacja:</b> od 1280 wzwyż ustaw 7 kolumn w <code>fr</code> (1360/7 ≈ 194 px na kolumnę wystarczy, jeśli zdjęcie w karcie ma niższy kadr). Przewijanie i strzałki zostaw dla węższych ekranów, a strzałki przenieś do paska nad siatką, obok zakresu dat, żeby nie leżały na kolumnach. Usuń też gradient na krawędzi.</p>
+  <figure class="two">
+    <a href="screenshots/home-1440-fold.png"><img src="screenshots/home-1440-fold.png" alt="Strona główna 1440, niedziela poza ekranem"></a>
+    <a href="screenshots/home-1440-po-strzalce.png"><img src="screenshots/home-1440-po-strzalce.png" alt="Po kliknięciu strzałki przycisk zasłania numer 27"></a>
+    <figcaption>1440: niedziela poza ekranem; po kliknięciu strzałki przycisk wstecz leży na „27”.</figcaption>
+  </figure>
+</div>
+
+<div class="finding crit">
+  <h3><span class="tag">krytyczne</span>Dla szkół: bieżący tydzień to głównie minione dni i pusty weekend</h3>
+  <p class="where"><code>/dla-szkol/2026-10-26</code> · 1440, 1280 · <code>features/schools/components/SchoolsShell*</code>, <code>DayColumn</code></p>
+  <p>Dziś jest piątek. Spośród 4,5 widocznych kolumn tylko jedna, piątek, ma wydarzenia, które jeszcze się odbędą. Minione dni są wyblakłe prawie do bieli: kontrast tytułów na oko ok. 1,5:1, nie da się ich przeczytać, ale nadal zajmują miejsce. Sobota i niedziela to dwie szerokie kremowe kolumny z napisem „Tego dnia nic pasującego.” Licznik „19 wydarzeń” wlicza minione, a zostały 3. Strzałka wstecz wisi nad wyblakłą kolumną, a pas wchodzi pod sidebar (ucięte „…lna: sztuka”).</p>
+  <p class="rec"><b>Rekomendacja:</b> w bieżącym tygodniu zacznij od dziś, a minione dni zwiń do wąskich pasków z datą i liczbą (do rozwinięcia). W wariancie szkolnym zwęź weekend, gdy jest pusty. W liczniku podaj to, co ma znaczenie: „3 przed nami · 16 minęło”. Jeśli minione wydarzenia mają być widoczne, ich tekst musi mieć kontrast co najmniej 4,5:1. Przygaś zdjęcie, nie tekst.</p>
+  <figure class="two">
+    <a href="screenshots/szkoly-1440-fold.jpg"><img src="screenshots/szkoly-1440-fold.jpg" alt="Dla szkół 1440, bieżący tydzień"></a>
+    <a href="screenshots/szkoly-1280-fold.png"><img src="screenshots/szkoly-1280-fold.png" alt="Dla szkół 1280, bieżący tydzień"></a>
+    <figcaption>1440 i 1280: jedna użyteczna kolumna, wyblakłe minione dni, pusty weekend; chip „Szkoły ponadpodstawowe” ucięty maską (1280).</figcaption>
+  </figure>
+</div>
+
+<h2>Ważne</h2>
+
+<div class="finding imp">
+  <h3><span class="tag">ważne</span>Strona główna: nie da się przejść do następnego tygodnia</h3>
+  <p class="where"><code>/</code> · wszystkie szerokości · <code>features/search/components/ChipDialog</code>, <code>Picker</code></p>
+  <p>Popover „w tym tygodniu” ma tylko opcje „dziś / jutro / w tym tygodniu / w weekend” i własny przedział z dwoma polami daty. Następnego tygodnia nie ma. Przewinięcie pasa kończy się na niedzieli. Na <code>/dla-szkol</code> są przyciski „Poprzedni / Następny tydzień”. W piątek, czyli wtedy, gdy ludzie planują weekend i kolejne dni, strona główna pokazuje głównie przeszłość.</p>
+  <p class="rec"><b>Rekomendacja:</b> dodaj strzałki ‹ › przy zakresie „26.10—1.11” (ten sam wzór co na stronie dla szkół) i opcję „w przyszłym tygodniu” w popoverze.</p>
+  <figure class="two">
+    <a href="screenshots/home-1440-popover-czas.png"><img src="screenshots/home-1440-popover-czas.png" alt="Popover wyboru czasu"></a>
+    <a href="screenshots/home-1440-popover-pora.png"><img src="screenshots/home-1440-popover-pora.png" alt="Popover pory dnia"></a>
+    <figcaption>Popovery czasu i pory dnia: bez „przyszłego tygodnia”; godziny pod porami dnia mają 10 px.</figcaption>
+  </figure>
+</div>
+
+<div class="finding imp">
+  <h3><span class="tag">ważne</span>Strona główna nie pokazuje „dziś” ani tego, co minęło</h3>
+  <p class="where"><code>/</code> · wszystkie szerokości · <code>DayColumn.module.css</code></p>
+  <p>Piątek 30 wygląda tak samo jak pozostałe dni. Wydarzenia z poniedziałku–czwartku mają pełny kontrast, jakby dało się na nie jeszcze pójść. Zielony numer dnia oznacza tu weekend, a zielony jest też kolorem akcentu i kategorii, więc „31” wygląda na wyróżnione. Strona dla szkół ma już oba stany (kółko na dziś, przygaszone minione), tylko w zbyt mocnej formie.</p>
+  <p class="rec"><b>Rekomendacja:</b> jeden język dla obu stron: dziś to kółko lub podkreślenie w kolorze akcentu przy numerze, minione to przygaszone zdjęcie i tekst drugorzędny (≥ 4,5:1), weekend to tylko tło kolumny. Zielony zostaje dla dziś i akcji.</p>
+</div>
+
+<div class="finding imp">
+  <h3><span class="tag">ważne</span>Zdanie-filtr dominuje ekran i udaje przyciski</h3>
+  <p class="where"><code>/</code> · 1440, 1280, 390 · <code>SearchSentence.module.css</code>, <code>SentenceChip.module.css</code>, <code>Header.module.css</code></p>
+  <p>„Pokaż mi wszystko wszędzie, w tym tygodniu o każdej porze.” to największa rzecz na stronie (32 px, cztery brzoskwiniowe chipy). Tymczasem „wszystko” i „wszędzie” to zwykły tekst: w drzewie dostępności nie są przyciskami, a wyglądają identycznie jak dwa działające chipy. Na 390 zdanie zajmuje 4 linie i ok. 60% pierwszego ekranu (inspektor: <code>headline-lines</code> FAIL). Po otwarciu mapy pierwsze wydarzenie spada poniżej ekranu. Strona nie ma <code>h1</code>.</p>
+  <p class="rec"><b>Rekomendacja:</b> dopóki kategoria i miejsce nie działają, pokazuj je jako zwykły tekst zdania, a styl chipa zostaw tylko dla tego, co da się kliknąć. Na telefonie zmniejsz zdanie do 22–24 px. Dodaj <code>h1</code>, np. „Program tygodnia” (może być wizualnie ukryte, a zdanie zostaje widocznym tytułem). Zakres dat i licznik „22 wydarzenia” to nagłówek tygodnia, więc przenieś je bliżej siatki.</p>
+  <figure class="two">
+    <a href="screenshots/home-390-mapa.png"><img src="screenshots/home-390-mapa.png" alt="Telefon z rozwiniętą mapą"></a>
+    <a href="screenshots/home-1280-fold.jpg"><img src="screenshots/home-1280-fold.jpg" alt="Strona główna 1280"></a>
+    <figcaption>390 z rozwiniętą mapą: zero wydarzeń na pierwszym ekranie; 1280: zdanie łamie się na dwie linie chipów.</figcaption>
+  </figure>
+</div>
+
+<div class="finding imp">
+  <h3><span class="tag">ważne</span>Dwa systemy UI i cztery style przycisków</h3>
+  <p class="where">obie strony · <code>SentenceChip</code>, <code>SchoolFilters</code>, <code>WeekArrow</code>, <code>WeekMap</code>, <code>ChipDialog</code></p>
+  <p>Ta sama czynność (wybierz tydzień i zawęź) wygląda zupełnie inaczej na każdej stronie: na głównej zdanie z popoverami, dla szkół sidebar z kalendarzem miesiąca, chipami i przyciskami tygodnia. Przyciski mają cztery wyglądy: brzoskwiniowy chip z zieloną kreską, pigułka ze złotą obwódką, czarny „Pokaż” i zielone kwadraty strzałek (w dialogu mapy dodatkowo bladozielone w stanie nieaktywnym). Przycisk „Zamknij mapę” jest w lewym górnym rogu dialogu, a nie tam, gdzie oko go szuka. Inspektor: <code>button-fx</code> (cień na przyciskach).</p>
+  <p class="rec"><b>Rekomendacja:</b> ustal jedną parę: przycisk główny (jeden kolor, płaski) i drugorzędny (obrys lub ton), plus jeden chip filtra z jednym stanem „aktywny” (wypełnienie, jak „historia” na stronie dla szkół). Strzałki tygodnia rób zawsze tym samym komponentem. „Zamknij” (×) daj w prawy górny róg dialogu.</p>
+  <figure class="two">
+    <a href="screenshots/szkoly-1280-mapa-dialog.png"><img src="screenshots/szkoly-1280-mapa-dialog.png" alt="Dialog mapy na stronie dla szkół"></a>
+    <a href="screenshots/szkoly-1440-nastepny-tydzien-filtry.png"><img src="screenshots/szkoly-1440-nastepny-tydzien-filtry.png" alt="Dla szkół, następny tydzień z aktywnym filtrem"></a>
+    <figcaption>Dialog mapy (zielone kwadraty, „Zamknij mapę” po lewej) i strona dla szkół (pigułki ze złotą obwódką, aktywny filtr wypełniony).</figcaption>
+  </figure>
+</div>
+
+<div class="finding imp">
+  <h3><span class="tag">ważne</span>Złote obwódki wszędzie, a do tego cień i gruba linia</h3>
+  <p class="where">obie strony · <code>packages/ui/src/tokens.css</code> (<code>--color-border: #dd9b0e</code>, <code>--shadow-edge</code>), <code>Header.module.css</code> (<code>border-bottom</code>)</p>
+  <p>Ramka tygodnia, każda kolumna, każdy chip i każdy przycisk mają obwódkę #dd9b0e (2,4:1 na bieli; inspektor <code>heavy-borders</code>). Pod nagłówkiem biegnie czarna linia 4 px, a tydzień ma jeszcze cień. Złoty to kolor kropki w logo. Rozsmarowany po każdej krawędzi przestaje cokolwiek wyróżniać, a ekran zamienia się w siatkę mocnych linii, które konkurują ze zdjęciami.</p>
+  <p class="rec"><b>Rekomendacja:</b> obwódki kolumn i nieaktywnych chipów zrób neutralne (ok. #e7e5e0), a separację dni oprzyj na odstępie i tle. Złoty zostaw na logo i ewentualnie na jeden wyróżnik (dziś). Wybierz linię 4 px albo cień ramki tygodnia, nie oba.</p>
+</div>
+
+<div class="finding imp">
+  <h3><span class="tag">ważne</span>Mapa: angielskie nazwy, zły kadr startowy, atrybucja zakrywa mapę</h3>
+  <p class="where"><code>/</code> (mapa w nagłówku, na 390 rozwijana) i dialog na <code>/dla-szkol</code> · <code>EventsMap.tsx</code>, <code>WeekMap</code></p>
+  <p>W polskim interfejsie mapa pisze „Poland, Warsaw, Greater Poland Voivodeship, Czechia”. Na stronie głównej widok startowy obejmuje obszar od Danii po Ukrainę, choć wydarzenia są w czterech polskich miastach. Na 390 atrybucja zajmuje ok. 1/5 wysokości mapy. W dialogu szkół pełny styl OSM (drogi, numery tras) zagłusza zielone punkty. Minione wydarzenia wyglądają na mapie tak samo jak przyszłe. Popup podaje tylko tytuł i termin, bez miejsca. Przelot do wydarzenia z karty działa dobrze.</p>
+  <p class="rec"><b>Rekomendacja:</b> nazwy z <code>name:pl</code>, wyciszony styl (mniej dróg i etykiet), <code>fitBounds</code> do punktów tygodnia z marginesem, zwinięta atrybucja (ikona „i”). W popupie dodaj miejsce i miasto, a minione punkty przygaś.</p>
+  <figure class="two">
+    <a href="screenshots/home-1440-pokaz-na-mapie.png"><img src="screenshots/home-1440-pokaz-na-mapie.png" alt="Mapa po kliknięciu pinezki w karcie"></a>
+    <a href="screenshots/szkoly-1280-mapa-popup.png"><img src="screenshots/szkoly-1280-mapa-popup.png" alt="Popup w dialogu mapy dla szkół"></a>
+    <figcaption>Po lewej dobry przelot z karty na mapę; po prawej gęsty styl OSM i popup minionego wydarzenia bez miejsca.</figcaption>
+  </figure>
+</div>
+
+<div class="finding imp">
+  <h3><span class="tag">ważne</span>Karta nie prowadzi dalej</h3>
+  <p class="where">obie strony · <code>OccurrenceCard.tsx</code></p>
+  <p>Jedyna akcja na karcie to pinezka „Pokaż na mapie”. Tytuł i zdjęcie niczego nie otwierają, nie ma ceny, linku do organizatora ani informacji o zapisach (dla szkół: grupa wiekowa, liczba miejsc). Odbiorca znajduje wydarzenie i nie ma dokąd przejść.</p>
+  <p class="rec"><b>Rekomendacja:</b> nawet przed powstaniem strony wydarzenia zrób z całej karty link (np. do strony organizatora albo rozwinięcia z opisem). W karcie szkolnej pokaż 1–2 cechy, po których się filtruje (klasy, liczba osób), żeby było widać, dlaczego wydarzenie pasuje.</p>
+</div>
+
+<h2>Drobne</h2>
+
+<div class="finding minor">
+  <ul class="plain">
+    <li><span class="tag">drobne</span>Nazwy dni wersalikami z rozstrzeleniem 0,12em (<code>DayColumn.module.css:52–53</code>; inspektor <code>micro-label</code>). Numer dnia 65 px wystarczająco prowadzi, więc nazwę dnia daj zwykłym zapisem: „poniedziałek”, 14 px.</li>
+    <li><span class="tag">drobne</span>Godziny pod porami dnia w popoverze mają 10 px („06:00–11:00”; <code>tiny-text</code>). Minimum to 12 px.</li>
+    <li><span class="tag">drobne</span>Kontrast: „godzina · kategoria” w zieleni to 4,4:1, a zakres „26.10—1.11” na stronie szkół 3,1:1. Użyj <code>--color-accent-strong</code> i ciemniejszego szarego.</li>
+    <li><span class="tag">drobne</span>Godziny w kartach nie mają cyfr tabelarycznych (<code>tabular</code>: 0%). Dodaj <code>font-variant-numeric: tabular-nums</code> do meta karty i kalendarza miesiąca.</li>
+    <li><span class="tag">drobne</span>„październik 2026” powtarza się na stronie szkół (sidebar i środek), a w sidebarze na 1280 łamie się na dwie linie. Środkowy tytuł mógłby nazywać tydzień („26 października – 1 listopada”).</li>
+    <li><span class="tag">drobne</span>Chip „Szkoły ponadpodstawowe” na 1280 jest ucięty maską gradientową (<code>SchoolFilters.module.css:100</code>). Lepiej zawinąć chipy do drugiej linii.</li>
+    <li><span class="tag">drobne</span>„Tego dnia nic pasującego.” to jedyna kursywa w UI i nie daje nic do zrobienia. Lepiej prosto i z akcją: „Brak wydarzeń dla wybranych filtrów · Wyczyść filtry”.</li>
+    <li><span class="tag">drobne</span>Na telefonie mapa po rozwinięciu wypycha program pod ekran. Rozważ mapę jako pełnoekranowy arkusz, jak dialog na stronie szkół.</li>
+  </ul>
+</div>
+
+<h2>Co działa dobrze</h2>
+<ul class="plain">
+  <li>Duży numer dnia jako oś tygodnia: odczytujesz go od razu, ma charakter i trzyma rytm kolumn.</li>
+  <li>Karta ma czytelną, stałą kolejność: godzina · kategoria w kolorze, tytuł, miejsce drobniej. W całym portalu jedna rodzina kroju (Albert Sans).</li>
+  <li>Pinezka na karcie zbliża mapę do miejsca i otwiera popup. To dobre powiązanie listy z mapą, a popup w dialogu prowadzi z powrotem do karty.</li>
+  <li>Zdanie „Pokaż mi …” to oryginalny pomysł na filtr, odróżnia portal od zwykłej listy wydarzeń. Wymaga tylko uczciwego stanu (patrz wyżej).</li>
+  <li>Strona dla szkół na telefonie: pasek tygodnia z kropkami liczby wydarzeń i strzałkami to najlepszy wzorzec nawigacji w portalu. Warto go przenieść na stronę główną.</li>
+  <li>Kalendarz miesiąca z kropkami wydarzeń pod datami jest zwarty i informacyjny. Aktywny filtr jest wyraźny (wypełniona zieleń).</li>
+  <li>Struktura dostępności jest dobra: dni to <code>h2</code>, karty to <code>article</code> z <code>h3</code>, przyciski mają nazwy („Pokaż na mapie: …”), jest skip-link.</li>
+</ul>
+
+<h2>Top 5 zmian o największym efekcie</h2>
+<ol class="top">
+  <li><b>Telefon: dni pionowo albo pasek dni z /dla-szkol, bez rozciągniętych kolumn.</b>Usuwa ok. 1100 px pustki i poziome przewijanie po jednym dniu.</li>
+  <li><b>Desktop ≥ 1280: siedem kolumn w fr, strzałki poza siatką.</b>Cały tydzień na jednym ekranie, nic nie leży na treści, marginesy strony są równe.</li>
+  <li><b>Bieżący tydzień zaczyna się od dziś, minione dni zwinięte, wspólny znacznik „dziś” na obu stronach.</b>Na stronie dla szkół z jednej użytecznej kolumny robią się cztery, a licznik mówi prawdę.</li>
+  <li><b>Nawigacja tygodnia na stronie głównej (‹ 26.10—1.11 ›) i jeden system przycisków i chipów.</b>Zamyka największą lukę funkcjonalną i scala dwie strony w jeden produkt.</li>
+  <li><b>Ściszenie ramek i porządek na mapie: neutralne obwódki, złoty tylko w logo, polskie nazwy, kadr do punktów.</b>Zdjęcia i zieleń akcentu zaczynają prowadzić, a mapa pokazuje to, co trzeba.</li>
+</ol>
+
+<p class="note" style="margin-top:48px">Surowe pomiary inspektora (zrzuty 1440/1280/390 i <code>report.json</code>) leżą w katalogu repo: <code>.taste-skill/before/home/</code> i <code>.taste-skill/before/dla-szkol/</code>.</p>
+
+</main>
+</body>
+</html>
