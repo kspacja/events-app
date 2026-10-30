@@ -91,6 +91,10 @@ export const CONTROL_GROUPS: readonly ControlGroup[] = [
       color('--color-bg-weekend', 'Weekend'),
       color('--color-border', 'Obramowanie'),
       color('--color-map-water', 'Woda na mapie'),
+      color('--color-map-land', 'Ląd na mapie'),
+      color('--color-map-green', 'Zieleń na mapie'),
+      color('--color-map-road', 'Drogi na mapie'),
+      color('--color-map-road-casing', 'Obrys dróg na mapie'),
     ],
   },
 ];

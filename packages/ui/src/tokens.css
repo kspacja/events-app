@@ -32,6 +32,10 @@
 
   --color-border: #dd9b0e;
   --color-map-water: #bfd7ea;
+  --color-map-land: #f5f4f1;
+  --color-map-green: #e3ecd9;
+  --color-map-road: #ffffff;
+  --color-map-road-casing: #e2ddd3;
 
   --space-0-5: calc(var(--space-unit) * 0.5);
   --space-1: var(--space-unit);

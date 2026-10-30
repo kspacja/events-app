@@ -31,20 +31,34 @@ describe('viewFor', () => {
     });
   });
 
-  it('fits points in several cities inside the bounds', () => {
+  it('frames all of Poland for points in several cities', () => {
     const view = viewFor([
       point('warsaw', 52.23, 21.01),
       point('krakow', 50.06, 19.94),
       point('gdansk', 54.35, 18.65),
     ]);
 
-    expect(view).toMatchObject({
-      bounds: [
-        [18.65, 50.06],
-        [21.01, 54.35],
-      ],
-      maxZoom: 14,
-      padding: 48,
-    });
+    expect(view.bounds).toEqual([
+      [14.12, 49.0],
+      [24.15, 54.84],
+    ]);
+  });
+
+  it('fits points within one city tightly', () => {
+    const view = viewFor([point('rynek', 50.06, 19.94), point('kazimierz', 50.05, 19.95)]);
+
+    expect(view.bounds).toEqual([
+      [19.94, 50.05],
+      [19.95, 50.06],
+    ]);
+  });
+
+  it('stretches the Polish frame to a point abroad', () => {
+    const view = viewFor([point('krakow', 50.06, 19.94), point('berlin', 52.52, 13.4)]);
+
+    expect(view.bounds).toEqual([
+      [13.4, 49.0],
+      [24.15, 54.84],
+    ]);
   });
 });

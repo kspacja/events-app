@@ -27,13 +27,27 @@ const POLAND_BOUNDS: Bounds = [
   [24.15, 54.84],
 ];
 
+// Points spread wider than about a city frame all of Poland, so the country sits in the middle, not its western half
+const CITY_SPAN_DEGREES = 1;
+
 function boundsFor(points: readonly MapPoint[]): Bounds {
   if (points.length === 0) return POLAND_BOUNDS;
   const lngs = points.map((p) => p.lng);
   const lats = points.map((p) => p.lat);
-  return [
+  const [[west, south], [east, north]]: Bounds = [
     [Math.min(...lngs), Math.min(...lats)],
     [Math.max(...lngs), Math.max(...lats)],
+  ];
+  if (east - west <= CITY_SPAN_DEGREES && north - south <= CITY_SPAN_DEGREES) {
+    return [
+      [west, south],
+      [east, north],
+    ];
+  }
+  const [[polandWest, polandSouth], [polandEast, polandNorth]] = POLAND_BOUNDS;
+  return [
+    [Math.min(west, polandWest), Math.min(south, polandSouth)],
+    [Math.max(east, polandEast), Math.max(north, polandNorth)],
   ];
 }
 

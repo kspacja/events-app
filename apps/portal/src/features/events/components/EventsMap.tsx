@@ -20,6 +20,7 @@ import { MAP_CONTROL_LOCALE, MAP_LABELS } from '../labels';
 import type { OccurrenceId } from '@events/contract/listing';
 import { onThemeChange } from '@/features/theme-lab/themeChange';
 import { viewFor, type MapPoint } from '../mapView';
+import { localizeBasemap, type BasemapPalette } from '../mapStyle';
 import styles from './EventsMap.module.css';
 
 // Bundlers break maplibre's default worker URL (derived from import.meta.url)
@@ -35,6 +36,13 @@ const SELECTED_MIN_ZOOM = 15;
 const FALLBACK_ACCENT = '#4da167';
 const FALLBACK_MUTED = '#cdd7d6';
 const FALLBACK_HALO = '#ffffff';
+const FALLBACK_BASEMAP: BasemapPalette = {
+  water: '#bfd7ea',
+  land: '#f5f4f1',
+  green: '#e3ecd9',
+  road: '#ffffff',
+  roadCasing: '#e2ddd3',
+};
 
 const hasActive: maplibregl.ExpressionSpecification = ['>', ['get', 'activeCount'], 0];
 
@@ -54,6 +62,28 @@ function readPalette(container: HTMLElement): Palette {
     muted: token('--color-text-disabled', FALLBACK_MUTED),
     halo: token('--color-bg', FALLBACK_HALO),
   };
+}
+
+function readBasemapPalette(): BasemapPalette {
+  const styles = getComputedStyle(document.documentElement);
+  const token = (name: string, fallback: string) => styles.getPropertyValue(name).trim() || fallback;
+  return {
+    water: token('--color-map-water', FALLBACK_BASEMAP.water),
+    land: token('--color-map-land', FALLBACK_BASEMAP.land),
+    green: token('--color-map-green', FALLBACK_BASEMAP.green),
+    road: token('--color-map-road', FALLBACK_BASEMAP.road),
+    roadCasing: token('--color-map-road-casing', FALLBACK_BASEMAP.roadCasing),
+  };
+}
+
+let basemapRequest: Promise<maplibregl.StyleSpecification | null> | null = null;
+
+// Fetched once and reworked before the first frame, so the map never shows the English, off-brand original
+function loadBasemap(): Promise<maplibregl.StyleSpecification | null> {
+  basemapRequest ??= fetch(MAP_STYLE_URL)
+    .then((response) => (response.ok ? (response.json() as Promise<maplibregl.StyleSpecification>) : null))
+    .catch(() => null);
+  return basemapRequest;
 }
 
 function layersFor({ accent, muted, halo }: Palette) {
@@ -113,6 +143,8 @@ interface EventsMapProps {
 export function EventsMap({ points, focus, onShowInWeek }: EventsMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [cursor, setCursor] = useState('');
+  // Without the reworked style (e.g. the fetch failed) the map falls back to the original one
+  const [basemap, setBasemap] = useState<maplibregl.StyleSpecification | string | null>(null);
   // Built on load and on theme change only, so the layer props stay referentially stable
   const [layers, setLayers] = useState<MapLayers | null>(null);
   const loaded = layers !== null;
@@ -158,6 +190,21 @@ export function EventsMap({ points, focus, onShowInWeek }: EventsMapProps) {
     return onThemeChange(() => setLayers(layersFor(readPalette(container))));
   }, [loaded]);
 
+  useEffect(() => {
+    let active = true;
+    function apply() {
+      void loadBasemap().then((style) => {
+        if (active) setBasemap(style ? localizeBasemap(style, readBasemapPalette()) : MAP_STYLE_URL);
+      });
+    }
+    apply();
+    const stop = onThemeChange(apply);
+    return () => {
+      active = false;
+      stop();
+    };
+  }, []);
+
   function handleLoad(event: MapEvent) {
     setLayers(layersFor(readPalette(event.target.getContainer())));
   }
@@ -186,12 +233,14 @@ export function EventsMap({ points, focus, onShowInWeek }: EventsMapProps) {
     map.easeTo({ center: [lng, lat], zoom });
   }
 
+  if (!basemap) return <div className={styles.pending} />;
+
   return (
     <Map
       ref={mapRef}
       mapLib={maplibregl}
       reuseMaps
-      mapStyle={MAP_STYLE_URL}
+      mapStyle={basemap}
       initialViewState={initialViewStateFor(focus)}
       attributionControl={{ compact: true }}
       locale={MAP_CONTROL_LOCALE}
