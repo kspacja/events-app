@@ -28,6 +28,7 @@ export function WeekGrid({ schedule, today }: WeekGridProps) {
                 key={scheduleDay.day}
                 scheduleDay={scheduleDay}
                 past={today !== undefined && scheduleDay.day < today}
+                isToday={scheduleDay.day === today}
               />
             ))}
           </ol>

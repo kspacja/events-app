@@ -24,6 +24,7 @@ describe('EventsSection', () => {
     const section = EventsSection({
       source,
       range: { from: monday, to: addDays(monday, 6) },
+      today: currentEventDay(NOW),
       time: null,
       sentence: 'Szukasz wydarzeń',
     });

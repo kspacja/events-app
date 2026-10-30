@@ -54,6 +54,16 @@
   color: var(--color-text-secondary);
 }
 
+.today {
+  margin-left: var(--space-2);
+  padding: var(--space-0-5) var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+}
+
 
 .number {
   font-family: var(--font-heading);
@@ -80,4 +90,16 @@
   font-style: italic;
   color: var(--color-text-muted);
   border-top: 2px solid var(--color-border);
+}
+
+@media (max-width: 768px) {
+  .day,
+  .day:first-child,
+  .day:last-child {
+    min-height: 0;
+    border: 1px solid var(--color-border);
+    border-top-width: 2px;
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-edge);
+  }
 }

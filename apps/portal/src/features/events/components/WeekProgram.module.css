@@ -1,0 +1,17 @@
+/* Phones only: the strip shows one day at a time, so a sticky row of days jumps between them */
+.phoneTabs {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .phoneTabs {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: block;
+    margin-top: var(--space-3);
+    margin-right: var(--strip-bleed);
+    padding: var(--space-2) 0;
+    background: var(--color-bg);
+  }
+}

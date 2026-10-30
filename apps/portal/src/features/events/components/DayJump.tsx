@@ -7,8 +7,8 @@ import { scrollStripToDay } from './DayStrip';
 
 interface DayJumpProps {
   readonly day: CalendarDay;
-  /** Monday of the week on screen; a day inside it is scrolled to, not navigated to. */
-  readonly shownWeek: CalendarDay;
+  /** Monday of the week on screen; a day inside it is scrolled to, not navigated to. Without it every day is on the page. */
+  readonly shownWeek?: CalendarDay;
   readonly href: string;
   readonly className?: string;
   readonly 'aria-label'?: string;
@@ -26,7 +26,7 @@ export function DayJump({ day, shownWeek, href, onNavigate, children, ...props }
   function handleClick(event: MouseEvent<HTMLAnchorElement>) {
     const isModified = event.metaKey || event.ctrlKey || event.shiftKey;
     if (isModified) return;
-    if (!isInWeek(day, shownWeek)) {
+    if (shownWeek && !isInWeek(day, shownWeek)) {
       if (!onNavigate) return;
       event.preventDefault();
       onNavigate();

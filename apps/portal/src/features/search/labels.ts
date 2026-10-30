@@ -6,7 +6,13 @@ export const DATE_PRESET_LABELS: Record<DatePreset, string> = {
   tomorrow: 'jutro',
   week: 'w tym tygodniu',
   weekend: 'w weekend',
+  nextWeek: 'w przyszłym tygodniu',
 };
+
+export const RANGE_NAVIGATION_LABELS = {
+  previous: 'Wcześniejszy termin',
+  next: 'Późniejszy termin',
+} as const;
 
 export const CUSTOM_RANGE_LABEL = 'własny przedział';
 

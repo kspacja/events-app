@@ -29,6 +29,7 @@ export const UI_LABELS = {
   emptyDay: 'Tego dnia nic pasującego.',
   outOfRange: 'Poza wybranym zakresem.',
   backToTop: 'Na górę',
+  today: 'dziś',
 } as const;
 
 export const CARD_LABELS = {

@@ -35,3 +35,12 @@
   border-radius: var(--radius-3xl);
   box-shadow: var(--shadow-edge);
 }
+
+/* Phones see one day at a time: each day is its own card as tall as its events, not as tall as the busiest day */
+@media (max-width: 768px) {
+  .week {
+    align-items: flex-start;
+    gap: var(--space-3);
+    box-shadow: none;
+  }
+}

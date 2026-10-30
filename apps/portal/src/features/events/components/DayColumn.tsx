@@ -7,11 +7,13 @@ import styles from './DayColumn.module.css';
 interface DayColumnProps {
   readonly scheduleDay: ScheduleDay;
   readonly past?: boolean;
+  readonly isToday?: boolean;
 }
 
 export function DayColumn({
   scheduleDay: { day, weekdayIndex, inRange, isWeekend, entries },
   past = false,
+  isToday = false,
 }: DayColumnProps) {
   const dayOfMonth = String(Number(day.slice(8)));
 
@@ -22,9 +24,13 @@ export function DayColumn({
       data-in-range={inRange}
       data-weekend={isWeekend}
       data-past={past || undefined}
+      aria-current={isToday ? 'date' : undefined}
     >
       <h2 className={styles.heading}>
-        <span className={styles.name}>{DAY_NAMES[weekdayIndex]}</span>
+        <span className={styles.name}>
+          {DAY_NAMES[weekdayIndex]}
+          {isToday ? <span className={styles.today}>{UI_LABELS.today}</span> : null}
+        </span>
         <time dateTime={day} className={styles.number}>
           {dayOfMonth}
         </time>

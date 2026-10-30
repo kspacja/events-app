@@ -1,0 +1,29 @@
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: var(--radius-chip-top);
+  color: var(--color-text);
+  font-size: var(--text-4xl);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.arrow:hover {
+  background: var(--color-bg-subtle);
+}
+
+.arrow:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.disabled {
+  color: var(--color-text-disabled);
+}
+
+.disabled:hover {
+  background: none;
+}

@@ -12,7 +12,7 @@ import { formatDay } from '@/lib/format';
 
 export const MAX_CUSTOM_RANGE_DAYS = 31;
 
-export const DATE_PRESETS = ['today', 'tomorrow', 'week', 'weekend'] as const;
+export const DATE_PRESETS = ['today', 'tomorrow', 'week', 'weekend', 'nextWeek'] as const;
 export type DatePreset = (typeof DATE_PRESETS)[number];
 
 export type DateSearchError =
@@ -55,7 +55,16 @@ export function resolvePreset(
       const saturday = addDays(monday, 5);
       return { from: today > saturday ? today : saturday, to: sunday };
     }
+    case 'nextWeek':
+      return { from: addDays(monday, DAYS_IN_WEEK), to: addDays(sunday, DAYS_IN_WEEK) };
   }
+}
+
+/** The range one step earlier or later: a single day moves by a day, longer ranges by whole weeks, so a weekend stays a weekend. */
+export function shiftRange(range: DateRange, direction: 1 | -1): DateRange {
+  const length = diffInDays(range.from, range.to) + 1;
+  const step = length === 1 ? 1 : Math.ceil(length / DAYS_IN_WEEK) * DAYS_IN_WEEK;
+  return { from: addDays(range.from, step * direction), to: addDays(range.to, step * direction) };
 }
 
 export function validateCustomRange(

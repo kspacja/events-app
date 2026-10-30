@@ -8,17 +8,24 @@ import styles from './DayTabs.module.css';
 
 interface DayTabsProps {
   readonly days: readonly { readonly day: CalendarDay; readonly weekdayIndex: number; readonly count: number }[];
-  /** Monday of the week on screen. */
-  readonly shownWeek: CalendarDay;
+  /** Monday of the week on screen; leave out when every day is on the page. */
+  readonly shownWeek?: CalendarDay;
+  /** Marks today's tab. */
+  readonly today?: CalendarDay;
   /** Week arrows on both ends of the row. */
   readonly rangeNavigation?: RangeNavigation;
 }
 
 /** One tab per day of the week; a tab only scrolls the strip to its day. Dots show how many events the day has. */
-export function DayTabs({ days, shownWeek, rangeNavigation }: DayTabsProps) {
+export function DayTabs({ days, shownWeek, today, rangeNavigation }: DayTabsProps) {
   return (
     <>
-      <div className={styles.tabs} role="group" aria-label={UI_LABELS.schedule}>
+      <div
+        className={styles.tabs}
+        data-arrows={rangeNavigation ? '' : undefined}
+        role="group"
+        aria-label={UI_LABELS.schedule}
+      >
         {rangeNavigation?.previous}
         {days.map(({ day, weekdayIndex }) => (
           <DayJump
@@ -27,6 +34,7 @@ export function DayTabs({ days, shownWeek, rangeNavigation }: DayTabsProps) {
             shownWeek={shownWeek}
             href={`#${dayDomId(day)}`}
             className={styles.tab}
+            aria-current={day === today ? 'date' : undefined}
             aria-label={`${DAY_NAMES[weekdayIndex]}, ${formatDay(day, 'd MMMM')}`}
           >
             <span aria-hidden="true">{DAY_SHORT_NAMES[weekdayIndex]}</span>

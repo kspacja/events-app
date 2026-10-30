@@ -7,12 +7,12 @@ import { Header } from '@/features/events/components/Header';
 import { OccurrenceSelectionProvider } from '@/features/events/OccurrenceSelectionProvider';
 import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatDay } from '@/lib/format';
-import { formatCount } from '@/features/events/schedule';
 import { SCHOOLS_LABELS } from '../labels';
 import { FiltersQueryContext, useFiltersQuery } from '../filtersQueryContext';
 import { monthOf } from '../monthCalendar';
 import { cachedWeekTotal, loadMonthCounts } from '../monthCounts';
 import { shiftWeek } from '../weekShift';
+import { formatWeekCount, upcomingCount } from '../weekCount';
 import { filtersQuery, parseFilters } from '../schoolFilters';
 import { MonthCalendar, WeekRow } from './MonthCalendar';
 import { AdvancedFiltersSheet, SchoolFilters } from './SchoolFilters';
@@ -80,6 +80,7 @@ function ShellContent({ today, children }: SchoolsShellProps) {
   // The page's count once it reports this week; until then, optimistically, the sum of month counts already in the browser
   const fits = weekCounts?.week === week && weekCounts.filtersQuery === filtersQuery;
   const count = fits ? weekCounts.total : cachedWeekTotal(week, filtersQuery);
+  const upcoming = fits && week <= today ? upcomingCount(weekCounts.days, today) : null;
   const range = { from: week, to: addDays(week, 6) };
   return (
     <div className={styles.split}>
@@ -106,7 +107,7 @@ function ShellContent({ today, children }: SchoolsShellProps) {
               {count !== null ? (
                 <>
                   {' · '}
-                  <span className={styles.count}>{formatCount(count)}</span>
+                  <span className={styles.count}>{formatWeekCount(count, upcoming)}</span>
                 </>
               ) : null}
             </span>
