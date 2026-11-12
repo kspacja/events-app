@@ -87,14 +87,10 @@
   border-bottom: 0;
 }
 
-/* The collapsed weekend: name and number on top, the link at the bottom */
-.day[data-collapsed] .weekday {
+/* The narrow weekend column: the day's name beside its number */
+.day[data-narrow] .weekday {
   display: inline;
   text-transform: capitalize;
-}
-
-.day[data-collapsed] .footer {
-  margin-top: auto;
 }
 
 .day[data-weekend='true'] {

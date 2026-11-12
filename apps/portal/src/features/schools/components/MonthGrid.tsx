@@ -44,31 +44,37 @@ function flash(bar: HTMLElement) {
   bar.addEventListener('animationend', () => delete bar.dataset.revealed, { once: true });
 }
 
-/** How many bars fit in a day; every day has the same height, so one list is enough to measure. */
+function barsThatFit(list: HTMLElement | null | undefined): number {
+  return list ? Math.max(1, Math.floor((list.clientHeight + BAR_GAP) / (BAR_HEIGHT + BAR_GAP))) : DEFAULT_CAPACITY;
+}
+
+/** How many bars fit in a weekday and in a half-height weekend day; one list of each is enough to measure. */
 function useCapacity() {
   const ref = useRef<HTMLOListElement>(null);
   const [capacity, setCapacity] = useState(DEFAULT_CAPACITY);
+  const [weekendCapacity, setWeekendCapacity] = useState(DEFAULT_CAPACITY);
   const [isPhone, setIsPhone] = useState(false);
   useEffect(() => {
+    // Weeks start on Monday, so the first list is a weekday's
     const list = ref.current?.querySelector<HTMLElement>('[data-bars]');
+    const weekendList = ref.current?.querySelector<HTMLElement>(`[data-weekday="${WEEKEND_FROM}"] [data-bars]`);
     if (!list) return;
     const phone = window.matchMedia(PHONE_QUERY);
     function update() {
-      if (!list) return;
       setIsPhone(phone.matches);
-      setCapacity(
-        phone.matches ? PHONE_CAPACITY : Math.max(1, Math.floor((list.clientHeight + BAR_GAP) / (BAR_HEIGHT + BAR_GAP))),
-      );
+      setCapacity(phone.matches ? PHONE_CAPACITY : barsThatFit(list));
+      setWeekendCapacity(phone.matches ? PHONE_CAPACITY : barsThatFit(weekendList));
     }
     const measure = new ResizeObserver(update);
     measure.observe(list);
+    if (weekendList) measure.observe(weekendList);
     phone.addEventListener('change', update);
     return () => {
       measure.disconnect();
       phone.removeEventListener('change', update);
     };
   }, []);
-  return { ref, capacity, isPhone };
+  return { ref, capacity, weekendCapacity, isPhone };
 }
 
 interface MonthBarProps {
@@ -138,8 +144,8 @@ interface MonthDayProps {
   readonly scheduleDay: ScheduleDay;
   readonly today: CalendarDay;
   readonly capacity: number;
-  /** A weekend day in the narrow column: only its number and a link to the drawer. */
-  readonly collapsed: boolean;
+  /** A weekend day in the narrow column, half a week's height, with its name beside the number. */
+  readonly narrow: boolean;
   /** The week's row, placing the day in the grid. */
   readonly row: number;
   readonly upward: boolean;
@@ -148,11 +154,11 @@ interface MonthDayProps {
   readonly onOpen: (opener: HTMLButtonElement, scrollToIndex: number | null) => void;
 }
 
-function MonthDay({ scheduleDay, today, capacity, collapsed, row, upward, selected, onOpen }: MonthDayProps) {
+function MonthDay({ scheduleDay, today, capacity, narrow, row, upward, selected, onOpen }: MonthDayProps) {
   const { day, weekdayIndex, inRange, isWeekend } = scheduleDay;
   const listings = activeListings(scheduleDay);
   // The footer below the list always holds its row, so the list has room for exactly `capacity` bars
-  const shown = collapsed ? [] : listings.slice(0, capacity);
+  const shown = listings.slice(0, capacity);
   const hidden = listings.length - shown.length;
   const isToday = day === today;
   return (
@@ -161,7 +167,7 @@ function MonthDay({ scheduleDay, today, capacity, collapsed, row, upward, select
       data-in-month={inRange}
       data-weekend={isWeekend}
       data-weekday={weekdayIndex}
-      data-collapsed={collapsed || undefined}
+      data-narrow={narrow || undefined}
       style={{ '--row': row } as CSSProperties}
       data-past={day < today || undefined}
       data-selected={selected || undefined}
@@ -197,9 +203,9 @@ function MonthDay({ scheduleDay, today, capacity, collapsed, row, upward, select
             className={styles.more}
             data-more
             aria-expanded={selected}
-            onClick={(event) => onOpen(event.currentTarget, hidden > 0 && !collapsed ? shown.length : null)}
+            onClick={(event) => onOpen(event.currentTarget, hidden > 0 ? shown.length : null)}
           >
-            {hidden > 0 && !collapsed ? `+${hidden} ${MONTH_LABELS.more}` : MONTH_LABELS.showDay}
+            {hidden > 0 ? `+${hidden} ${MONTH_LABELS.more}` : MONTH_LABELS.showDay}
           </button>
         ) : null}
       </div>
@@ -218,7 +224,7 @@ interface MonthGridProps {
 
 /** The whole month on one and a half screens: equal week rows, events as bars. */
 export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps) {
-  const { ref, capacity, isPhone } = useCapacity();
+  const { ref, capacity, weekendCapacity, isPhone } = useCapacity();
   const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
   // The drawer slides out before it goes
   const [closing, setClosing] = useState(false);
@@ -289,9 +295,9 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
                 key={scheduleDay.day}
                 scheduleDay={scheduleDay}
                 today={today}
-                capacity={capacity}
-              collapsed={!isPhone && scheduleDay.weekdayIndex >= WEEKEND_FROM}
-              row={row}
+                capacity={scheduleDay.weekdayIndex >= WEEKEND_FROM ? weekendCapacity : capacity}
+                narrow={!isPhone && scheduleDay.weekdayIndex >= WEEKEND_FROM}
+                row={row}
                 upward={row >= weeks.length - UPWARD_ROWS}
                 selected={openDay === scheduleDay.day}
                 onOpen={(opener, scrollTo) => {
