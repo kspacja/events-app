@@ -312,7 +312,8 @@
   }
 
   .day[data-in-month='false'],
-  .day[data-empty] {
+  .day[data-empty],
+  .day[data-past] {
     display: none;
   }
 

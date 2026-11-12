@@ -38,15 +38,15 @@ export function formatPassedWeeks({ range, count }: PassedWeeks): string {
 export interface WeekJump {
   /** The week's days in the month, e.g. "2–8.11". */
   readonly label: string;
-  /** Its first day with events; null when it has none, so there is nothing to jump to. */
+  /** Its first day with events from today on (phones hide past days); null when there is none to jump to. */
   readonly target: CalendarDay | null;
 }
 
-export function weekJumpsOf(weeks: readonly Week[]): WeekJump[] {
+export function weekJumpsOf(weeks: readonly Week[], today: CalendarDay): WeekJump[] {
   return weeks.flatMap((week) => {
     const inMonth = week.filter(({ inRange }) => inRange);
     if (inMonth.length === 0) return [];
-    const first = inMonth.find(({ entries }) => entries.some(({ active }) => active));
+    const first = inMonth.find(({ day, entries }) => day >= today && entries.some(({ active }) => active));
     return [{ label: formatRangeLabel({ from: inMonth[0].day, to: inMonth[inMonth.length - 1].day }), target: first?.day ?? null }];
   });
 }

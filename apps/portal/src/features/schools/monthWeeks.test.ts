@@ -52,9 +52,13 @@ describe('formatPassedWeeks', () => {
 
 describe('weekJumpsOf', () => {
   it('jumps to the first day with events of each week, or nowhere when it has none', () => {
-    expect(weekJumpsOf([week('2026-11-02', 6, 1), week('2026-11-09', 0, 0)])).toEqual([
+    expect(weekJumpsOf([week('2026-11-02', 6, 1), week('2026-11-09', 0, 0)], '2026-11-02')).toEqual([
       { label: '8.11', target: '2026-11-08' },
       { label: '9—15.11', target: null },
     ]);
+  });
+
+  it('skips the days already gone, as phones hide them', () => {
+    expect(weekJumpsOf([week('2026-11-09', 0, 1)], '2026-11-12')).toEqual([{ label: '9—15.11', target: '2026-11-12' }]);
   });
 });
