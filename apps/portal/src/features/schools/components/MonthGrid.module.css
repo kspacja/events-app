@@ -126,9 +126,9 @@
   letter-spacing: 0.08em;
 }
 
-/* A quiet note in a day of the month with nothing on, where the link would be */
-.noEvents {
-  padding: 0 var(--space-1-5);
+/* A quiet note under the day's number when it has nothing on */
+.bars:empty[data-empty-note]::before {
+  content: attr(data-empty-note);
   font-size: var(--text-xs);
   color: var(--color-text-tertiary);
 }

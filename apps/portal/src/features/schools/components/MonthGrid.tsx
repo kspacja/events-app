@@ -185,7 +185,8 @@ function MonthDay({ scheduleDay, today, capacity, narrow, row, upward, selected,
         <span className="visually-hidden">{formatDay(day, 'EEEE, d MMMM')}</span>
         {isToday ? <span className={styles.today}>{UI_LABELS.today}</span> : null}
       </h3>
-      <ul className={styles.bars} data-bars>
+      {/* The note shows in the empty list itself, so it takes none of the room the bars are counted from */}
+      <ul className={styles.bars} data-bars data-empty-note={inRange ? MONTH_LABELS.noEvents : undefined}>
         {shown.map((listing) => (
           <MonthBar
             key={listing.occurrenceId}
@@ -207,8 +208,6 @@ function MonthDay({ scheduleDay, today, capacity, narrow, row, upward, selected,
           >
             {hidden > 0 ? `+${hidden} ${MONTH_LABELS.more}` : MONTH_LABELS.showDay}
           </button>
-        ) : inRange ? (
-          <span className={styles.noEvents}>{MONTH_LABELS.noEvents}</span>
         ) : null}
       </div>
     </li>

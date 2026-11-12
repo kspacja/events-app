@@ -47,9 +47,11 @@ describe('MonthGrid', () => {
   });
 
   it('notes "brak wydarzeń" in an empty day of the month, but not outside it', () => {
-    renderGrid([day('2026-11-02', []), day('2026-10-31', [], false)]);
+    const { container } = renderGrid([day('2026-11-02', []), day('2026-10-31', [], false)]);
 
-    expect(screen.getAllByText('brak wydarzeń')).toHaveLength(1);
+    // Drawn by CSS from the attribute, under the day's number
+    const notes = [...container.querySelectorAll('[data-empty-note]')].map((list) => list.getAttribute('data-empty-note'));
+    expect(notes).toEqual(['brak wydarzeń']);
   });
 
   it('shows as many bars as fit and the rest behind "+N więcej"', () => {
