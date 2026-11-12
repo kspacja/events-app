@@ -82,6 +82,35 @@
   font-weight: 600;
 }
 
+/* A day with events opens its drawer from its number */
+.dayButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: calc(-1 * var(--space-0-5)) calc(-1 * var(--space-1-5));
+  padding: var(--space-0-5) var(--space-1-5);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.dayButton:hover {
+  background: var(--color-accent-soft);
+}
+
+.dayButton:hover time {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.dayButton:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 1px;
+}
+
 .today {
   padding: var(--space-0-5) var(--space-2);
   border-radius: var(--radius-full);

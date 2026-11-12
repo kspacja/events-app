@@ -89,6 +89,14 @@ describe('MonthGrid', () => {
     expect(within(jumps).getByRole('button', { name: '9.11' })).toBeDisabled();
   });
 
+  it('opens any day with events in the drawer from its number', () => {
+    renderGrid([day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]);
+
+    fireEvent.click(screen.getByRole('button', { name: 'poniedziałek, 2 listopada, dziś, pokaż dzień' }));
+
+    expect(screen.getByRole('dialog', { name: 'poniedziałek, 2 listopada' })).toBeInTheDocument();
+  });
+
   it('opens the tile when the bar is tapped', () => {
     renderGrid([day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]);
     const bar = screen.getByRole('button', { name: '10:00 Lekcja w muzeum' });

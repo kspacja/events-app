@@ -120,6 +120,21 @@ function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
   );
 }
 
+function DayTitle({ day, isToday }: { readonly day: CalendarDay; readonly isToday: boolean }) {
+  return (
+    <>
+      <span className={styles.weekday} aria-hidden="true">
+        {formatDay(day, 'EEEE')}
+      </span>
+      <time dateTime={day} aria-hidden="true">
+        {formatDay(day, 'd')}
+      </time>
+      <span className="visually-hidden">{formatDay(day, 'EEEE, d MMMM')}</span>
+      {isToday ? <span className={styles.today}>{UI_LABELS.today}</span> : null}
+    </>
+  );
+}
+
 function activeListings({ entries }: ScheduleDay): OccurrenceListing[] {
   return entries.filter(({ active }) => active).map(({ listing }) => listing);
 }
@@ -130,10 +145,11 @@ interface MonthDayProps {
   readonly capacity: number;
   readonly upward: boolean;
   readonly selected: boolean;
-  readonly onMore: (opener: HTMLButtonElement) => void;
+  /** Opens the day's drawer; `opener` gets the focus back when it closes. */
+  readonly onOpen: (opener: HTMLButtonElement) => void;
 }
 
-function MonthDay({ scheduleDay, today, capacity, upward, selected, onMore }: MonthDayProps) {
+function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: MonthDayProps) {
   const { day, weekdayIndex, inRange, isWeekend } = scheduleDay;
   const listings = activeListings(scheduleDay);
   // A full day keeps its last row for "+N więcej"
@@ -152,14 +168,19 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onMore }: Mo
       aria-current={isToday ? 'date' : undefined}
     >
       <h3 className={styles.dayHeading}>
-        <span className={styles.weekday} aria-hidden="true">
-          {formatDay(day, 'EEEE')}
-        </span>
-        <time dateTime={day} aria-hidden="true">
-          {formatDay(day, 'd')}
-        </time>
-        <span className="visually-hidden">{formatDay(day, 'EEEE, d MMMM')}</span>
-        {isToday ? <span className={styles.today}>{UI_LABELS.today}</span> : null}
+        {listings.length > 0 ? (
+          <button
+            type="button"
+            className={styles.dayButton}
+            aria-expanded={selected}
+            aria-label={[formatDay(day, 'EEEE, d MMMM'), ...(isToday ? [UI_LABELS.today] : []), MONTH_LABELS.showDay].join(', ')}
+            onClick={(event) => onOpen(event.currentTarget)}
+          >
+            <DayTitle day={day} isToday={isToday} />
+          </button>
+        ) : (
+          <DayTitle day={day} isToday={isToday} />
+        )}
       </h3>
       <ul className={styles.bars} data-bars>
         {shown.map((listing) => (
@@ -177,7 +198,7 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onMore }: Mo
           className={styles.more}
           data-more
           aria-expanded={selected}
-          onClick={(event) => onMore(event.currentTarget)}
+          onClick={(event) => onOpen(event.currentTarget)}
         >
           {`+${hidden} ${MONTH_LABELS.more}`}
         </button>
@@ -290,7 +311,7 @@ export function MonthGrid({ weeks, passed = null, today }: MonthGridProps) {
               capacity={capacity}
               upward={row >= weeks.length - UPWARD_ROWS}
               selected={openDay === scheduleDay.day}
-              onMore={(opener) => {
+              onOpen={(opener) => {
                 if (openDay === scheduleDay.day && !closing) {
                   close();
                   return;
