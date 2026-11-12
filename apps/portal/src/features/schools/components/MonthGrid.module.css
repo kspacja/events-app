@@ -219,3 +219,108 @@
     outline-offset: 2px;
   }
 }
+
+/* Phones only: the weekday name beside the number, and the row of week jumps */
+.weekday,
+.weekJumps {
+  display: none;
+}
+
+/* Phones: the month as a list of the days that have events, every bar in full */
+@media (max-width: 768px) {
+  .grid {
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .weekdays {
+    display: none;
+  }
+
+  .weekJumps {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    display: flex;
+    gap: var(--space-1-5);
+    margin: 0 calc(-1 * var(--space-4)) var(--space-3);
+    padding: var(--space-2) var(--space-4);
+    overflow-x: auto;
+    background: var(--color-bg);
+    scrollbar-width: none;
+  }
+
+  .weekJump {
+    flex: none;
+    height: 32px;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .weekJump:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .weekJump:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+  }
+
+  .days {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .day {
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    /* Below the sticky week jumps */
+    scroll-margin-top: 60px;
+  }
+
+  .day:nth-child(7n),
+  .day:nth-last-child(-n + 7) {
+    border: 1px solid var(--color-border);
+  }
+
+  .day[data-in-month='false'],
+  .day[data-empty] {
+    display: none;
+  }
+
+  .weekday {
+    display: inline;
+    text-transform: capitalize;
+  }
+
+  .bar {
+    height: 40px;
+  }
+
+  /* The tile opens in place, under its bar */
+  .tile {
+    position: static;
+    display: none;
+    width: auto;
+    padding: var(--space-1) 0 var(--space-2);
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .entry[data-open] .tile,
+  .entry:has(:focus-visible) .tile {
+    display: block;
+  }
+}

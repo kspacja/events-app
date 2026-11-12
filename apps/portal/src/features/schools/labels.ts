@@ -31,4 +31,5 @@ export const MONTH_LABELS = {
   countScope: 'w miesiącu',
   more: 'więcej',
   closeDay: 'Zamknij dzień',
+  weekJumps: 'Tygodnie miesiąca',
 } as const;

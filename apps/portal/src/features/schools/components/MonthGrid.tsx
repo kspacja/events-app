@@ -7,6 +7,7 @@ import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
 import { UI_LABELS } from '@/features/events/labels';
 import type { ScheduleDay } from '@/features/events/schedule';
 import { occurrenceDomId } from '@/features/events/scheduleDom';
+import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import { MonthDayDrawer } from './MonthDayDrawer';
@@ -21,6 +22,8 @@ const DEFAULT_CAPACITY = 4;
 const END_ALIGNED_FROM = 3;
 // The last two rows open their tiles upwards
 const UPWARD_ROWS = 2;
+// Phones list the days one under another, so every bar fits
+const PHONE_QUERY = '(max-width: 768px)';
 
 const REVEAL_EVENT = 'month-grid:reveal';
 
@@ -44,11 +47,20 @@ function useCapacity() {
   useEffect(() => {
     const list = ref.current?.querySelector<HTMLElement>('[data-bars]');
     if (!list) return;
-    const measure = new ResizeObserver(() => {
-      setCapacity(Math.max(1, Math.floor((list.clientHeight + BAR_GAP) / (BAR_HEIGHT + BAR_GAP))));
-    });
+    const phone = window.matchMedia(PHONE_QUERY);
+    function update() {
+      if (!list) return;
+      setCapacity(
+        phone.matches ? Infinity : Math.max(1, Math.floor((list.clientHeight + BAR_GAP) / (BAR_HEIGHT + BAR_GAP))),
+      );
+    }
+    const measure = new ResizeObserver(update);
     measure.observe(list);
-    return () => measure.disconnect();
+    phone.addEventListener('change', update);
+    return () => {
+      measure.disconnect();
+      phone.removeEventListener('change', update);
+    };
   }, []);
   return { ref, capacity };
 }
@@ -122,9 +134,13 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onMore }: Mo
       data-past={day < today || undefined}
       data-selected={selected || undefined}
       data-day={day}
+      data-empty={listings.length === 0 || undefined}
       aria-current={isToday ? 'date' : undefined}
     >
       <h3 className={styles.dayHeading}>
+        <span className={styles.weekday} aria-hidden="true">
+          {formatDay(day, 'EEEE')}
+        </span>
         <time dateTime={day} aria-hidden="true">
           {formatDay(day, 'd')}
         </time>
@@ -153,6 +169,36 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onMore }: Mo
         </button>
       ) : null}
     </li>
+  );
+}
+
+/** Phones: a sticky row of the month's weeks; a week scrolls the list to its first day with events. */
+function WeekJumps({ weeks }: { readonly weeks: readonly (readonly ScheduleDay[])[] }) {
+  return (
+    <nav className={styles.weekJumps} aria-label={MONTH_LABELS.weekJumps}>
+      {weeks.map((week) => {
+        const inMonth = week.filter(({ inRange }) => inRange);
+        if (inMonth.length === 0) return null;
+        const first = inMonth.find((scheduleDay) => activeListings(scheduleDay).length > 0);
+        const label = formatRangeLabel({ from: inMonth[0].day, to: inMonth[inMonth.length - 1].day });
+        return (
+          <button
+            key={week[0].day}
+            type="button"
+            className={styles.weekJump}
+            disabled={!first}
+            onClick={() => {
+              const target = first && document.querySelector<HTMLElement>(`[data-day="${first.day}"]`);
+              if (!target) return;
+              const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+              target.scrollIntoView({ block: 'start', behavior });
+            }}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </nav>
   );
 }
 
@@ -198,6 +244,7 @@ export function MonthGrid({ weeks, today }: MonthGridProps) {
   } as CSSProperties;
   return (
     <section className={styles.grid} aria-label={CALENDAR_LABELS.region} style={style}>
+      <WeekJumps weeks={weeks} />
       <div className={styles.weekdays} aria-hidden="true">
         {WEEKDAY_SHORT_NAMES.map((name) => (
           <span key={name}>{name}</span>

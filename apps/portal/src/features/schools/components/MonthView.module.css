@@ -61,3 +61,14 @@
     bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
   }
 }
+
+/* Phones: the week jumps take the sticky top, so the filters scroll away */
+@media (max-width: 768px) {
+  .filters {
+    position: static;
+  }
+
+  .month {
+    font-size: var(--text-2xl);
+  }
+}
