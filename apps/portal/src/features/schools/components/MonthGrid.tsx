@@ -11,6 +11,7 @@ import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import { MonthDayDrawer } from './MonthDayDrawer';
+import { formatPassedWeeks, type PassedWeeks } from '../monthWeeks';
 import styles from './MonthGrid.module.css';
 
 // One source for the bar size, read by the CSS and by the count of bars that fit a day
@@ -216,12 +217,15 @@ function WeekJumps({ weeks }: { readonly weeks: readonly (readonly ScheduleDay[]
 }
 
 interface MonthGridProps {
+  /** The weeks still ahead; those fully gone are left out. */
   readonly weeks: readonly (readonly ScheduleDay[])[];
+  /** What the left-out weeks held, for a note above the grid. */
+  readonly passed?: PassedWeeks | null;
   readonly today: CalendarDay;
 }
 
 /** The whole month on one and a half screens: equal week rows, events as bars. */
-export function MonthGrid({ weeks, today }: MonthGridProps) {
+export function MonthGrid({ weeks, passed = null, today }: MonthGridProps) {
   const { ref, capacity } = useCapacity();
   const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
   const openerRef = useRef<HTMLButtonElement | null>(null);
@@ -258,6 +262,7 @@ export function MonthGrid({ weeks, today }: MonthGridProps) {
   return (
     <section className={styles.grid} aria-label={CALENDAR_LABELS.region} style={style}>
       <WeekJumps weeks={weeks} />
+      {passed ? <p className={styles.passed}>{formatPassedWeeks(passed)}</p> : null}
       <div className={styles.weekdays} aria-hidden="true">
         {WEEKDAY_SHORT_NAMES.map((name) => (
           <span key={name}>{name}</span>

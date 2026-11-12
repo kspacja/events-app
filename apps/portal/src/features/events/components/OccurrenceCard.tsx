@@ -9,7 +9,7 @@ import styles from './OccurrenceCard.module.css';
 interface OccurrenceCardProps {
   readonly listing: OccurrenceListing;
   readonly muted?: boolean;
-  /** `popup`: no image and no anchor id, the pin beside the time; shown over a month bar. */
+  /** `popup`: framed and without the anchor id; shown over a month bar and in the day drawer. */
   readonly variant?: 'strip' | 'popup';
 }
 
@@ -28,24 +28,21 @@ export function OccurrenceCard({ listing, muted = false, variant = 'strip' }: Oc
       data-muted={muted}
       data-variant={variant}
     >
-      {variant === 'strip' ? (
-        <div className={styles.image}>
-          {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt=""
-              fill
-              unoptimized
-              sizes="240px"
-              className={styles.photo}
-            />
-          ) : null}
-          <ShowOnMapButton occurrenceId={occurrenceId} title={title} />
-        </div>
-      ) : null}
+      <div className={styles.image}>
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt=""
+            fill
+            unoptimized
+            sizes="240px"
+            className={styles.photo}
+          />
+        ) : null}
+        <ShowOnMapButton occurrenceId={occurrenceId} title={title} />
+      </div>
       <p className={styles.meta}>
         {formatLocalTime(startsAt)} · {main.label}
-        {variant === 'popup' ? <ShowOnMapButton occurrenceId={occurrenceId} title={title} /> : null}
       </p>
       <h3 className={styles.title}>
         {title}

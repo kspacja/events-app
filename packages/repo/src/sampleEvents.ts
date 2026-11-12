@@ -143,6 +143,17 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'poz-school-writing', title: 'Warsztaty pisarskie z poetką', categories: [MEETUPS], venue: STARY_RYNEK, dayOffset: 3, time: '12:00', price: free, forSchools: true },
   { id: 'wro-school-chemistry', title: 'Pokazy chemiczne', categories: [WORKSHOPS], venue: HALA_STULECIA, dayOffset: 4, time: '09:00', price: paid(10), forSchools: true },
   { id: 'krk-school-english', title: 'Spacer po Krakowie po angielsku', categories: [MOVEMENT], venue: PLAC_NOWY, dayOffset: 4, time: '10:30', price: paid(15), forSchools: true },
+  // A crowded Thursday, so the schools month has a day behind "+N więcej"
+  { id: 'wro-school-astronomy', title: 'Astronomia dla najmłodszych', categories: [WORKSHOPS], venue: HALA_STULECIA, dayOffset: 3, time: '08:00', price: paid(8), forSchools: true },
+  { id: 'krk-school-legends', title: 'Legendy krakowskie w teatrze lalek', categories: [ART], venue: KAZIMIERZ, dayOffset: 3, time: '08:30', price: paid(12), forSchools: true },
+  { id: 'wro-school-choir', title: 'Próba chóru szkolnego', categories: [MUSIC], venue: KOSCIOL_PRZY_RYNKU, dayOffset: 3, time: '09:15', price: free, forSchools: true },
+  { id: 'gdn-school-amber', title: 'Bursztyn: skąd się bierze', categories: [WORKSHOPS], venue: DLUGIE_POBRZEZE, dayOffset: 3, time: '10:30', price: paid(10), forSchools: true },
+  { id: 'wro-school-bridges', title: 'Mosty Wrocławia: lekcja w terenie', categories: [MOVEMENT], venue: WYSPA_SLODOWA, dayOffset: 3, time: '11:00', price: free, forSchools: true },
+  { id: 'poz-school-comics', title: 'Rysujemy komiks', categories: [WORKSHOPS, ART], venue: GALERIA_JEZYCE, dayOffset: 3, time: '11:30', price: paid(15), forSchools: true },
+  { id: 'krk-school-debate', title: 'Debata oksfordzka dla licealistów', categories: [MEETUPS], venue: PLAC_NOWY, dayOffset: 3, time: '12:30', price: free, forSchools: true },
+  { id: 'wro-school-recycling', title: 'Segregacja i recykling w praktyce', categories: [WORKSHOPS], venue: OLBIN, dayOffset: 3, time: '13:00', price: free, forSchools: true },
+  { id: 'gdn-school-sea', title: 'Życie w Bałtyku', categories: [MOVEMENT], venue: PLAZA_JELITKOWO, dayOffset: 3, time: '13:30', price: free, forSchools: true },
+  { id: 'poz-school-poetry', title: 'Slam poetycki w szkole', categories: [MEETUPS], venue: STARY_RYNEK, dayOffset: 3, time: '14:30', price: free, forSchools: true },
 ];
 
 // Every template occurs in the first week, so these are the first week's sizes

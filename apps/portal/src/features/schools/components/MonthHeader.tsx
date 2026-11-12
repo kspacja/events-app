@@ -19,21 +19,23 @@ interface MonthHeaderProps {
 export function MonthHeader({ month, today, filtersQuery, total, upcoming }: MonthHeaderProps) {
   return (
     <div className={styles.header}>
-      <PeriodArrow
-        direction={-1}
-        href={schoolsMonthHref(addMonths(month, -1), filtersQuery)}
-        label={CALENDAR_LABELS.previousMonth}
-        disabled={month <= monthOf(today)}
-      />
-      <h2 className={styles.month}>
-        {formatDay(firstDayOf(month), 'LLLL yyyy')}
-        <span className={styles.count}>{formatWeekCount(total, upcoming, MONTH_LABELS.countScope)}</span>
-      </h2>
-      <PeriodArrow
-        direction={1}
-        href={schoolsMonthHref(addMonths(month, 1), filtersQuery)}
-        label={CALENDAR_LABELS.nextMonth}
-      />
+      <div className={styles.nav}>
+        <PeriodArrow
+          direction={-1}
+          href={schoolsMonthHref(addMonths(month, -1), filtersQuery)}
+          label={CALENDAR_LABELS.previousMonth}
+          disabled={month <= monthOf(today)}
+          compact
+        />
+        <h2 className={styles.month}>{formatDay(firstDayOf(month), 'LLLL yyyy')}</h2>
+        <PeriodArrow
+          direction={1}
+          href={schoolsMonthHref(addMonths(month, 1), filtersQuery)}
+          label={CALENDAR_LABELS.nextMonth}
+          compact
+        />
+      </div>
+      <span className={styles.count}>{formatWeekCount(total, upcoming, MONTH_LABELS.countScope)}</span>
     </div>
   );
 }
