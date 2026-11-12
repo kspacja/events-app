@@ -56,6 +56,18 @@ describe('MonthGrid', () => {
     expect(screen.getByText('+3 więcej')).toBeInTheDocument();
   });
 
+  it('opens the full day in a drawer from "+N więcej", and closes it with Escape', () => {
+    const many = Array.from({ length: 6 }, (_, i) => listing(`e${i}`, `2026-11-02T0${i}:00:00Z`, `Wydarzenie ${i}`));
+    renderGrid([day('2026-11-02', many)]);
+
+    fireEvent.click(screen.getByRole('button', { name: '+3 więcej' }));
+    const drawer = screen.getByRole('dialog', { name: 'poniedziałek, 2 listopada' });
+    expect(within(drawer).getAllByRole('article')).toHaveLength(6);
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('opens the tile when the bar is tapped', () => {
     renderGrid([day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]);
     const bar = screen.getByRole('button', { name: '10:00 Lekcja w muzeum' });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import type { CalendarDay } from '@events/time';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
@@ -9,6 +9,7 @@ import type { ScheduleDay } from '@/features/events/schedule';
 import { occurrenceDomId } from '@/features/events/scheduleDom';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
+import { MonthDayDrawer } from './MonthDayDrawer';
 import styles from './MonthGrid.module.css';
 
 // One source for the bar size, read by the CSS and by the count of bars that fit a day
@@ -78,16 +79,22 @@ function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
   );
 }
 
+function activeListings({ entries }: ScheduleDay): OccurrenceListing[] {
+  return entries.filter(({ active }) => active).map(({ listing }) => listing);
+}
+
 interface MonthDayProps {
   readonly scheduleDay: ScheduleDay;
   readonly today: CalendarDay;
   readonly capacity: number;
   readonly upward: boolean;
+  readonly selected: boolean;
+  readonly onMore: (opener: HTMLButtonElement) => void;
 }
 
-function MonthDay({ scheduleDay, today, capacity, upward }: MonthDayProps) {
-  const { day, weekdayIndex, inRange, isWeekend, entries } = scheduleDay;
-  const listings = entries.filter(({ active }) => active).map(({ listing }) => listing);
+function MonthDay({ scheduleDay, today, capacity, upward, selected, onMore }: MonthDayProps) {
+  const { day, weekdayIndex, inRange, isWeekend } = scheduleDay;
+  const listings = activeListings(scheduleDay);
   // A full day keeps its last row for "+N więcej"
   const shown = listings.length > capacity ? listings.slice(0, capacity - 1) : listings;
   const hidden = listings.length - shown.length;
@@ -98,6 +105,7 @@ function MonthDay({ scheduleDay, today, capacity, upward }: MonthDayProps) {
       data-in-month={inRange}
       data-weekend={isWeekend}
       data-past={day < today || undefined}
+      data-selected={selected || undefined}
       aria-current={isToday ? 'date' : undefined}
     >
       <h3 className={styles.dayHeading}>
@@ -117,7 +125,16 @@ function MonthDay({ scheduleDay, today, capacity, upward }: MonthDayProps) {
           />
         ))}
       </ul>
-      {hidden > 0 ? <span className={styles.more}>{`+${hidden} ${MONTH_LABELS.more}`}</span> : null}
+      {hidden > 0 ? (
+        <button
+          type="button"
+          className={styles.more}
+          aria-expanded={selected}
+          onClick={(event) => onMore(event.currentTarget)}
+        >
+          {`+${hidden} ${MONTH_LABELS.more}`}
+        </button>
+      ) : null}
     </li>
   );
 }
@@ -130,6 +147,14 @@ interface MonthGridProps {
 /** The whole month on one and a half screens: equal week rows, events as bars. */
 export function MonthGrid({ weeks, today }: MonthGridProps) {
   const { ref, capacity } = useCapacity();
+  const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
+  const openerRef = useRef<HTMLButtonElement | null>(null);
+  const open = openDay ? weeks.flat().find(({ day }) => day === openDay) : undefined;
+  const close = useCallback(() => {
+    setOpenDay(null);
+    // Back to the "+N" that opened it, once the drawer is gone
+    requestAnimationFrame(() => openerRef.current?.focus());
+  }, []);
   const style = {
     '--rows': weeks.length,
     '--bar-height': `${BAR_HEIGHT}px`,
@@ -151,10 +176,23 @@ export function MonthGrid({ weeks, today }: MonthGridProps) {
               today={today}
               capacity={capacity}
               upward={row >= weeks.length - UPWARD_ROWS}
+              selected={openDay === scheduleDay.day}
+              onMore={(opener) => {
+                openerRef.current = opener;
+                setOpenDay((current) => (current === scheduleDay.day ? null : scheduleDay.day));
+              }}
             />
           )),
         )}
       </ol>
+      {open ? (
+        <MonthDayDrawer
+          day={open.day}
+          listings={activeListings(open)}
+          side={open.weekdayIndex >= END_ALIGNED_FROM ? 'start' : 'end'}
+          onClose={close}
+        />
+      ) : null}
     </section>
   );
 }

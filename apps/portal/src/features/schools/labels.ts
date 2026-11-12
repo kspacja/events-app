@@ -30,4 +30,5 @@ export const WEEKDAY_SHORT_NAMES = ['pn', 'wt', 'śr', 'czw', 'pt', 'sob', 'nd']
 export const MONTH_LABELS = {
   countScope: 'w miesiącu',
   more: 'więcej',
+  closeDay: 'Zamknij dzień',
 } as const;
