@@ -23,7 +23,7 @@ function day(date: CalendarDay, listings: OccurrenceListing[], inRange = true): 
 function renderGrid(days: ScheduleDay[]) {
   return render(
     <OccurrenceSelectionProvider>
-      <MonthGrid weeks={[days]} today="2026-11-02" />
+      <MonthGrid month="2026-11" weeks={[days]} today="2026-11-02" />
     </OccurrenceSelectionProvider>,
   );
 }

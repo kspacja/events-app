@@ -10,6 +10,7 @@ import { occurrenceDomId } from '@/features/events/scheduleDom';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import { MonthDayDrawer } from './MonthDayDrawer';
+import { firstDayOf, type CalendarMonth } from '../monthCalendar';
 import { formatPassedWeeks, type PassedWeeks } from '../monthWeeks';
 import styles from './MonthGrid.module.css';
 
@@ -196,6 +197,7 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: Mo
 }
 
 interface MonthGridProps {
+  readonly month: CalendarMonth;
   /** The weeks still ahead; those fully gone are left out. */
   readonly weeks: readonly (readonly ScheduleDay[])[];
   /** What the left-out weeks held, for a note above the grid. */
@@ -204,7 +206,7 @@ interface MonthGridProps {
 }
 
 /** The whole month on one and a half screens: equal week rows, events as bars. */
-export function MonthGrid({ weeks, passed = null, today }: MonthGridProps) {
+export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps) {
   const { ref, capacity } = useCapacity();
   const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
   // The drawer slides out before it goes
@@ -252,7 +254,13 @@ export function MonthGrid({ weeks, passed = null, today }: MonthGridProps) {
   } as CSSProperties;
   return (
     <section className={styles.grid} aria-label={CALENDAR_LABELS.region} style={style}>
-      {passed ? <p className={styles.passed}>{formatPassedWeeks(passed)}</p> : null}
+      <div className={styles.caption}>
+        {/* The dock's h2 already names the month for screen readers */}
+        <span className={styles.monthName} aria-hidden="true">
+          {formatDay(firstDayOf(month), 'LLLL yyyy')}
+        </span>
+        {passed ? <p className={styles.passed}>{formatPassedWeeks(passed)}</p> : null}
+      </div>
       <div className={styles.weekdays} aria-hidden="true">
         {WEEKDAY_SHORT_NAMES.map((name) => (
           <span key={name}>{name}</span>
