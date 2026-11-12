@@ -91,6 +91,8 @@ interface SampleEventTemplate {
   /** Local time, `HH:mm` */
   readonly time: string;
   readonly forSchools?: true;
+  /** Occurs in this generated week only (0 = the current one), not every week. */
+  readonly onlyInWeek?: number;
 }
 
 // Placeholder photos for testing: seeded by event id, so each event keeps its own picture; 2× the card size
@@ -154,11 +156,15 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'wro-school-recycling', title: 'Segregacja i recykling w praktyce', categories: [WORKSHOPS], venue: OLBIN, dayOffset: 3, time: '13:00', price: free, forSchools: true },
   { id: 'gdn-school-sea', title: 'Życie w Bałtyku', categories: [MOVEMENT], venue: PLAZA_JELITKOWO, dayOffset: 3, time: '13:30', price: free, forSchools: true },
   { id: 'poz-school-poetry', title: 'Slam poetycki w szkole', categories: [MEETUPS], venue: STARY_RYNEK, dayOffset: 3, time: '14:30', price: free, forSchools: true },
+  // One school event on a Saturday and one on a Sunday, for the schools month's weekend column
+  { id: 'wro-school-zoo', title: 'Sobota w zoo z klasą', categories: [MOVEMENT], venue: HALA_STULECIA, dayOffset: 5, time: '10:00', price: paid(20), forSchools: true, onlyInWeek: 0 },
+  { id: 'krk-school-concert', title: 'Niedzielny koncert dla szkół', categories: [MUSIC], venue: PIWNICA_POD_BARANAMI, dayOffset: 6, time: '12:00', price: paid(15), forSchools: true, onlyInWeek: 1 },
 ];
 
-// Every template occurs in the first week, so these are the first week's sizes
-export const SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK = SAMPLE_EVENTS.filter(({ forSchools }) => !forSchools).length;
-export const SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK = SAMPLE_EVENTS.filter(({ forSchools }) => forSchools).length;
+// Every template occurs in the first week, except those kept to a later one
+const IN_FIRST_WEEK = SAMPLE_EVENTS.filter(({ onlyInWeek = 0 }) => onlyInWeek === 0);
+export const SAMPLE_GENERAL_OCCURRENCES_IN_FIRST_WEEK = IN_FIRST_WEEK.filter(({ forSchools }) => !forSchools).length;
+export const SAMPLE_SCHOOL_OCCURRENCES_IN_FIRST_WEEK = IN_FIRST_WEEK.filter(({ forSchools }) => forSchools).length;
 
 const GENERATED_WEEKS = 5;
 const DAYS_IN_WEEK = 7;
@@ -189,7 +195,7 @@ export function createSampleEvents(now: Date): EventsData {
 
   const occurrences = Array.from({ length: GENERATED_WEEKS }, (_, weekIndex) =>
     SAMPLE_EVENTS.flatMap((template, templateIndex): Occurrence[] => {
-      if (isSkipped(weekIndex, templateIndex)) return [];
+      if (template.onlyInWeek === undefined ? isSkipped(weekIndex, templateIndex) : template.onlyInWeek !== weekIndex) return [];
       const day = addDays(firstMonday, weekIndex * DAYS_IN_WEEK + template.dayOffset);
       return [
         {
