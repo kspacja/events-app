@@ -7,12 +7,14 @@ import styles from './TopBar.module.css';
 interface TopBarProps {
   /** The page's <h1>, beside the logo. */
   readonly title?: string;
+  /** Full width, for pages that span the whole screen (the schools month). */
+  readonly wide?: boolean;
 }
 
-export function TopBar({ title }: TopBarProps) {
+export function TopBar({ title, wide = false }: TopBarProps) {
   return (
     <div className={styles.bar}>
-      <div className={styles.inner}>
+      <div className={styles.inner} data-wide={wide || undefined}>
         <Link href="/" className={styles.logo} aria-label={UI_LABELS.logoLabel}>
           {UI_LABELS.logo}
           <span className={styles.dot} aria-hidden="true">

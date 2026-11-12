@@ -20,6 +20,12 @@
   }
 }
 
+/* Lines up with the full-width page's side padding */
+.inner[data-wide] {
+  max-width: none;
+  padding-left: var(--space-4);
+}
+
 .logo {
   font-family: var(--font-heading);
   font-size: var(--text-xl);
