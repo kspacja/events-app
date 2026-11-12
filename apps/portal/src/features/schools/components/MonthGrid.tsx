@@ -120,21 +120,6 @@ function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
   );
 }
 
-function DayTitle({ day, isToday }: { readonly day: CalendarDay; readonly isToday: boolean }) {
-  return (
-    <>
-      <span className={styles.weekday} aria-hidden="true">
-        {formatDay(day, 'EEEE')}
-      </span>
-      <time dateTime={day} aria-hidden="true">
-        {formatDay(day, 'd')}
-      </time>
-      <span className="visually-hidden">{formatDay(day, 'EEEE, d MMMM')}</span>
-      {isToday ? <span className={styles.today}>{UI_LABELS.today}</span> : null}
-    </>
-  );
-}
-
 function activeListings({ entries }: ScheduleDay): OccurrenceListing[] {
   return entries.filter(({ active }) => active).map(({ listing }) => listing);
 }
@@ -152,8 +137,8 @@ interface MonthDayProps {
 function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: MonthDayProps) {
   const { day, weekdayIndex, inRange, isWeekend } = scheduleDay;
   const listings = activeListings(scheduleDay);
-  // A full day keeps its last row for "+N więcej"
-  const shown = listings.length > capacity ? listings.slice(0, capacity - 1) : listings;
+  // The footer below the list always holds its row, so the list has room for exactly `capacity` bars
+  const shown = listings.slice(0, capacity);
   const hidden = listings.length - shown.length;
   const isToday = day === today;
   return (
@@ -168,19 +153,14 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: Mo
       aria-current={isToday ? 'date' : undefined}
     >
       <h3 className={styles.dayHeading}>
-        {listings.length > 0 ? (
-          <button
-            type="button"
-            className={styles.dayButton}
-            aria-expanded={selected}
-            aria-label={[formatDay(day, 'EEEE, d MMMM'), ...(isToday ? [UI_LABELS.today] : []), MONTH_LABELS.showDay].join(', ')}
-            onClick={(event) => onOpen(event.currentTarget)}
-          >
-            <DayTitle day={day} isToday={isToday} />
-          </button>
-        ) : (
-          <DayTitle day={day} isToday={isToday} />
-        )}
+        <span className={styles.weekday} aria-hidden="true">
+          {formatDay(day, 'EEEE')}
+        </span>
+        <time dateTime={day} aria-hidden="true">
+          {formatDay(day, 'd')}
+        </time>
+        <span className="visually-hidden">{formatDay(day, 'EEEE, d MMMM')}</span>
+        {isToday ? <span className={styles.today}>{UI_LABELS.today}</span> : null}
       </h3>
       <ul className={styles.bars} data-bars>
         {shown.map((listing) => (
@@ -192,17 +172,20 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: Mo
           />
         ))}
       </ul>
-      {hidden > 0 ? (
-        <button
-          type="button"
-          className={styles.more}
-          data-more
-          aria-expanded={selected}
-          onClick={(event) => onOpen(event.currentTarget)}
-        >
-          {`+${hidden} ${MONTH_LABELS.more}`}
-        </button>
-      ) : null}
+      {/* Every day keeps this row, even empty, so all lists have the same height */}
+      <div className={styles.footer}>
+        {listings.length > 0 ? (
+          <button
+            type="button"
+            className={styles.more}
+            data-more
+            aria-expanded={selected}
+            onClick={(event) => onOpen(event.currentTarget)}
+          >
+            {hidden > 0 ? `+${hidden} ${MONTH_LABELS.more}` : MONTH_LABELS.showDay}
+          </button>
+        ) : null}
+      </div>
     </li>
   );
 }

@@ -46,21 +46,21 @@ describe('MonthGrid', () => {
     expect(screen.queryByRole('button', { name: /Lekcja/ })).not.toBeInTheDocument();
   });
 
-  it('keeps the last row of a full day for the rest', () => {
+  it('shows as many bars as fit and the rest behind "+N więcej"', () => {
     const many = Array.from({ length: 6 }, (_, i) => listing(`e${i}`, `2026-11-02T0${i}:00:00Z`, `Wydarzenie ${i}`));
     renderGrid([day('2026-11-02', many)]);
 
     // The day's bars, inside the month's list of days
     const list = screen.getAllByRole('list')[1];
-    expect(within(list).getAllByRole('listitem')).toHaveLength(3);
-    expect(screen.getByText('+3 więcej')).toBeInTheDocument();
+    expect(within(list).getAllByRole('listitem')).toHaveLength(4);
+    expect(screen.getByRole('button', { name: '+2 więcej' })).toBeInTheDocument();
   });
 
   it('opens the full day in a drawer from "+N więcej", and slides it out on Escape', () => {
     const many = Array.from({ length: 6 }, (_, i) => listing(`e${i}`, `2026-11-02T0${i}:00:00Z`, `Wydarzenie ${i}`));
     renderGrid([day('2026-11-02', many)]);
 
-    fireEvent.click(screen.getByRole('button', { name: '+3 więcej' }));
+    fireEvent.click(screen.getByRole('button', { name: '+2 więcej' }));
     const drawer = screen.getByRole('dialog', { name: 'poniedziałek, 2 listopada' });
     expect(within(drawer).getAllByRole('article')).toHaveLength(6);
 
@@ -89,10 +89,10 @@ describe('MonthGrid', () => {
     expect(within(jumps).getByRole('button', { name: '9.11' })).toBeDisabled();
   });
 
-  it('opens any day with events in the drawer from its number', () => {
+  it('opens a day whose bars all fit from "pokaż dzień"', () => {
     renderGrid([day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]);
 
-    fireEvent.click(screen.getByRole('button', { name: 'poniedziałek, 2 listopada, dziś, pokaż dzień' }));
+    fireEvent.click(screen.getByRole('button', { name: 'pokaż dzień' }));
 
     expect(screen.getByRole('dialog', { name: 'poniedziałek, 2 listopada' })).toBeInTheDocument();
   });
