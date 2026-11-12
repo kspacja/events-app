@@ -1,0 +1,182 @@
+.grid {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.weekdays > span {
+  padding: var(--space-2) var(--space-3);
+}
+
+/* One and a half screens for the whole month, shared equally by its 4 to 6 weeks */
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-auto-rows: calc(150dvh / var(--rows));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--space-2);
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-weekday);
+}
+
+.day:nth-child(7n) {
+  border-right: 0;
+}
+
+.day:nth-last-child(-n + 7) {
+  border-bottom: 0;
+}
+
+.day[data-weekend='true'] {
+  background: var(--color-bg-weekend);
+}
+
+.day[data-in-month='false'] {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-disabled);
+}
+
+/* A day that has passed: still there, but faded; its tiles stay readable */
+.day[data-past] .dayHeading,
+.day[data-past] .bar {
+  opacity: 0.4;
+}
+
+.dayHeading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.today {
+  padding: var(--space-0-5) var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+}
+
+.bars {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--bar-gap);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  position: relative;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--bar-height);
+  padding: 0 var(--space-1-5);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-soft);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bar:hover,
+.entry[data-open] .bar {
+  background: var(--color-accent-soft-hover);
+}
+
+.bar:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 1px;
+}
+
+.time {
+  flex: none;
+  font-weight: 600;
+  color: var(--color-accent-strong);
+}
+
+.title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The tile touches its bar, so the pointer can move onto it without closing it */
+.tile {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+  width: 260px;
+  padding-top: var(--space-1);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.12s, visibility 0.12s;
+}
+
+.entry[data-align='end'] .tile {
+  right: 0;
+  left: auto;
+}
+
+.entry[data-upward] .tile {
+  top: auto;
+  bottom: 100%;
+  padding-top: 0;
+  padding-bottom: var(--space-1);
+}
+
+.entry[data-open] .tile,
+.entry:has(:focus-visible) .tile {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .entry:hover .tile {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.more {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-accent-strong);
+}

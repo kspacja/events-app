@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { currentEventDay } from '@events/time';
+import { MonthGrid } from '@/features/schools/components/MonthGrid';
 import { MonthHeader } from '@/features/schools/components/MonthHeader';
 import { monthOf } from '@/features/schools/monthCalendar';
 import { monthFromPath } from '@/features/schools/monthParam';
@@ -19,6 +20,9 @@ export default async function MonthPage({ params, searchParams }: PageProps<'/dl
   const upcoming = month === monthOf(today) ? upcomingCount(dayCountsOf(schedule), today) : null;
 
   return (
-    <MonthHeader month={month} today={today} filtersQuery={query} total={schedule.activeCount} upcoming={upcoming} />
+    <>
+      <MonthHeader month={month} today={today} filtersQuery={query} total={schedule.activeCount} upcoming={upcoming} />
+      <MonthGrid weeks={schedule.weeks} today={today} />
+    </>
   );
 }

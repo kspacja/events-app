@@ -78,3 +78,28 @@
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
 }
+
+/* Over a month bar: a floating tile without the image, the pin at the end of the time row */
+.card[data-variant='popup'] {
+  box-sizing: border-box;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.card[data-variant='popup'] .meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: 0;
+}
+
+.card[data-variant='popup'] .meta > button {
+  position: relative;
+  top: auto;
+  left: auto;
+  flex: none;
+}

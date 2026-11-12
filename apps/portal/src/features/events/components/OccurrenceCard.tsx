@@ -9,9 +9,11 @@ import styles from './OccurrenceCard.module.css';
 interface OccurrenceCardProps {
   readonly listing: OccurrenceListing;
   readonly muted?: boolean;
+  /** `popup`: no image and no anchor id, the pin beside the time; shown over a month bar. */
+  readonly variant?: 'strip' | 'popup';
 }
 
-export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) {
+export function OccurrenceCard({ listing, muted = false, variant = 'strip' }: OccurrenceCardProps) {
   const { occurrenceId, startsAt, event, venue } = listing;
   const { title, imageUrl } = event;
   const main = mainCategory(event);
@@ -20,26 +22,30 @@ export function OccurrenceCard({ listing, muted = false }: OccurrenceCardProps) 
 
   return (
     <article
-      id={occurrenceDomId(occurrenceId)}
+      id={variant === 'strip' ? occurrenceDomId(occurrenceId) : undefined}
       tabIndex={-1}
       className={styles.card}
       data-muted={muted}
+      data-variant={variant}
     >
-      <div className={styles.image}>
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt=""
-            fill
-            unoptimized
-            sizes="240px"
-            className={styles.photo}
-          />
-        ) : null}
-        <ShowOnMapButton occurrenceId={occurrenceId} title={title} />
-      </div>
+      {variant === 'strip' ? (
+        <div className={styles.image}>
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt=""
+              fill
+              unoptimized
+              sizes="240px"
+              className={styles.photo}
+            />
+          ) : null}
+          <ShowOnMapButton occurrenceId={occurrenceId} title={title} />
+        </div>
+      ) : null}
       <p className={styles.meta}>
         {formatLocalTime(startsAt)} · {main.label}
+        {variant === 'popup' ? <ShowOnMapButton occurrenceId={occurrenceId} title={title} /> : null}
       </p>
       <h3 className={styles.title}>
         {title}

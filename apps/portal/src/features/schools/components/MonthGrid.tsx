@@ -1,0 +1,160 @@
+'use client';
+
+import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
+import type { CalendarDay } from '@events/time';
+import type { OccurrenceListing } from '@events/contract/listing';
+import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
+import { UI_LABELS } from '@/features/events/labels';
+import type { ScheduleDay } from '@/features/events/schedule';
+import { occurrenceDomId } from '@/features/events/scheduleDom';
+import { formatDay, formatLocalTime } from '@/lib/format';
+import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
+import styles from './MonthGrid.module.css';
+
+// One source for the bar size, read by the CSS and by the count of bars that fit a day
+const BAR_HEIGHT = 24;
+const BAR_GAP = 2;
+// Until the first measurement, e.g. in the server render
+const DEFAULT_CAPACITY = 4;
+// Thursday on: the tile opens to the left, so it stays on the page
+const END_ALIGNED_FROM = 3;
+// The last two rows open their tiles upwards
+const UPWARD_ROWS = 2;
+
+/** How many bars fit in a day; every day has the same height, so one list is enough to measure. */
+function useCapacity() {
+  const ref = useRef<HTMLOListElement>(null);
+  const [capacity, setCapacity] = useState(DEFAULT_CAPACITY);
+  useEffect(() => {
+    const list = ref.current?.querySelector<HTMLElement>('[data-bars]');
+    if (!list) return;
+    const measure = new ResizeObserver(() => {
+      setCapacity(Math.max(1, Math.floor((list.clientHeight + BAR_GAP) / (BAR_HEIGHT + BAR_GAP))));
+    });
+    measure.observe(list);
+    return () => measure.disconnect();
+  }, []);
+  return { ref, capacity };
+}
+
+interface MonthBarProps {
+  readonly listing: OccurrenceListing;
+  readonly alignEnd: boolean;
+  readonly upward: boolean;
+}
+
+/** "10:00 Title"; hovering, focusing or tapping it shows the event's tile. */
+function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
+  const [open, setOpen] = useState(false);
+  const tileId = useId();
+  return (
+    <li
+      className={styles.entry}
+      data-open={open || undefined}
+      data-align={alignEnd ? 'end' : 'start'}
+      data-upward={upward || undefined}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') setOpen(false);
+      }}
+    >
+      <button
+        type="button"
+        id={occurrenceDomId(listing.occurrenceId)}
+        className={styles.bar}
+        aria-expanded={open}
+        aria-controls={tileId}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <span className={styles.time}>{formatLocalTime(listing.startsAt)}</span>{' '}
+        <span className={styles.title}>{listing.event.title}</span>
+      </button>
+      <div id={tileId} className={styles.tile}>
+        <OccurrenceCard listing={listing} variant="popup" />
+      </div>
+    </li>
+  );
+}
+
+interface MonthDayProps {
+  readonly scheduleDay: ScheduleDay;
+  readonly today: CalendarDay;
+  readonly capacity: number;
+  readonly upward: boolean;
+}
+
+function MonthDay({ scheduleDay, today, capacity, upward }: MonthDayProps) {
+  const { day, weekdayIndex, inRange, isWeekend, entries } = scheduleDay;
+  const listings = entries.filter(({ active }) => active).map(({ listing }) => listing);
+  // A full day keeps its last row for "+N więcej"
+  const shown = listings.length > capacity ? listings.slice(0, capacity - 1) : listings;
+  const hidden = listings.length - shown.length;
+  const isToday = day === today;
+  return (
+    <li
+      className={styles.day}
+      data-in-month={inRange}
+      data-weekend={isWeekend}
+      data-past={day < today || undefined}
+      aria-current={isToday ? 'date' : undefined}
+    >
+      <h3 className={styles.dayHeading}>
+        <time dateTime={day} aria-hidden="true">
+          {formatDay(day, 'd')}
+        </time>
+        <span className="visually-hidden">{formatDay(day, 'EEEE, d MMMM')}</span>
+        {isToday ? <span className={styles.today}>{UI_LABELS.today}</span> : null}
+      </h3>
+      <ul className={styles.bars} data-bars>
+        {shown.map((listing) => (
+          <MonthBar
+            key={listing.occurrenceId}
+            listing={listing}
+            alignEnd={weekdayIndex >= END_ALIGNED_FROM}
+            upward={upward}
+          />
+        ))}
+      </ul>
+      {hidden > 0 ? <span className={styles.more}>{`+${hidden} ${MONTH_LABELS.more}`}</span> : null}
+    </li>
+  );
+}
+
+interface MonthGridProps {
+  readonly weeks: readonly (readonly ScheduleDay[])[];
+  readonly today: CalendarDay;
+}
+
+/** The whole month on one and a half screens: equal week rows, events as bars. */
+export function MonthGrid({ weeks, today }: MonthGridProps) {
+  const { ref, capacity } = useCapacity();
+  const style = {
+    '--rows': weeks.length,
+    '--bar-height': `${BAR_HEIGHT}px`,
+    '--bar-gap': `${BAR_GAP}px`,
+  } as CSSProperties;
+  return (
+    <section className={styles.grid} aria-label={CALENDAR_LABELS.region} style={style}>
+      <div className={styles.weekdays} aria-hidden="true">
+        {WEEKDAY_SHORT_NAMES.map((name) => (
+          <span key={name}>{name}</span>
+        ))}
+      </div>
+      <ol ref={ref} className={styles.days}>
+        {weeks.flatMap((week, row) =>
+          week.map((scheduleDay) => (
+            <MonthDay
+              key={scheduleDay.day}
+              scheduleDay={scheduleDay}
+              today={today}
+              capacity={capacity}
+              upward={row >= weeks.length - UPWARD_ROWS}
+            />
+          )),
+        )}
+      </ol>
+    </section>
+  );
+}
