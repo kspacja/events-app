@@ -307,40 +307,37 @@
   }
 }
 
-/* A pill floating over the page, opening the advanced filters on every screen */
-.floatingButton {
+/* In the month dock: a quiet pill, on every screen */
+.dockButton {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
-  height: 48px;
-  padding: 0 var(--space-5);
-  border: 0;
+  height: 36px;
+  padding: 0 var(--space-3-5);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  background: var(--color-accent-strong);
-  color: var(--color-on-accent);
+  background: var(--color-surface);
+  color: var(--color-text);
   font: inherit;
+  font-size: var(--text-sm);
   font-weight: 600;
-  box-shadow: var(--shadow-md);
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.floatingButton:hover {
-  background: var(--color-accent);
+.dockButton:hover {
+  border-color: var(--color-accent);
 }
 
-.floatingButton:focus-visible {
+.dockButton:focus-visible {
   outline: 2px solid var(--color-text);
   outline-offset: 2px;
 }
 
-.floatingButton .count {
-  background: var(--color-on-accent);
-  color: var(--color-accent-strong);
-}
-
-/* Wider screens: the floating pill's dialog sits in the middle instead of sliding up */
+/* Wider screens: the dock's dialog sits in the middle instead of sliding up */
 @media (min-width: 769px) {
-  .sheet[data-trigger='floating'] {
+  .sheet[data-trigger='dock'] {
     inset: 0;
     width: min(640px, 92vw);
     height: fit-content;
@@ -348,7 +345,47 @@
     border-radius: var(--radius-2xl);
   }
 
-  .sheet[data-trigger='floating'][open] {
+  .sheet[data-trigger='dock'][open] {
     animation: none;
   }
+}
+
+/* The month dock: a scrolling row per main filter, "clear" under them at the end */
+.filtersContainer[data-layout='rows'] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1-5);
+  margin-top: 0;
+}
+
+.filtersContainer[data-layout='rows'] .clear {
+  align-self: flex-end;
+}
+
+.filters[data-layout='rows'][data-placement='main'] {
+  grid-auto-flow: row;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--space-1-5);
+}
+
+.filters[data-layout='rows'] .group::after {
+  display: none;
+}
+
+/* In the dialog the main filters stack like the advanced ones, each under its name */
+.filters[data-layout='sheet'][data-placement='main'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.filters[data-layout='sheet'][data-placement='main'] .group {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.filters[data-layout='sheet'][data-placement='main'] .group::after {
+  display: none;
 }

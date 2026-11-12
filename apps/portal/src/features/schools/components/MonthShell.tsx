@@ -12,9 +12,8 @@ import { addMonths, firstDayOf, monthOf } from '../monthCalendar';
 import { monthFromPath } from '../monthParam';
 import { schoolsMonthHref } from '../schoolsHref';
 import { filtersQuery, parseFilters } from '../schoolFilters';
-import { MapButton, MapDialog, MapDialogNav, MapDialogTitle, MapDialogProvider } from './MapDialog';
+import { MapDialog, MapDialogNav, MapDialogTitle, MapDialogProvider } from './MapDialog';
 import { revealInMonth } from './MonthGrid';
-import { FiltersDialog, SchoolFilters } from './SchoolFilters';
 import { PeriodArrow } from './WeekArrow';
 import styles from './MonthView.module.css';
 
@@ -32,10 +31,6 @@ export function MonthShell({ today, children }: MonthShellProps) {
       <OccurrenceSelectionProvider>
         <MapDialogProvider>
           <main className={styles.page}>{children}</main>
-          <div className={styles.floating}>
-            <MapButton variant="floating" />
-            <FiltersDialog trigger="floating" />
-          </div>
           <MonthMapDialog today={today} filtersQuery={query} />
         </MapDialogProvider>
       </OccurrenceSelectionProvider>
@@ -70,14 +65,5 @@ function MonthMapDialog({ today, filtersQuery }: { readonly today: CalendarDay; 
         </MapDialogNav>
       }
     />
-  );
-}
-
-/** The main filters, stuck to the top while the month scrolls under them. */
-export function MonthFiltersBar() {
-  return (
-    <div className={styles.filters}>
-      <SchoolFilters placement="main" />
-    </div>
   );
 }

@@ -150,28 +150,47 @@
   }
 }
 
-/* Floating over the page, beside the filters pill */
-.floatingButton {
+/* In the month dock, beside the filters button */
+.dockButton {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
-  height: 48px;
-  padding: 0 var(--space-5);
+  height: 36px;
+  padding: 0 var(--space-3-5);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   background: var(--color-surface);
   color: var(--color-text);
   font: inherit;
+  font-size: var(--text-sm);
   font-weight: 600;
-  box-shadow: var(--shadow-md);
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.floatingButton:hover {
+.dockButton:hover {
   border-color: var(--color-accent);
 }
 
-.floatingButton:focus-visible {
+.dockButton:focus-visible {
   outline: 2px solid var(--color-text);
   outline-offset: 2px;
+}
+
+/* Phones: only the icon, the name stays for screen readers */
+@media (max-width: 768px) {
+  .dockButton {
+    width: 36px;
+    padding: 0;
+  }
+
+  .dockButton .buttonLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }

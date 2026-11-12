@@ -1,75 +1,12 @@
 .page {
   box-sizing: border-box;
   min-height: 100vh;
-  padding: var(--space-5) var(--space-4) var(--space-12);
+  /* Room under the grid, so the dock never covers its last row */
+  padding: var(--space-5) var(--space-4) 200px;
 }
 
 @media (max-width: 768px) {
   .page {
-    padding: var(--space-4) var(--space-4) var(--space-10);
+    padding: var(--space-4) var(--space-4) 96px;
   }
-}
-
-/* One low row: small arrows around the month, the count after them */
-.header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
-  margin-bottom: var(--space-3);
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.month {
-  min-width: 8.5em;
-  margin: 0;
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: var(--text-xl);
-  text-align: center;
-}
-
-.count {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-accent-strong);
-}
-
-.filters {
-  position: sticky;
-  top: 0;
-  z-index: 15;
-  margin-bottom: var(--space-3);
-  padding: var(--space-1) 0 var(--space-3);
-  background: var(--color-bg);
-}
-
-/* Filters and map float over the page's bottom right corner */
-.floating {
-  position: fixed;
-  right: var(--space-6);
-  bottom: var(--space-6);
-  z-index: 25;
-  display: flex;
-  gap: var(--space-3);
-}
-
-@media (max-width: 768px) {
-  .floating {
-    right: var(--space-4);
-    bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
-  }
-}
-
-/* Phones: the week jumps take the sticky top, so the filters scroll away */
-@media (max-width: 768px) {
-  .filters {
-    position: static;
-  }
-
 }

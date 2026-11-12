@@ -115,10 +115,10 @@ export function MapDialogTitle({ title, subtitle }: { readonly title: string; re
   );
 }
 
-/** Opens the map dialog: labelled in a sidebar, an icon beside a heading, or a pill floating over the page. */
-export function MapButton({ variant }: { readonly variant: 'label' | 'icon' | 'floating' }) {
+/** Opens the map dialog: labelled in a sidebar, an icon beside a heading, or in the month dock (an icon on phones). */
+export function MapButton({ variant }: { readonly variant: 'label' | 'icon' | 'dock' }) {
   const { setOpen } = useMapDialog();
-  const className = { label: styles.labelButton, icon: styles.iconButton, floating: styles.floatingButton }[variant];
+  const className = { label: styles.labelButton, icon: styles.iconButton, dock: styles.dockButton }[variant];
   return (
     <button
       type="button"
@@ -127,7 +127,7 @@ export function MapButton({ variant }: { readonly variant: 'label' | 'icon' | 'f
       onClick={() => setOpen(true)}
     >
       <MapIcon />
-      {variant === 'icon' ? null : MAP_LABELS.open}
+      {variant === 'icon' ? null : <span className={styles.buttonLabel}>{MAP_LABELS.open}</span>}
     </button>
   );
 }
