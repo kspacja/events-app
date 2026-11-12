@@ -17,7 +17,7 @@
   border: 1px solid color-mix(in srgb, var(--dock-green) 70%, black);
   border-radius: var(--radius-2xl);
   /* Green glass: the month shows through, blurred */
-  background: color-mix(in srgb, var(--dock-green) 85%, transparent);
+  background: color-mix(in srgb, var(--dock-green) 90%, transparent);
   color: var(--dock-ink);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--dock-ink) 30%, transparent),

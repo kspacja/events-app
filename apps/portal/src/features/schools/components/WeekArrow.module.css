@@ -71,8 +71,12 @@
   border-radius: var(--radius-md);
   background: var(--color-accent-strong);
   color: var(--color-on-accent);
-  font-size: var(--text-2xl);
+  font-size: var(--text-5xl);
   text-decoration: none;
+
+  .sign {
+    top: -3px;
+  }
 }
 
 .compact:hover {
