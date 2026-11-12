@@ -15,7 +15,7 @@ import { shiftWeek } from '../weekShift';
 import { formatWeekCount, upcomingCount } from '../weekCount';
 import { filtersQuery, parseFilters } from '../schoolFilters';
 import { MonthCalendar, WeekRow } from './MonthCalendar';
-import { AdvancedFiltersSheet, SchoolFilters } from './SchoolFilters';
+import { FiltersDialog, SchoolFilters } from './SchoolFilters';
 import { MapButton, WeekArea, WeekMapDialog, WeekNavigationProvider, useWeekNavigation } from './WeekNavigation';
 import { WeekArrow } from './WeekArrow';
 import styles from './SchoolsShell.module.css';
@@ -118,7 +118,7 @@ function ShellContent({ today, children }: SchoolsShellProps) {
           </span>
         </div>
         <SchoolFilters placement="main" />
-        <PhoneWeekPicker today={today} leading={<AdvancedFiltersSheet />} />
+        <PhoneWeekPicker today={today} leading={<FiltersDialog />} />
         <div className={styles.strip}>
           <WeekArea>{children}</WeekArea>
         </div>

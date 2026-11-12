@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { currentEventDay } from '@events/time';
 import { MonthGrid } from '@/features/schools/components/MonthGrid';
 import { MonthHeader } from '@/features/schools/components/MonthHeader';
+import { MonthFiltersBar } from '@/features/schools/components/MonthShell';
 import { monthOf } from '@/features/schools/monthCalendar';
 import { monthFromPath } from '@/features/schools/monthParam';
 import { loadMonthSchedule } from '@/features/schools/monthSchedule';
@@ -22,6 +23,7 @@ export default async function MonthPage({ params, searchParams }: PageProps<'/dl
   return (
     <>
       <MonthHeader month={month} today={today} filtersQuery={query} total={schedule.activeCount} upcoming={upcoming} />
+      <MonthFiltersBar />
       <MonthGrid weeks={schedule.weeks} today={today} />
     </>
   );

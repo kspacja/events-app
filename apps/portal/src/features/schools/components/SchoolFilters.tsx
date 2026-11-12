@@ -126,8 +126,13 @@ function countOwn(selection: FilterSelection, placement: FilterPlacement): numbe
   );
 }
 
-/** Phones only: a button under the main filters opens the advanced ones in a sheet that slides up from the bottom. */
-export function AdvancedFiltersSheet() {
+interface FiltersDialogProps {
+  /** `text`: phones only, under the main filters. `floating`: a pill floating over the page, on every screen. */
+  readonly trigger?: 'text' | 'floating';
+}
+
+/** The advanced filters in a dialog: a sheet from the bottom on phones, centred on wider screens. */
+export function FiltersDialog({ trigger = 'text' }: FiltersDialogProps) {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const chosen = countOwn(parseFilters(new URLSearchParams(useSearchParams())), 'advanced');
@@ -143,13 +148,18 @@ export function AdvancedFiltersSheet() {
 
   return (
     <>
-      <button type="button" className={styles.sheetButton} onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className={trigger === 'floating' ? styles.floatingButton : styles.sheetButton}
+        onClick={() => setOpen(true)}
+      >
         {FILTER_LABELS.advanced}
         {chosen > 0 ? <span className={styles.count}>{chosen}</span> : null}
       </button>
       <dialog
         ref={dialogRef}
         className={styles.sheet}
+        data-trigger={trigger}
         aria-label={FILTER_LABELS.advanced}
         onClose={() => setOpen(false)}
         onClick={(event) => {

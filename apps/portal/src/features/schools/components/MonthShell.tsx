@@ -6,6 +6,7 @@ import type { CalendarDay } from '@events/time';
 import { OccurrenceSelectionProvider } from '@/features/events/OccurrenceSelectionProvider';
 import { FiltersQueryContext } from '../filtersQueryContext';
 import { filtersQuery, parseFilters } from '../schoolFilters';
+import { FiltersDialog, SchoolFilters } from './SchoolFilters';
 import styles from './MonthView.module.css';
 
 interface MonthShellProps {
@@ -21,7 +22,19 @@ export function MonthShell({ children }: MonthShellProps) {
     <FiltersQueryContext value={query}>
       <OccurrenceSelectionProvider>
         <main className={styles.page}>{children}</main>
+        <div className={styles.floating}>
+          <FiltersDialog trigger="floating" />
+        </div>
       </OccurrenceSelectionProvider>
     </FiltersQueryContext>
+  );
+}
+
+/** The main filters, stuck to the top while the month scrolls under them. */
+export function MonthFiltersBar() {
+  return (
+    <div className={styles.filters}>
+      <SchoolFilters placement="main" />
+    </div>
   );
 }
