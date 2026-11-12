@@ -34,3 +34,19 @@ export function formatPassedWeeks({ range, count }: PassedWeeks): string {
   const verb = count !== 1 && pluralRules.select(count) === 'few' ? 'minęły' : 'minęło';
   return `${formatRangeLabel(range)} · ${formatCount(count)} ${verb}`;
 }
+
+export interface WeekJump {
+  /** The week's days in the month, e.g. "2–8.11". */
+  readonly label: string;
+  /** Its first day with events; null when it has none, so there is nothing to jump to. */
+  readonly target: CalendarDay | null;
+}
+
+export function weekJumpsOf(weeks: readonly Week[]): WeekJump[] {
+  return weeks.flatMap((week) => {
+    const inMonth = week.filter(({ inRange }) => inRange);
+    if (inMonth.length === 0) return [];
+    const first = inMonth.find(({ entries }) => entries.some(({ active }) => active));
+    return [{ label: formatRangeLabel({ from: inMonth[0].day, to: inMonth[inMonth.length - 1].day }), target: first?.day ?? null }];
+  });
+}

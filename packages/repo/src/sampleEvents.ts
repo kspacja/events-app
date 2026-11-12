@@ -1,6 +1,7 @@
 import { eventIdSchema, occurrenceIdSchema, type Category, type Price } from '@events/contract/listing';
 import { addDays, currentEventDay, mondayOf, warsawIsoAt } from '@events/time';
 import { createEventsData, venueId, type EventsData, type Event, type Occurrence, type Venue } from './model';
+import { sampleImageUrl } from './sampleImages';
 
 const WROCLAW = 'Wrocław';
 
@@ -93,7 +94,6 @@ interface SampleEventTemplate {
 }
 
 // Placeholder photos for testing: seeded by event id, so each event keeps its own picture; 2× the card size
-const sampleImageUrl = (eventId: string) => `https://picsum.photos/seed/${eventId}/480/208`;
 
 // Order matters: the skip cycle below is keyed by the template index
 const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
@@ -179,11 +179,11 @@ function isSkipped(weekIndex: number, templateIndex: number): boolean {
 export function createSampleEvents(now: Date): EventsData {
   const firstMonday = mondayOf(currentEventDay(now));
 
-  const events: Event[] = SAMPLE_EVENTS.map(({ id, title, categories, forSchools = false }) => ({
+  const events: Event[] = SAMPLE_EVENTS.map(({ id, title, categories, forSchools = false }, index) => ({
     id: eventIdSchema.parse(id),
     title,
     categorySlugs: categories.map(({ slug }) => slug),
-    imageUrl: sampleImageUrl(id),
+    imageUrl: sampleImageUrl(id, index),
     forSchools,
   }));
 

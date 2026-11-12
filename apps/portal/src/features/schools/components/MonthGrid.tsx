@@ -7,7 +7,6 @@ import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
 import { UI_LABELS } from '@/features/events/labels';
 import type { ScheduleDay } from '@/features/events/schedule';
 import { occurrenceDomId } from '@/features/events/scheduleDom';
-import { formatRangeLabel } from '@/features/search/dateRange';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import { MonthDayDrawer } from './MonthDayDrawer';
@@ -23,8 +22,9 @@ const DEFAULT_CAPACITY = 4;
 const END_ALIGNED_FROM = 3;
 // The last two rows open their tiles upwards
 const UPWARD_ROWS = 2;
-// Phones list the days one under another, so every bar fits
+// Phones list the days one under another, each with up to this many bars
 const PHONE_QUERY = '(max-width: 768px)';
+const PHONE_CAPACITY = 10;
 
 const REVEAL_EVENT = 'month-grid:reveal';
 
@@ -52,7 +52,7 @@ function useCapacity() {
     function update() {
       if (!list) return;
       setCapacity(
-        phone.matches ? Infinity : Math.max(1, Math.floor((list.clientHeight + BAR_GAP) / (BAR_HEIGHT + BAR_GAP))),
+        phone.matches ? PHONE_CAPACITY : Math.max(1, Math.floor((list.clientHeight + BAR_GAP) / (BAR_HEIGHT + BAR_GAP))),
       );
     }
     const measure = new ResizeObserver(update);
@@ -75,6 +75,8 @@ interface MonthBarProps {
 /** "10:00 Title"; hovering, focusing or tapping it shows the event's tile. */
 function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
   const [open, setOpen] = useState(false);
+  // A tapped bar opens its tile towards the larger part of the screen
+  const [tappedUpward, setTappedUpward] = useState<boolean | null>(null);
   const tileId = useId();
   const entryRef = useRef<HTMLLIElement>(null);
 
@@ -94,7 +96,7 @@ function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
       className={styles.entry}
       data-open={open || undefined}
       data-align={alignEnd ? 'end' : 'start'}
-      data-upward={upward || undefined}
+      data-upward={(tappedUpward ?? upward) || undefined}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
       }}
@@ -108,7 +110,10 @@ function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
         className={styles.bar}
         aria-expanded={open}
         aria-controls={tileId}
-        onClick={() => setOpen((value) => !value)}
+        onClick={(event) => {
+          setTappedUpward(event.currentTarget.getBoundingClientRect().top > window.innerHeight / 2);
+          setOpen((value) => !value);
+        }}
       >
         <span className={styles.time}>{formatLocalTime(listing.startsAt)}</span>{' '}
         <span className={styles.title}>{listing.event.title}</span>
@@ -190,36 +195,6 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: Mo
   );
 }
 
-/** Phones: a sticky row of the month's weeks; a week scrolls the list to its first day with events. */
-function WeekJumps({ weeks }: { readonly weeks: readonly (readonly ScheduleDay[])[] }) {
-  return (
-    <nav className={styles.weekJumps} aria-label={MONTH_LABELS.weekJumps}>
-      {weeks.map((week) => {
-        const inMonth = week.filter(({ inRange }) => inRange);
-        if (inMonth.length === 0) return null;
-        const first = inMonth.find((scheduleDay) => activeListings(scheduleDay).length > 0);
-        const label = formatRangeLabel({ from: inMonth[0].day, to: inMonth[inMonth.length - 1].day });
-        return (
-          <button
-            key={week[0].day}
-            type="button"
-            className={styles.weekJump}
-            disabled={!first}
-            onClick={() => {
-              const target = first && document.querySelector<HTMLElement>(`[data-day="${first.day}"]`);
-              if (!target) return;
-              const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
-              target.scrollIntoView({ block: 'start', behavior });
-            }}
-          >
-            {label}
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
-
 interface MonthGridProps {
   /** The weeks still ahead; those fully gone are left out. */
   readonly weeks: readonly (readonly ScheduleDay[])[];
@@ -277,7 +252,6 @@ export function MonthGrid({ weeks, passed = null, today }: MonthGridProps) {
   } as CSSProperties;
   return (
     <section className={styles.grid} aria-label={CALENDAR_LABELS.region} style={style}>
-      <WeekJumps weeks={weeks} />
       {passed ? <p className={styles.passed}>{formatPassedWeeks(passed)}</p> : null}
       <div className={styles.weekdays} aria-hidden="true">
         {WEEKDAY_SHORT_NAMES.map((name) => (

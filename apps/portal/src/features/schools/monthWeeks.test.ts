@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { CalendarDay } from '@events/time';
 import type { ScheduleDay, ScheduleEntry } from '@/features/events/schedule';
-import { formatPassedWeeks, splitPassedWeeks } from './monthWeeks';
+import { formatPassedWeeks, splitPassedWeeks, weekJumpsOf } from './monthWeeks';
 
 function week(monday: string, firstInMonth: number, eventsPerDay: number) {
   return Array.from({ length: 7 }, (_, offset): ScheduleDay => {
@@ -47,5 +47,14 @@ describe('formatPassedWeeks', () => {
     expect(formatPassedWeeks({ range, count: 1 })).toBe('2—8.11 · 1 wydarzenie minęło');
     expect(formatPassedWeeks({ range, count: 3 })).toBe('2—8.11 · 3 wydarzenia minęły');
     expect(formatPassedWeeks({ range, count: 12 })).toBe('2—8.11 · 12 wydarzeń minęło');
+  });
+});
+
+describe('weekJumpsOf', () => {
+  it('jumps to the first day with events of each week, or nowhere when it has none', () => {
+    expect(weekJumpsOf([week('2026-11-02', 6, 1), week('2026-11-09', 0, 0)])).toEqual([
+      { label: '8.11', target: '2026-11-08' },
+      { label: '9—15.11', target: null },
+    ]);
   });
 });

@@ -71,24 +71,6 @@ describe('MonthGrid', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('offers a jump to every week of the month, disabled when it has no events', () => {
-    render(
-      <OccurrenceSelectionProvider>
-        <MonthGrid
-          weeks={[
-            [day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])],
-            [day('2026-11-09', [])],
-          ]}
-          today="2026-11-02"
-        />
-      </OccurrenceSelectionProvider>,
-    );
-    const jumps = screen.getByRole('navigation', { name: 'Tygodnie miesiąca' });
-
-    expect(within(jumps).getByRole('button', { name: '2.11' })).toBeEnabled();
-    expect(within(jumps).getByRole('button', { name: '9.11' })).toBeDisabled();
-  });
-
   it('opens a day whose bars all fit from "pokaż dzień"', () => {
     renderGrid([day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]);
 

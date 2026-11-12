@@ -5,7 +5,7 @@ import { MonthGrid } from '@/features/schools/components/MonthGrid';
 import { MonthDock } from '@/features/schools/components/MonthDock';
 import { monthOf } from '@/features/schools/monthCalendar';
 import { monthFromPath } from '@/features/schools/monthParam';
-import { splitPassedWeeks } from '@/features/schools/monthWeeks';
+import { splitPassedWeeks, weekJumpsOf } from '@/features/schools/monthWeeks';
 import { loadMonthSchedule } from '@/features/schools/monthSchedule';
 import { schoolsMonthHref } from '@/features/schools/schoolsHref';
 import { filtersQuery, parseFilters } from '@/features/schools/schoolFilters';
@@ -26,7 +26,7 @@ export default async function MonthPage({ params, searchParams }: PageProps<'/dl
     <>
       <MapPoints points={schedule.mapPoints} focus={schedule.mapFocus} />
       {/* First in the page, so the month heading comes before its days; the dock itself floats at the bottom */}
-      <MonthDock month={month} today={today} filtersQuery={query} total={schedule.activeCount} upcoming={upcoming} />
+      <MonthDock month={month} today={today} filtersQuery={query} total={schedule.activeCount} upcoming={upcoming} jumps={weekJumpsOf(shown)} />
       <MonthGrid weeks={shown} passed={passed} today={today} />
     </>
   );

@@ -11,7 +11,7 @@
   - cienie: poziomy `sm` / `md` / `lg` i `edge`; `--shadow-color`, `--shadow-strength` (mnożnik przezroczystości), `--shadow-scale` (mnożnik przesunięcia i rozmycia); ujednolicona przezroczystość w obrębie poziomu;
   - promienie: `--radius-unit` (4px) × mnożnik, `--radius-xs` … `--radius-3xl`, `--radius-full`; obecne tokeny (`--radius-card`, `--radius-chip-*`, `--radius-map`) wskazują na kroki skali.
 - Kolory wpisane na sztywno w modułach CSS zastępują tokeny; mapa odczytuje paletę ponownie po zmianie motywu.
-- Kolorów Kategorii nie ma; przykładowe Wydarzenia mają zdjęcia z picsum.photos (`seed` = id Wydarzenia), a karta bez zdjęcia ma tło `--color-bg-subtle`.
+- Kolorów Kategorii nie ma; przykładowe Wydarzenia mają 10 rotowanych zdjęć z Wikimedia Commons (wolne licencje, atrybucje w `packages/repo/src/sampleImages.ts`; `SAMPLE_IMAGE_SOURCE = 'picsum'` przywraca picsum.photos z `seed` = id Wydarzenia), a karta bez zdjęcia ma tło `--color-bg-subtle`.
 - Belka u góry każdej strony (`TopBar`, renderowana przez stronę, bo strona podaje tytuł): logo i link „Dla szkół”, tło `--color-accent-strong`, tekst `--color-on-accent`, kropka logo `--color-logo-dot`. Logo nie ma już w nagłówku strony. Na `/dla-szkol` obok logo stoi `<h1>` „dla szkół” (odstęp `--space-2-5`, jak wcześniej `sentencePlace="beside"`) zamiast linku; wiersz tytułu i linia pod nim zniknęły.
 - W dev portal nie cache'uje odpowiedzi API (`revalidate: 0`), żeby zmiana przykładowych danych lub seed była widoczna od razu; poza dev zostaje 300 s.
 - Breakpointy zostają w `@media` (CSS nie pozwala tam na zmienne).

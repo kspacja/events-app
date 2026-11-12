@@ -7,6 +7,7 @@
 
 @media (max-width: 768px) {
   .page {
-    padding: var(--space-4) var(--space-4) 96px;
+    /* Room for the two-row dock */
+    padding: var(--space-4) var(--space-4) 140px;
   }
 }

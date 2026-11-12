@@ -7,6 +7,8 @@ import { formatWeekCount } from '../weekCount';
 import { MapButton } from './MapDialog';
 import { FiltersDialog, SchoolFilters } from './SchoolFilters';
 import { PeriodArrow } from './WeekArrow';
+import { WeekJumps } from './WeekJumps';
+import type { WeekJump } from '../monthWeeks';
 import styles from './MonthDock.module.css';
 
 interface MonthDockProps {
@@ -16,10 +18,12 @@ interface MonthDockProps {
   readonly total: number;
   /** Events still ahead in the current month; null for a later one. */
   readonly upcoming: number | null;
+  /** Phones: the month's weeks, as a second row of the dock. */
+  readonly jumps: readonly WeekJump[];
 }
 
 /** Month switcher, main filters and the dialogs' buttons, floating over the bottom of the page. */
-export function MonthDock({ month, today, filtersQuery, total, upcoming }: MonthDockProps) {
+export function MonthDock({ month, today, filtersQuery, total, upcoming, jumps }: MonthDockProps) {
   return (
     <div className={styles.dock}>
       <div className={styles.period}>
@@ -53,6 +57,7 @@ export function MonthDock({ month, today, filtersQuery, total, upcoming }: Month
         </span>
         <MapButton variant="dock" />
       </div>
+      <WeekJumps jumps={jumps} />
     </div>
   );
 }
