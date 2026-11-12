@@ -56,6 +56,14 @@ describe('MonthGrid', () => {
     expect(screen.getByRole('button', { name: '+2 więcej' })).toBeInTheDocument();
   });
 
+  it('collapses a weekend day to its "pokaż dzień" link on wide screens', () => {
+    const many = Array.from({ length: 6 }, (_, i) => listing(`e${i}`, `2026-11-07T0${i}:00:00Z`, `Wydarzenie ${i}`));
+    renderGrid([{ ...day('2026-11-07', many), weekdayIndex: 5, isWeekend: true }]);
+
+    expect(screen.queryByRole('button', { name: /Wydarzenie/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'pokaż dzień' })).toBeInTheDocument();
+  });
+
   it('opens the full day in a drawer from "+N więcej", and slides it out on Escape', () => {
     const many = Array.from({ length: 6 }, (_, i) => listing(`e${i}`, `2026-11-02T0${i}:00:00Z`, `Wydarzenie ${i}`));
     renderGrid([day('2026-11-02', many)]);

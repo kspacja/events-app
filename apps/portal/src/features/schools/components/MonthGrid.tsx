@@ -26,6 +26,8 @@ const UPWARD_ROWS = 2;
 // Phones list the days one under another, each with up to this many bars
 const PHONE_QUERY = '(max-width: 768px)';
 const PHONE_CAPACITY = 10;
+// Saturday and Sunday share one narrow column on wider screens
+const WEEKEND_FROM = 5;
 
 const REVEAL_EVENT = 'month-grid:reveal';
 
@@ -46,12 +48,14 @@ function flash(bar: HTMLElement) {
 function useCapacity() {
   const ref = useRef<HTMLOListElement>(null);
   const [capacity, setCapacity] = useState(DEFAULT_CAPACITY);
+  const [isPhone, setIsPhone] = useState(false);
   useEffect(() => {
     const list = ref.current?.querySelector<HTMLElement>('[data-bars]');
     if (!list) return;
     const phone = window.matchMedia(PHONE_QUERY);
     function update() {
       if (!list) return;
+      setIsPhone(phone.matches);
       setCapacity(
         phone.matches ? PHONE_CAPACITY : Math.max(1, Math.floor((list.clientHeight + BAR_GAP) / (BAR_HEIGHT + BAR_GAP))),
       );
@@ -64,7 +68,7 @@ function useCapacity() {
       phone.removeEventListener('change', update);
     };
   }, []);
-  return { ref, capacity };
+  return { ref, capacity, isPhone };
 }
 
 interface MonthBarProps {
@@ -134,17 +138,21 @@ interface MonthDayProps {
   readonly scheduleDay: ScheduleDay;
   readonly today: CalendarDay;
   readonly capacity: number;
+  /** A weekend day in the narrow column: only its number and a link to the drawer. */
+  readonly collapsed: boolean;
+  /** The week's row, placing the day in the grid. */
+  readonly row: number;
   readonly upward: boolean;
   readonly selected: boolean;
   /** Opens the day's drawer at `scrollToIndex`; `opener` gets the focus back when it closes. */
   readonly onOpen: (opener: HTMLButtonElement, scrollToIndex: number | null) => void;
 }
 
-function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: MonthDayProps) {
+function MonthDay({ scheduleDay, today, capacity, collapsed, row, upward, selected, onOpen }: MonthDayProps) {
   const { day, weekdayIndex, inRange, isWeekend } = scheduleDay;
   const listings = activeListings(scheduleDay);
   // The footer below the list always holds its row, so the list has room for exactly `capacity` bars
-  const shown = listings.slice(0, capacity);
+  const shown = collapsed ? [] : listings.slice(0, capacity);
   const hidden = listings.length - shown.length;
   const isToday = day === today;
   return (
@@ -152,6 +160,9 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: Mo
       className={styles.day}
       data-in-month={inRange}
       data-weekend={isWeekend}
+      data-weekday={weekdayIndex}
+      data-collapsed={collapsed || undefined}
+      style={{ '--row': row } as CSSProperties}
       data-past={day < today || undefined}
       data-selected={selected || undefined}
       data-day={day}
@@ -186,9 +197,9 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: Mo
             className={styles.more}
             data-more
             aria-expanded={selected}
-            onClick={(event) => onOpen(event.currentTarget, hidden > 0 ? shown.length : null)}
+            onClick={(event) => onOpen(event.currentTarget, hidden > 0 && !collapsed ? shown.length : null)}
           >
-            {hidden > 0 ? `+${hidden} ${MONTH_LABELS.more}` : MONTH_LABELS.showDay}
+            {hidden > 0 && !collapsed ? `+${hidden} ${MONTH_LABELS.more}` : MONTH_LABELS.showDay}
           </button>
         ) : null}
       </div>
@@ -207,7 +218,7 @@ interface MonthGridProps {
 
 /** The whole month on one and a half screens: equal week rows, events as bars. */
 export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps) {
-  const { ref, capacity } = useCapacity();
+  const { ref, capacity, isPhone } = useCapacity();
   const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
   // The drawer slides out before it goes
   const [closing, setClosing] = useState(false);
@@ -266,9 +277,10 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
       </div>
       <div className={styles.grid}>
         <div className={styles.weekdays} aria-hidden="true">
-          {WEEKDAY_SHORT_NAMES.map((name) => (
+          {WEEKDAY_SHORT_NAMES.slice(0, WEEKEND_FROM).map((name) => (
             <span key={name}>{name}</span>
           ))}
+          <span>{WEEKDAY_SHORT_NAMES.slice(WEEKEND_FROM).join(' / ')}</span>
         </div>
         <ol ref={ref} className={styles.days}>
           {weeks.flatMap((week, row) =>
@@ -278,6 +290,8 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
                 scheduleDay={scheduleDay}
                 today={today}
                 capacity={capacity}
+              collapsed={!isPhone && scheduleDay.weekdayIndex >= WEEKEND_FROM}
+              row={row}
                 upward={row >= weeks.length - UPWARD_ROWS}
                 selected={openDay === scheduleDay.day}
                 onOpen={(opener, scrollTo) => {

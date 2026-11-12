@@ -1,4 +1,6 @@
 .grid {
+  /* Five weekdays, then Saturday over Sunday in one narrow column */
+  --grid-columns: repeat(5, minmax(0, 1fr)) 136px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-2xl);
   background: var(--color-surface);
@@ -30,7 +32,7 @@
 
 .weekdays {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: var(--grid-columns);
   border-bottom: 1px solid var(--color-border);
   font-size: var(--text-sm);
   font-weight: 600;
@@ -43,11 +45,11 @@
   padding: var(--space-2) var(--space-3);
 }
 
-/* One and a half screens for the whole month, shared equally by its 4 to 6 weeks */
+/* One and a half screens for the whole month, shared equally by its 4 to 6 weeks; each week is two half rows for the weekend */
 .days {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  grid-auto-rows: calc(150dvh / var(--rows));
+  grid-template-columns: var(--grid-columns);
+  grid-auto-rows: calc(75dvh / var(--rows));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -63,14 +65,36 @@
   border-right: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
   background: var(--color-bg-weekday);
+  grid-row: calc(var(--row) * 2 + 1) / span 2;
 }
 
-.day:nth-child(7n) {
+.day[data-weekday='5'],
+.day[data-weekday='6'] {
+  grid-column: 6;
   border-right: 0;
 }
 
-.day:nth-last-child(-n + 7) {
+.day[data-weekday='5'] {
+  grid-row: calc(var(--row) * 2 + 1);
+}
+
+.day[data-weekday='6'] {
+  grid-row: calc(var(--row) * 2 + 2);
+}
+
+/* Saturday keeps its bottom rule: it parts it from Sunday */
+.day:nth-last-child(-n + 7):not([data-weekday='5']) {
   border-bottom: 0;
+}
+
+/* The collapsed weekend: name and number on top, the link at the bottom */
+.day[data-collapsed] .weekday {
+  display: inline;
+  text-transform: capitalize;
+}
+
+.day[data-collapsed] .footer {
+  margin-top: auto;
 }
 
 .day[data-weekend='true'] {
@@ -286,8 +310,8 @@
     scroll-margin-top: var(--space-4);
   }
 
-  .day:nth-child(7n),
-  .day:nth-last-child(-n + 7) {
+  .day[data-weekday],
+  .day:nth-last-child(-n + 7):not([data-weekday='5']) {
     border: 1px solid var(--color-border);
   }
 
