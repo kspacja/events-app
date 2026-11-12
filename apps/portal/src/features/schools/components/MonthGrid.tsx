@@ -253,7 +253,7 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
     '--bar-gap': `${BAR_GAP}px`,
   } as CSSProperties;
   return (
-    <section className={styles.grid} aria-label={CALENDAR_LABELS.region} style={style}>
+    <section aria-label={CALENDAR_LABELS.region} style={style}>
       <div className={styles.caption}>
         {/* The dock's h2 already names the month for screen readers */}
         <span className={styles.monthName} aria-hidden="true">
@@ -261,33 +261,35 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
         </span>
         {passed ? <p className={styles.passed}>{formatPassedWeeks(passed)}</p> : null}
       </div>
-      <div className={styles.weekdays} aria-hidden="true">
-        {WEEKDAY_SHORT_NAMES.map((name) => (
-          <span key={name}>{name}</span>
-        ))}
+      <div className={styles.grid}>
+        <div className={styles.weekdays} aria-hidden="true">
+          {WEEKDAY_SHORT_NAMES.map((name) => (
+            <span key={name}>{name}</span>
+          ))}
+        </div>
+        <ol ref={ref} className={styles.days}>
+          {weeks.flatMap((week, row) =>
+            week.map((scheduleDay) => (
+              <MonthDay
+                key={scheduleDay.day}
+                scheduleDay={scheduleDay}
+                today={today}
+                capacity={capacity}
+                upward={row >= weeks.length - UPWARD_ROWS}
+                selected={openDay === scheduleDay.day}
+                onOpen={(opener) => {
+                  if (openDay === scheduleDay.day && !closing) {
+                    close();
+                    return;
+                  }
+                  openerRef.current = opener;
+                  openDayDrawer(scheduleDay.day);
+                }}
+              />
+            )),
+          )}
+        </ol>
       </div>
-      <ol ref={ref} className={styles.days}>
-        {weeks.flatMap((week, row) =>
-          week.map((scheduleDay) => (
-            <MonthDay
-              key={scheduleDay.day}
-              scheduleDay={scheduleDay}
-              today={today}
-              capacity={capacity}
-              upward={row >= weeks.length - UPWARD_ROWS}
-              selected={openDay === scheduleDay.day}
-              onOpen={(opener) => {
-                if (openDay === scheduleDay.day && !closing) {
-                  close();
-                  return;
-                }
-                openerRef.current = opener;
-                openDayDrawer(scheduleDay.day);
-              }}
-            />
-          )),
-        )}
-      </ol>
       {open ? (
         <MonthDayDrawer
           // A drawer changing sides slides in anew from its own edge

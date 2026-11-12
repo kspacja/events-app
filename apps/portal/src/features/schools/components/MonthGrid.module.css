@@ -11,8 +11,8 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-1) var(--space-3);
-  padding: var(--space-1-5) var(--space-3);
-  border-bottom: 1px dashed var(--color-border);
+  margin-bottom: var(--space-2);
+  padding: 0 var(--space-1);
   font-size: var(--text-sm);
 }
 
@@ -269,7 +269,7 @@
 
   .caption {
     margin-bottom: var(--space-3);
-    padding: 0 0 var(--space-1-5);
+    padding: 0;
   }
 
   .days {

@@ -11,18 +11,36 @@
   box-sizing: border-box;
   width: min(1100px, calc(100% - 2 * var(--space-4)));
   padding: var(--space-3) var(--space-4);
-  border: 1px solid color-mix(in srgb, var(--color-text) 18%, transparent);
+  /* Read here, before the parts below swap the tokens */
+  --dock-green: var(--color-accent-strong);
+  --dock-ink: var(--color-on-accent);
+  border: 1px solid color-mix(in srgb, var(--dock-green) 70%, black);
   border-radius: var(--radius-2xl);
-  /* Milk glass: the month shows through, blurred */
-  background: color-mix(in srgb, var(--color-surface) 35%, transparent);
-  /* A lit top edge and a darker glow underneath lift it off the grid */
+  /* Green glass: the month shows through, blurred */
+  background: color-mix(in srgb, var(--dock-green) 85%, transparent);
+  color: var(--dock-ink);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--color-surface) 75%, white),
+    inset 0 1px 0 color-mix(in srgb, var(--dock-ink) 30%, transparent),
     var(--shadow-lg),
     0 2px 8px rgb(0 0 0 / 0.12);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   backdrop-filter: blur(16px) saturate(1.4);
   transform: translateX(-50%);
+}
+
+/* Light on green: the dock's own controls get inverted tokens; the filters dialog keeps the page's */
+.period,
+.filters,
+.jumps,
+.actions > button,
+.wide > button,
+.narrow > button {
+  --color-text: var(--dock-ink);
+  --color-surface: transparent;
+  --color-border: color-mix(in srgb, var(--dock-ink) 55%, transparent);
+  --color-accent: var(--dock-ink);
+  --color-accent-strong: var(--dock-ink);
+  --color-on-accent: var(--dock-green);
 }
 
 .period {
