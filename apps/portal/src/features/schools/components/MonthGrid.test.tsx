@@ -46,6 +46,12 @@ describe('MonthGrid', () => {
     expect(screen.queryByRole('button', { name: /Lekcja/ })).not.toBeInTheDocument();
   });
 
+  it('notes "brak wydarzeń" in an empty day of the month, but not outside it', () => {
+    renderGrid([day('2026-11-02', []), day('2026-10-31', [], false)]);
+
+    expect(screen.getAllByText('brak wydarzeń')).toHaveLength(1);
+  });
+
   it('shows as many bars as fit and the rest behind "+N więcej"', () => {
     const many = Array.from({ length: 6 }, (_, i) => listing(`e${i}`, `2026-11-02T0${i}:00:00Z`, `Wydarzenie ${i}`));
     renderGrid([day('2026-11-02', many)]);

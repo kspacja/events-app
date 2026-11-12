@@ -32,5 +32,6 @@ export const MONTH_LABELS = {
   more: 'więcej',
   closeDay: 'Zamknij dzień',
   showDay: 'pokaż dzień',
+  noEvents: 'brak wydarzeń',
   weekJumps: 'Tygodnie miesiąca',
 } as const;

@@ -207,6 +207,8 @@ function MonthDay({ scheduleDay, today, capacity, narrow, row, upward, selected,
           >
             {hidden > 0 ? `+${hidden} ${MONTH_LABELS.more}` : MONTH_LABELS.showDay}
           </button>
+        ) : inRange ? (
+          <span className={styles.noEvents}>{MONTH_LABELS.noEvents}</span>
         ) : null}
       </div>
     </li>
