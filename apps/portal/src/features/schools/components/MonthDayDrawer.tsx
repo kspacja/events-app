@@ -13,17 +13,34 @@ interface MonthDayDrawerProps {
   readonly listings: readonly OccurrenceListing[];
   /** The side away from the day, so the day stays in sight. */
   readonly side: 'start' | 'end';
+  /** Sliding out; `onClosed` follows once it is off the screen. */
+  readonly closing?: boolean;
   readonly onClose: () => void;
+  readonly onClosed?: () => void;
 }
 
 /** Not modal: the month stays usable beside it, and another day's "+N" swaps its content. */
-export function MonthDayDrawer({ day, listings, side, onClose }: MonthDayDrawerProps) {
+export function MonthDayDrawer({ day, listings, side, closing = false, onClose, onClosed }: MonthDayDrawerProps) {
   const headingId = useId();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     headingRef.current?.focus();
   }, [day]);
+
+  const drawerRef = useRef<HTMLElement>(null);
+
+  // A plain listener: React maps animationend to a prefixed name where AnimationEvent is missing
+  useEffect(() => {
+    const drawer = drawerRef.current;
+    if (!drawer || !closing) return;
+    function slidOut(event: Event) {
+      // Only the drawer's own slide, not one of its children's
+      if (event.target === drawer) onClosed?.();
+    }
+    drawer.addEventListener('animationend', slidOut);
+    return () => drawer.removeEventListener('animationend', slidOut);
+  }, [closing, onClosed]);
 
   useEffect(() => {
     function closeOnEscape(event: KeyboardEvent) {
@@ -34,7 +51,15 @@ export function MonthDayDrawer({ day, listings, side, onClose }: MonthDayDrawerP
   }, [onClose]);
 
   return (
-    <aside role="dialog" aria-modal="false" aria-labelledby={headingId} className={styles.drawer} data-side={side}>
+    <aside
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby={headingId}
+      className={styles.drawer}
+      data-side={side}
+      data-closing={closing || undefined}
+      ref={drawerRef}
+    >
       <div className={styles.bar}>
         <h3 id={headingId} ref={headingRef} tabIndex={-1} className={styles.heading}>
           {formatDay(day, 'EEEE, d MMMM')}

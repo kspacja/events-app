@@ -9,14 +9,40 @@
   width: min(380px, 90vw);
   background: var(--color-bg);
   box-shadow: var(--shadow-lg);
+  animation: drawer-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.drawer[data-closing] {
+  animation: drawer-out 180ms ease-in forwards;
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(var(--drawer-offscreen));
+  }
+}
+
+@keyframes drawer-out {
+  to {
+    transform: translateX(var(--drawer-offscreen));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .drawer[data-closing] {
+    animation: none;
+  }
 }
 
 .drawer[data-side='start'] {
+  --drawer-offscreen: -100%;
   left: 0;
   border-right: 1px solid var(--color-border);
 }
 
 .drawer[data-side='end'] {
+  --drawer-offscreen: 100%;
   right: 0;
   border-left: 1px solid var(--color-border);
 }

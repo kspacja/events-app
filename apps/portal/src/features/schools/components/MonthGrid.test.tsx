@@ -56,7 +56,7 @@ describe('MonthGrid', () => {
     expect(screen.getByText('+3 więcej')).toBeInTheDocument();
   });
 
-  it('opens the full day in a drawer from "+N więcej", and closes it with Escape', () => {
+  it('opens the full day in a drawer from "+N więcej", and slides it out on Escape', () => {
     const many = Array.from({ length: 6 }, (_, i) => listing(`e${i}`, `2026-11-02T0${i}:00:00Z`, `Wydarzenie ${i}`));
     renderGrid([day('2026-11-02', many)]);
 
@@ -65,6 +65,9 @@ describe('MonthGrid', () => {
     expect(within(drawer).getAllByRole('article')).toHaveLength(6);
 
     fireEvent.keyDown(document, { key: 'Escape' });
+    // It slides out first, and goes once the slide ends
+    expect(drawer).toHaveAttribute('data-closing');
+    fireEvent.animationEnd(drawer);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 

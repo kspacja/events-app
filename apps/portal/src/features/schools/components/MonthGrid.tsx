@@ -228,12 +228,24 @@ interface MonthGridProps {
 export function MonthGrid({ weeks, passed = null, today }: MonthGridProps) {
   const { ref, capacity } = useCapacity();
   const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
+  // The drawer slides out before it goes
+  const [closing, setClosing] = useState(false);
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const open = openDay ? weeks.flat().find(({ day }) => day === openDay) : undefined;
-  const close = useCallback(() => {
+  const closed = useCallback(() => {
     setOpenDay(null);
+    setClosing(false);
     // Back to the "+N" that opened it, once the drawer is gone
     requestAnimationFrame(() => openerRef.current?.focus());
+  }, []);
+  const close = useCallback(() => {
+    // No animation runs, so nothing would report its end
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) closed();
+    else setClosing(true);
+  }, [closed]);
+  const openDayDrawer = useCallback((day: CalendarDay) => {
+    setClosing(false);
+    setOpenDay(day);
   }, []);
 
   useEffect(() => {
@@ -249,11 +261,11 @@ export function MonthGrid({ weeks, passed = null, today }: MonthGridProps) {
       );
       if (!hiddenIn) return;
       openerRef.current = document.querySelector<HTMLButtonElement>(`[data-day="${hiddenIn.day}"] [data-more]`);
-      setOpenDay(hiddenIn.day);
+      openDayDrawer(hiddenIn.day);
     }
     document.addEventListener(REVEAL_EVENT, reveal);
     return () => document.removeEventListener(REVEAL_EVENT, reveal);
-  }, [weeks]);
+  }, [weeks, openDayDrawer]);
   const style = {
     '--rows': weeks.length,
     '--bar-height': `${BAR_HEIGHT}px`,
@@ -279,8 +291,12 @@ export function MonthGrid({ weeks, passed = null, today }: MonthGridProps) {
               upward={row >= weeks.length - UPWARD_ROWS}
               selected={openDay === scheduleDay.day}
               onMore={(opener) => {
+                if (openDay === scheduleDay.day && !closing) {
+                  close();
+                  return;
+                }
                 openerRef.current = opener;
-                setOpenDay((current) => (current === scheduleDay.day ? null : scheduleDay.day));
+                openDayDrawer(scheduleDay.day);
               }}
             />
           )),
@@ -288,10 +304,14 @@ export function MonthGrid({ weeks, passed = null, today }: MonthGridProps) {
       </ol>
       {open ? (
         <MonthDayDrawer
+          // A drawer changing sides slides in anew from its own edge
+          key={open.weekdayIndex >= END_ALIGNED_FROM ? 'start' : 'end'}
           day={open.day}
           listings={activeListings(open)}
           side={open.weekdayIndex >= END_ALIGNED_FROM ? 'start' : 'end'}
+          closing={closing}
           onClose={close}
+          onClosed={closed}
         />
       ) : null}
     </section>
