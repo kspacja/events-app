@@ -75,8 +75,21 @@ interface MonthBarProps {
 function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
   const [open, setOpen] = useState(false);
   const tileId = useId();
+  const entryRef = useRef<HTMLLIElement>(null);
+
+  // Safari does not focus a tapped button, so blur alone would never close the tile
+  useEffect(() => {
+    if (!open) return;
+    function closeOutside(event: PointerEvent) {
+      if (!entryRef.current?.contains(event.target as Node)) setOpen(false);
+    }
+    document.addEventListener('pointerdown', closeOutside);
+    return () => document.removeEventListener('pointerdown', closeOutside);
+  }, [open]);
+
   return (
     <li
+      ref={entryRef}
       className={styles.entry}
       data-open={open || undefined}
       data-align={alignEnd ? 'end' : 'start'}
