@@ -136,8 +136,8 @@ interface MonthDayProps {
   readonly capacity: number;
   readonly upward: boolean;
   readonly selected: boolean;
-  /** Opens the day's drawer; `opener` gets the focus back when it closes. */
-  readonly onOpen: (opener: HTMLButtonElement) => void;
+  /** Opens the day's drawer at `scrollToIndex`; `opener` gets the focus back when it closes. */
+  readonly onOpen: (opener: HTMLButtonElement, scrollToIndex: number | null) => void;
 }
 
 function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: MonthDayProps) {
@@ -186,7 +186,7 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onOpen }: Mo
             className={styles.more}
             data-more
             aria-expanded={selected}
-            onClick={(event) => onOpen(event.currentTarget)}
+            onClick={(event) => onOpen(event.currentTarget, hidden > 0 ? shown.length : null)}
           >
             {hidden > 0 ? `+${hidden} ${MONTH_LABELS.more}` : MONTH_LABELS.showDay}
           </button>
@@ -211,6 +211,7 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
   const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
   // The drawer slides out before it goes
   const [closing, setClosing] = useState(false);
+  const [scrollToIndex, setScrollToIndex] = useState<number | null>(null);
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const open = openDay ? weeks.flat().find(({ day }) => day === openDay) : undefined;
   const closed = useCallback(() => {
@@ -224,9 +225,10 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) closed();
     else setClosing(true);
   }, [closed]);
-  const openDayDrawer = useCallback((day: CalendarDay) => {
+  const openDayDrawer = useCallback((day: CalendarDay, scrollTo: number | null) => {
     setClosing(false);
     setOpenDay(day);
+    setScrollToIndex(scrollTo);
   }, []);
 
   useEffect(() => {
@@ -237,12 +239,13 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
         flash(bar);
         return;
       }
-      const hiddenIn = weeks.flat().find((scheduleDay) =>
-        activeListings(scheduleDay).some((listing) => listing.occurrenceId === occurrenceId),
-      );
-      if (!hiddenIn) return;
-      openerRef.current = document.querySelector<HTMLButtonElement>(`[data-day="${hiddenIn.day}"] [data-more]`);
-      openDayDrawer(hiddenIn.day);
+      for (const scheduleDay of weeks.flat()) {
+        const index = activeListings(scheduleDay).findIndex((listing) => listing.occurrenceId === occurrenceId);
+        if (index < 0) continue;
+        openerRef.current = document.querySelector<HTMLButtonElement>(`[data-day="${scheduleDay.day}"] [data-more]`);
+        openDayDrawer(scheduleDay.day, index);
+        return;
+      }
     }
     document.addEventListener(REVEAL_EVENT, reveal);
     return () => document.removeEventListener(REVEAL_EVENT, reveal);
@@ -277,13 +280,13 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
                 capacity={capacity}
                 upward={row >= weeks.length - UPWARD_ROWS}
                 selected={openDay === scheduleDay.day}
-                onOpen={(opener) => {
+                onOpen={(opener, scrollTo) => {
                   if (openDay === scheduleDay.day && !closing) {
                     close();
                     return;
                   }
                   openerRef.current = opener;
-                  openDayDrawer(scheduleDay.day);
+                  openDayDrawer(scheduleDay.day, scrollTo);
                 }}
               />
             )),
@@ -298,6 +301,7 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
           listings={activeListings(open)}
           side={open.weekdayIndex >= END_ALIGNED_FROM ? 'start' : 'end'}
           closing={closing}
+          scrollToIndex={scrollToIndex}
           onClose={close}
           onClosed={closed}
         />

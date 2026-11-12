@@ -15,18 +15,35 @@ interface MonthDayDrawerProps {
   readonly side: 'start' | 'end';
   /** Sliding out; `onClosed` follows once it is off the screen. */
   readonly closing?: boolean;
+  /** Scrolled into view on open: the first event the day's list could not show, or one picked on the map. */
+  readonly scrollToIndex?: number | null;
   readonly onClose: () => void;
   readonly onClosed?: () => void;
 }
 
 /** Not modal: the month stays usable beside it, and another day's "+N" swaps its content. */
-export function MonthDayDrawer({ day, listings, side, closing = false, onClose, onClosed }: MonthDayDrawerProps) {
+export function MonthDayDrawer({
+  day,
+  listings,
+  side,
+  closing = false,
+  scrollToIndex = null,
+  onClose,
+  onClosed,
+}: MonthDayDrawerProps) {
   const headingId = useId();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
+  const listRef = useRef<HTMLUListElement>(null);
+
   useEffect(() => {
     headingRef.current?.focus();
-  }, [day]);
+    const list = listRef.current;
+    const item = scrollToIndex === null ? null : list?.children[scrollToIndex];
+    if (!list || !item) return;
+    // Only the list scrolls; the page stays where it is
+    list.scrollTop += item.getBoundingClientRect().top - list.getBoundingClientRect().top;
+  }, [day, scrollToIndex]);
 
   const drawerRef = useRef<HTMLElement>(null);
 
@@ -69,7 +86,7 @@ export function MonthDayDrawer({ day, listings, side, closing = false, onClose, 
           <span className="visually-hidden">{MONTH_LABELS.closeDay}</span>
         </button>
       </div>
-      <ul className={styles.list}>
+      <ul ref={listRef} className={styles.list}>
         {listings.map((listing) => (
           <li key={listing.occurrenceId}>
             <OccurrenceCard listing={listing} variant="popup" />
