@@ -33,27 +33,46 @@ export function WeekArrow({ direction, week, onNavigate, compact = false, today 
     onNavigate(target);
   }
 
-  const sign = <span className={styles.sign} aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>;
-  const label = direction < 0 ? CALENDAR_LABELS.previousWeek : CALENDAR_LABELS.nextWeek;
+  return (
+    <PeriodArrow
+      direction={direction}
+      href={schoolsHref(target, undefined, filtersQuery)}
+      label={direction < 0 ? CALENDAR_LABELS.previousWeek : CALENDAR_LABELS.nextWeek}
+      disabled={today !== undefined && isPastWeek(target, today)}
+      compact={compact}
+      onClick={handleClick}
+    />
+  );
+}
 
-  if (today && isPastWeek(target, today)) {
+interface PeriodArrowProps {
+  readonly direction: -1 | 1;
+  readonly href: string;
+  readonly label: string;
+  /** Shown, but not a link: the period cannot be reached. */
+  readonly disabled?: boolean;
+  readonly compact?: boolean;
+  readonly onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+}
+
+/** A previous/next link for any period: a week, a month. */
+export function PeriodArrow({ direction, href, label, disabled = false, compact = false, onClick }: PeriodArrowProps) {
+  const sign = <span className={styles.sign} aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>;
+  const text = <span className={compact ? 'visually-hidden' : styles.label}>{label}</span>;
+
+  if (disabled) {
     return (
       <span className={`${compact ? styles.compact : styles.arrow} ${styles.disabled}`} aria-disabled="true">
         {sign}
-        <span className={compact ? 'visually-hidden' : styles.label}>{label}</span>
+        {text}
       </span>
     );
   }
 
   return (
-    <Link
-      href={schoolsHref(target, undefined, filtersQuery)}
-      scroll={false}
-      className={compact ? styles.compact : styles.arrow}
-      onClick={handleClick}
-    >
+    <Link href={href} scroll={false} className={compact ? styles.compact : styles.arrow} onClick={onClick}>
       {sign}
-      <span className={compact ? 'visually-hidden' : styles.label}>{label}</span>
+      {text}
     </Link>
   );
 }

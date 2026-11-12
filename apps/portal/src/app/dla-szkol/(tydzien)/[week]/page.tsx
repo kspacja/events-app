@@ -4,18 +4,11 @@ import { StripControls } from '@/features/events/components/StripControls';
 import { WeekGrid } from '@/features/events/components/WeekGrid';
 import { WeekCount, WeekMapPoints } from '@/features/schools/components/WeekNavigation';
 import { loadWeekSchedule } from '@/features/schools/weekSchedule';
-import type { Schedule } from '@/features/events/schedule';
 import { schoolsHref } from '@/features/schools/schoolsHref';
 import { weekFromPath } from '@/features/schools/weekParam';
 import { isPastWeek } from '@/features/schools/weekShift';
+import { dayCountsOf } from '@/features/schools/weekCount';
 import { filtersQuery, parseFilters } from '@/features/schools/schoolFilters';
-
-/** Active events per day, the same numbers the day markers show. */
-function dayCountsOf(schedule: Schedule): Record<string, number> {
-  return Object.fromEntries(
-    schedule.weeks.flat().map(({ day, entries }) => [day, entries.filter(({ active }) => active).length]),
-  );
-}
 
 export default async function WeekPage({ params, searchParams }: PageProps<'/dla-szkol/[week]'>) {
   const { week: raw } = await params;
@@ -27,7 +20,7 @@ export default async function WeekPage({ params, searchParams }: PageProps<'/dla
   if (isPastWeek(week, today)) redirect(schoolsHref(mondayOf(today), undefined, query));
 
   const schedule = await loadWeekSchedule(week as CalendarDay, query);
-  
+
   return (
     <>
       <WeekMapPoints points={schedule.mapPoints} focus={schedule.mapFocus} />

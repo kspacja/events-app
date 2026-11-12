@@ -1,0 +1,37 @@
+.page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: var(--space-7) var(--space-10) var(--space-12);
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: var(--space-4) var(--space-4) var(--space-10);
+  }
+}
+
+/* Arrows on both ends, the month and its count in the middle */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--text-3xl);
+  text-align: center;
+}
+
+.count {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-accent-strong);
+}

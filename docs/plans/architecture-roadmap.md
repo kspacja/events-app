@@ -26,6 +26,7 @@ Koniec etapu: **code review w dwóch osiach** całego etapu (Standards + Spec, r
 | 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia; ustawia też Oznaczenie szkolne (`forSchools`, etap 3.5) | — | — |
 | 3.5 Strona dla szkół | podstrona portalu: Kalendarz miesiąca zamiast Zapytania, afisz wybranego tygodnia, tylko Wydarzenia z Oznaczeniem szkolnym | zrobione (na MSW i przykładowych danych; Oznaczenie szkolne ustawi Studio w etapie 3) | [stages/3.5-strona-dla-szkol.md](stages/3.5-strona-dla-szkol.md) |
 | 3.6 Filtry dla szkół | prototyp UI filtrów strony dla szkół na MSW (grupa wiekowa, przedmiot, liczba uczestników, rodzaj); mapa w oknie modalnym | w toku | [stages/3.6-filtry-dla-szkol.md](stages/3.6-filtry-dla-szkol.md) |
+| 3.7 Widok miesiąca dla szkół | alternatywny widok `/dla-szkol/miesiac/RRRR-MM`: siatka miesiąca z paskami Wydarzeń, kafelek po najechaniu, szuflada dnia, pływające filtry i mapa | w toku | [stages/3.7-miesiac-dla-szkol.md](stages/3.7-miesiac-dla-szkol.md) |
 | 4. Moderacja | `apps/moderation`: kolejka Zgłoszeń i decyzje | — | — |
 | 5. Rekomendacje | `packages/recommendations`, `apps/worker`, Reakcje, `ColdStart` (ADR-0003, 0007) | — | — |
 | 6. Import i Kanały | import CSV, Kanał JSON Zaufanego Organizatora (cyklicznie i na webhook) | — | [stages/6-import-i-kanaly.md](stages/6-import-i-kanaly.md) |

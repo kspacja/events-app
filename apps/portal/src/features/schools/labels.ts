@@ -26,3 +26,7 @@ export const CALENDAR_LABELS = {
 } as const;
 
 export const WEEKDAY_SHORT_NAMES = ['pn', 'wt', 'śr', 'czw', 'pt', 'sob', 'nd'] as const;
+
+export const MONTH_LABELS = {
+  countScope: 'w miesiącu',
+} as const;
