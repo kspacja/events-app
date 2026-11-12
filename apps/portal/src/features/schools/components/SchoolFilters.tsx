@@ -116,7 +116,8 @@ export function SchoolFilters({ placement, layout = 'inline' }: SchoolFiltersPro
         />
       ))}
     </section>
-      {hasOwn(selection, placement) ? (
+      {/* The month dock has no room for it: chips are toggled off one by one */}
+      {layout !== 'rows' && hasOwn(selection, placement) ? (
         <button type="button" className={styles.clear} onClick={() => apply(withoutPlacement(selection, placement))}>
           {FILTER_LABELS.clear}
         </button>
