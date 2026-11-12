@@ -138,9 +138,11 @@ interface EventsMapProps {
   readonly focus: readonly MapPoint[];
   /** Makes the popup's title a button that takes the user to the occurrence in the list. */
   readonly onShowInWeek?: (occurrenceId: OccurrenceId) => void;
+  /** Where that button takes the user, for screen readers. */
+  readonly showInLabel?: string;
 }
 
-export function EventsMap({ points, focus, onShowInWeek }: EventsMapProps) {
+export function EventsMap({ points, focus, onShowInWeek, showInLabel = MAP_LABELS.showInWeek }: EventsMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [cursor, setCursor] = useState('');
   // Without the reworked style (e.g. the fetch failed) the map falls back to the original one
@@ -287,7 +289,7 @@ export function EventsMap({ points, focus, onShowInWeek }: EventsMapProps) {
               {onShowInWeek ? (
                 <button type="button" className={styles.titleButton} onClick={() => onShowInWeek(selected.occurrenceId)}>
                   {selected.title}
-                  <span className="visually-hidden">{`, ${MAP_LABELS.showInWeek}`}</span>
+                  <span className="visually-hidden">{`, ${showInLabel}`}</span>
                 </button>
               ) : (
                 selected.title

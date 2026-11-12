@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type CSSProperties } from 'react';
 import type { CalendarDay } from '@events/time';
-import type { OccurrenceListing } from '@events/contract/listing';
+import type { OccurrenceId, OccurrenceListing } from '@events/contract/listing';
 import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
 import { UI_LABELS } from '@/features/events/labels';
 import type { ScheduleDay } from '@/features/events/schedule';
@@ -21,6 +21,21 @@ const DEFAULT_CAPACITY = 4;
 const END_ALIGNED_FROM = 3;
 // The last two rows open their tiles upwards
 const UPWARD_ROWS = 2;
+
+const REVEAL_EVENT = 'month-grid:reveal';
+
+/** From the map: focus the occurrence's bar, or open its day's drawer when it hides behind "+N". */
+export function revealInMonth(occurrenceId: OccurrenceId) {
+  document.dispatchEvent(new CustomEvent<OccurrenceId>(REVEAL_EVENT, { detail: occurrenceId }));
+}
+
+function flash(bar: HTMLElement) {
+  const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  bar.scrollIntoView({ block: 'center', behavior });
+  bar.focus({ preventScroll: true });
+  bar.dataset.revealed = 'true';
+  bar.addEventListener('animationend', () => delete bar.dataset.revealed, { once: true });
+}
 
 /** How many bars fit in a day; every day has the same height, so one list is enough to measure. */
 function useCapacity() {
@@ -106,6 +121,7 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onMore }: Mo
       data-weekend={isWeekend}
       data-past={day < today || undefined}
       data-selected={selected || undefined}
+      data-day={day}
       aria-current={isToday ? 'date' : undefined}
     >
       <h3 className={styles.dayHeading}>
@@ -129,6 +145,7 @@ function MonthDay({ scheduleDay, today, capacity, upward, selected, onMore }: Mo
         <button
           type="button"
           className={styles.more}
+          data-more
           aria-expanded={selected}
           onClick={(event) => onMore(event.currentTarget)}
         >
@@ -155,6 +172,25 @@ export function MonthGrid({ weeks, today }: MonthGridProps) {
     // Back to the "+N" that opened it, once the drawer is gone
     requestAnimationFrame(() => openerRef.current?.focus());
   }, []);
+
+  useEffect(() => {
+    function reveal(event: Event) {
+      const occurrenceId = (event as CustomEvent<OccurrenceId>).detail;
+      const bar = document.getElementById(occurrenceDomId(occurrenceId));
+      if (bar) {
+        flash(bar);
+        return;
+      }
+      const hiddenIn = weeks.flat().find((scheduleDay) =>
+        activeListings(scheduleDay).some((listing) => listing.occurrenceId === occurrenceId),
+      );
+      if (!hiddenIn) return;
+      openerRef.current = document.querySelector<HTMLButtonElement>(`[data-day="${hiddenIn.day}"] [data-more]`);
+      setOpenDay(hiddenIn.day);
+    }
+    document.addEventListener(REVEAL_EVENT, reveal);
+    return () => document.removeEventListener(REVEAL_EVENT, reveal);
+  }, [weeks]);
   const style = {
     '--rows': weeks.length,
     '--bar-height': `${BAR_HEIGHT}px`,

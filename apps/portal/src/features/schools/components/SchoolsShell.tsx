@@ -16,7 +16,8 @@ import { formatWeekCount, upcomingCount } from '../weekCount';
 import { filtersQuery, parseFilters } from '../schoolFilters';
 import { MonthCalendar, WeekRow } from './MonthCalendar';
 import { FiltersDialog, SchoolFilters } from './SchoolFilters';
-import { MapButton, WeekArea, WeekMapDialog, WeekNavigationProvider, useWeekNavigation } from './WeekNavigation';
+import { MapButton, MapDialogProvider } from './MapDialog';
+import { WeekArea, WeekMapDialog, WeekNavigationProvider, useWeekNavigation } from './WeekNavigation';
 import { WeekArrow } from './WeekArrow';
 import styles from './SchoolsShell.module.css';
 
@@ -135,7 +136,9 @@ export function SchoolsShell({ today, children }: SchoolsShellProps) {
     <FiltersQueryContext value={query}>
       <WeekNavigationProvider today={today}>
         <OccurrenceSelectionProvider>
-          <ShellContent today={today}>{children}</ShellContent>
+          <MapDialogProvider>
+            <ShellContent today={today}>{children}</ShellContent>
+          </MapDialogProvider>
         </OccurrenceSelectionProvider>
       </WeekNavigationProvider>
     </FiltersQueryContext>

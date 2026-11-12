@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation';
 import { currentEventDay, mondayOf, type CalendarDay } from '@events/time';
 import { StripControls } from '@/features/events/components/StripControls';
 import { WeekGrid } from '@/features/events/components/WeekGrid';
-import { WeekCount, WeekMapPoints } from '@/features/schools/components/WeekNavigation';
+import { MapPoints } from '@/features/schools/components/MapDialog';
+import { WeekCount } from '@/features/schools/components/WeekNavigation';
 import { loadWeekSchedule } from '@/features/schools/weekSchedule';
 import { schoolsHref } from '@/features/schools/schoolsHref';
 import { weekFromPath } from '@/features/schools/weekParam';
@@ -23,7 +24,7 @@ export default async function WeekPage({ params, searchParams }: PageProps<'/dla
 
   return (
     <>
-      <WeekMapPoints points={schedule.mapPoints} focus={schedule.mapFocus} />
+      <MapPoints points={schedule.mapPoints} focus={schedule.mapFocus} />
       <WeekCount
         week={week as CalendarDay}
         filtersQuery={query}

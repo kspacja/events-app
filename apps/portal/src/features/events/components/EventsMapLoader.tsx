@@ -14,8 +14,9 @@ interface EventsMapLoaderProps {
   readonly points: readonly MapPoint[];
   readonly focus: readonly MapPoint[];
   readonly onShowInWeek?: (occurrenceId: OccurrenceId) => void;
+  readonly showInLabel?: string;
 }
 
-export function EventsMapLoader({ points, focus, onShowInWeek }: EventsMapLoaderProps) {
-  return <EventsMap points={points} focus={focus} onShowInWeek={onShowInWeek} />;
+export function EventsMapLoader(props: EventsMapLoaderProps) {
+  return <EventsMap {...props} />;
 }

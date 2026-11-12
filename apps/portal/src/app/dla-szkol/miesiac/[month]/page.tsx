@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { currentEventDay } from '@events/time';
+import { MapPoints } from '@/features/schools/components/MapDialog';
 import { MonthGrid } from '@/features/schools/components/MonthGrid';
 import { MonthHeader } from '@/features/schools/components/MonthHeader';
 import { MonthFiltersBar } from '@/features/schools/components/MonthShell';
@@ -22,6 +23,7 @@ export default async function MonthPage({ params, searchParams }: PageProps<'/dl
 
   return (
     <>
+      <MapPoints points={schedule.mapPoints} focus={schedule.mapFocus} />
       <MonthHeader month={month} today={today} filtersQuery={query} total={schedule.activeCount} upcoming={upcoming} />
       <MonthFiltersBar />
       <MonthGrid weeks={schedule.weeks} today={today} />

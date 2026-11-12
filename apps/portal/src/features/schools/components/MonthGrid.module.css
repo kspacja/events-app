@@ -201,3 +201,21 @@
 .day[data-selected] {
   box-shadow: inset 0 0 0 2px var(--color-accent);
 }
+
+/* A bar reached from the map flashes once, so the eye finds it */
+.bar[data-revealed='true'] {
+  animation: revealed 2s ease-out;
+}
+
+@keyframes revealed {
+  0%,
+  40% {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  100% {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+}
