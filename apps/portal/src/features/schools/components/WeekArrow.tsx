@@ -52,17 +52,20 @@ interface PeriodArrowProps {
   /** Shown, but not a link: the period cannot be reached. */
   readonly disabled?: boolean;
   readonly compact?: boolean;
+  /** Only the sign, small and unframed, for a quiet spot like a caption. */
+  readonly subtle?: boolean;
   readonly onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
 /** A previous/next link for any period: a week, a month. */
-export function PeriodArrow({ direction, href, label, disabled = false, compact = false, onClick }: PeriodArrowProps) {
+export function PeriodArrow({ direction, href, label, disabled = false, compact = false, subtle = false, onClick }: PeriodArrowProps) {
+  const variant = subtle ? styles.subtle : compact ? styles.compact : styles.arrow;
   const sign = <span className={styles.sign} aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>;
-  const text = <span className={compact ? 'visually-hidden' : styles.label}>{label}</span>;
+  const text = <span className={compact || subtle ? 'visually-hidden' : styles.label}>{label}</span>;
 
   if (disabled) {
     return (
-      <span className={`${compact ? styles.compact : styles.arrow} ${styles.disabled}`} aria-disabled="true">
+      <span className={`${variant} ${styles.disabled}`} aria-disabled="true">
         {sign}
         {text}
       </span>
@@ -70,7 +73,7 @@ export function PeriodArrow({ direction, href, label, disabled = false, compact 
   }
 
   return (
-    <Link href={href} scroll={false} className={compact ? styles.compact : styles.arrow} onClick={onClick}>
+    <Link href={href} scroll={false} className={variant} onClick={onClick}>
       {sign}
       {text}
     </Link>

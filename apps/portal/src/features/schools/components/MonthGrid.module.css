@@ -6,16 +6,22 @@
   background: var(--color-surface);
 }
 
-/* The month's name, with the weeks already gone as one quiet line beside it */
+/* Month name in the middle, the passed-weeks note on the right */
 .caption {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   gap: var(--space-1) var(--space-3);
   margin-bottom: var(--space-2);
   padding: 0 var(--space-1);
   font-size: var(--text-sm);
+}
+
+.monthNav {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .monthName {
@@ -26,6 +32,8 @@
 }
 
 .passed {
+  grid-column: 3;
+  justify-self: end;
   margin: 0;
   color: var(--color-text-tertiary);
 }
@@ -294,9 +302,17 @@
     display: none;
   }
 
+  /* Phones: the name alone, centred, with the note under it; the dock switches months */
   .caption {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: var(--space-3);
     padding: 0;
+  }
+
+  .monthNav > :not(.monthName) {
+    display: none;
   }
 
   .days {

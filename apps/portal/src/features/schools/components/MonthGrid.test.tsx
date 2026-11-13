@@ -87,6 +87,14 @@ describe('MonthGrid', () => {
     expect(screen.getByRole('dialog', { name: 'poniedziałek, 2 listopada' })).toBeInTheDocument();
   });
 
+  it('switches months from the arrows beside the month name', () => {
+    renderGrid([day('2026-11-02', [])]);
+
+    expect(screen.getByRole('link', { name: 'Następny miesiąc' })).toHaveAttribute('href', '/dla-szkol/miesiac/2026-12');
+    // The current month is the earliest one: the way back is shown, but not a link
+    expect(screen.queryByRole('link', { name: 'Poprzedni miesiąc' })).not.toBeInTheDocument();
+  });
+
   it('opens the tile when the bar is tapped', () => {
     renderGrid([day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]);
     const bar = screen.getByRole('button', { name: '10:00 Lekcja w muzeum' });

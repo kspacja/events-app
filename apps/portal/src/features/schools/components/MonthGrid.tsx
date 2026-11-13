@@ -10,7 +10,10 @@ import { occurrenceDomId } from '@/features/events/scheduleDom';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import { MonthDayDrawer } from './MonthDayDrawer';
-import { firstDayOf, type CalendarMonth } from '../monthCalendar';
+import { useFiltersQuery } from '../filtersQueryContext';
+import { addMonths, firstDayOf, monthOf, type CalendarMonth } from '../monthCalendar';
+import { schoolsMonthHref } from '../schoolsHref';
+import { PeriodArrow } from './WeekArrow';
 import { formatPassedWeeks, type PassedWeeks } from '../monthWeeks';
 import styles from './MonthGrid.module.css';
 
@@ -268,6 +271,7 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
     document.addEventListener(REVEAL_EVENT, reveal);
     return () => document.removeEventListener(REVEAL_EVENT, reveal);
   }, [weeks, openDayDrawer]);
+  const filtersQuery = useFiltersQuery();
   const style = {
     '--rows': weeks.length,
     '--bar-height': `${BAR_HEIGHT}px`,
@@ -276,10 +280,25 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
   return (
     <section aria-label={CALENDAR_LABELS.region} style={style}>
       <div className={styles.caption}>
-        {/* The dock's h2 already names the month for screen readers */}
-        <span className={styles.monthName} aria-hidden="true">
-          {formatDay(firstDayOf(month), 'LLLL yyyy')}
-        </span>
+        <div className={styles.monthNav}>
+          <PeriodArrow
+            direction={-1}
+            href={schoolsMonthHref(addMonths(month, -1), filtersQuery)}
+            label={CALENDAR_LABELS.previousMonth}
+            disabled={month <= monthOf(today)}
+            subtle
+          />
+          {/* The dock's h2 already names the month for screen readers */}
+          <span className={styles.monthName} aria-hidden="true">
+            {formatDay(firstDayOf(month), 'LLLL yyyy')}
+          </span>
+          <PeriodArrow
+            direction={1}
+            href={schoolsMonthHref(addMonths(month, 1), filtersQuery)}
+            label={CALENDAR_LABELS.nextMonth}
+            subtle
+          />
+        </div>
         {passed ? <p className={styles.passed}>{formatPassedWeeks(passed)}</p> : null}
       </div>
       <div className={styles.grid}>

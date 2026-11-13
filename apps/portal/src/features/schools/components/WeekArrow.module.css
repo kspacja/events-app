@@ -87,3 +87,31 @@
   outline: 2px solid var(--color-text);
   outline-offset: 2px;
 }
+
+/* Beside the month name above the grid: just a grey sign */
+.subtle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--text-2xl);
+  text-decoration: none;
+}
+
+.subtle:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-text);
+}
+
+.subtle.disabled:hover {
+  background: none;
+  color: var(--color-text-secondary);
+}
+
+.subtle:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
