@@ -60,7 +60,7 @@
   margin: 0;
   font-family: var(--font-heading);
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .heading:first-letter {

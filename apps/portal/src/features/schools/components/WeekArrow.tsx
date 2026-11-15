@@ -7,6 +7,7 @@ import { CALENDAR_LABELS } from '../labels';
 import { schoolsHref } from '../schoolsHref';
 import { useFiltersQuery } from '../filtersQueryContext';
 import { isPastWeek, shiftWeek } from '../weekShift';
+import { Chevron } from '@/components/Chevron';
 import styles from './WeekArrow.module.css';
 
 interface WeekArrowProps {
@@ -60,7 +61,7 @@ interface PeriodArrowProps {
 /** A previous/next link for any period: a week, a month. */
 export function PeriodArrow({ direction, href, label, disabled = false, compact = false, subtle = false, onClick }: PeriodArrowProps) {
   const variant = subtle ? styles.subtle : compact ? styles.compact : styles.arrow;
-  const sign = <span className={styles.sign} aria-hidden="true">{direction < 0 ? '‹' : '›'}</span>;
+  const sign = <span className={styles.sign} aria-hidden="true"><Chevron direction={direction} /></span>;
   const text = <span className={compact || subtle ? 'visually-hidden' : styles.label}>{label}</span>;
 
   if (disabled) {

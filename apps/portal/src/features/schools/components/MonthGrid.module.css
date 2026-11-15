@@ -26,7 +26,7 @@
 
 .monthName {
   font-family: var(--font-heading);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-secondary);
   text-transform: capitalize;
 }
@@ -43,9 +43,7 @@
   grid-template-columns: var(--grid-columns);
   border-bottom: 1px solid var(--color-border);
   font-size: var(--text-sm);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-weight: 500;
   color: var(--color-text-secondary);
 }
 
@@ -122,16 +120,11 @@
   gap: var(--space-2);
   margin: 0;
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .today {
-  padding: var(--space-0-5) var(--space-2);
-  border-radius: var(--radius-full);
-  background: var(--color-accent-strong);
-  color: var(--color-on-accent);
-  font-size: var(--text-xs);
-  letter-spacing: 0.08em;
+  color: var(--color-accent-strong);
 }
 
 /* A quiet note under the day's number when it has nothing on */
@@ -166,7 +159,7 @@
   padding: 0 var(--space-1-5);
   border: 0;
   border-radius: var(--radius-sm);
-  background: var(--color-accent-soft);
+  background: var(--color-bg-subtle);
   color: var(--color-text);
   font: inherit;
   font-size: var(--text-sm);
@@ -177,7 +170,7 @@
 
 .bar:hover,
 .entry[data-open] .bar {
-  background: var(--color-accent-soft-hover);
+  background: color-mix(in srgb, var(--color-text) 8%, var(--color-bg-subtle));
 }
 
 .bar:focus-visible {
@@ -187,7 +180,7 @@
 
 .time {
   flex: none;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-accent-strong);
 }
 
@@ -249,7 +242,7 @@
   color: var(--color-accent-strong);
   font: inherit;
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 

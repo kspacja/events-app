@@ -19,6 +19,7 @@ import {
 import { schoolsHref } from '../schoolsHref';
 import { useFiltersQuery } from '../filtersQueryContext';
 import { DayMarkers } from './DayMarkers';
+import { Chevron } from '@/components/Chevron';
 import styles from './MonthCalendar.module.css';
 
 interface MonthCalendarProps {
@@ -111,11 +112,11 @@ export function MonthCalendar({ week, today, onNavigate }: MonthCalendarProps) {
               aria-label={CALENDAR_LABELS.previousMonth}
               onClick={() => move(previous)}
             >
-              ‹
+              <Chevron direction={-1} size={20} />
             </button>
           ) : (
             <span className={`${styles.arrow} ${styles.disabled}`} aria-hidden="true">
-              ‹
+              <Chevron direction={-1} size={20} />
             </span>
           )}
           <button
@@ -124,7 +125,7 @@ export function MonthCalendar({ week, today, onNavigate }: MonthCalendarProps) {
             aria-label={CALENDAR_LABELS.nextMonth}
             onClick={() => move(next)}
           >
-            ›
+            <Chevron direction={1} size={20} />
           </button>
         </div>
       </div>

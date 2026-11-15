@@ -26,7 +26,7 @@ export const UI_LABELS = {
   logo: 'wydarzenia',
   logoLabel: 'Wydarzenia, strona główna',
   schedule: 'Program',
-  emptyDay: 'Tego dnia nic pasującego.',
+  emptyDay: 'Tego dnia nic pasującego',
   outOfRange: 'Poza wybranym zakresem.',
   backToTop: 'Na górę',
   today: 'dziś',

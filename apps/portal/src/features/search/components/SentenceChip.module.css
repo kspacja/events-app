@@ -2,14 +2,15 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1-5);
-  padding: 0 var(--space-3);
+  /* Without a block behind it, wide padding reads as stray spaces before the comma */
+  padding: 0 var(--space-1);
   border: 0;
   border-bottom: 2px solid var(--color-accent);
   border-radius: var(--radius-chip);
-  background: var(--color-accent-soft);
+  background: transparent;
   color: var(--color-accent-strong);
   font: inherit;
-  font-weight: 600;
+  font-weight: 500;
   line-height: inherit;
   cursor: default;
 }
@@ -19,7 +20,12 @@
 }
 
 .interactive:hover {
-  background: var(--color-accent-soft-hover);
+  background: var(--color-accent-soft);
+}
+
+.interactive:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
 }
 
 .interactive[data-pending] {

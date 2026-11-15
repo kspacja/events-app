@@ -45,7 +45,7 @@
   border-color: var(--color-accent);
   background: var(--color-accent-soft);
   color: var(--color-accent-strong);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .custom {
@@ -60,7 +60,7 @@
   margin: 0;
   color: var(--color-text-secondary);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .fields {
@@ -105,6 +105,6 @@
   background: var(--color-text);
   color: var(--color-bg);
   font: inherit;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }

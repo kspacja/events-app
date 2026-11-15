@@ -10,7 +10,7 @@
 
 /* A card reached from the map flashes once, so the eye finds it */
 .card[data-revealed='true'] {
-  animation: revealed 2s ease-out;
+  animation: revealed 1.2s ease-out;
   outline-offset: 8px;
 }
 
@@ -29,9 +29,9 @@
 
 .image {
   position: relative;
-  /* Shrinks with a narrower day column; 212/104 is the size at the full 240px column */
-  aspect-ratio: 212 / 104;
-  max-height: 104px;
+  /* 3:2 lets the photo lead the card; the cap keeps wide phone cards from growing tall */
+  aspect-ratio: 3 / 2;
+  max-height: 160px;
   overflow: hidden;
   border-radius: var(--radius-card);
   background: var(--color-bg-subtle);
@@ -61,22 +61,22 @@
 
 .meta {
   margin: var(--space-1-5) 0 0;
-  font-size: var(--text-md);
-  font-weight: 600;
-  color: var(--color-accent-strong);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--meta-color, var(--color-text-secondary));
 }
 
 .title {
   margin: 0;
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.3;
 }
 
 .place {
   margin: 0;
   font-size: var(--text-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
 }
 
 /* Over a month bar and in the day drawer: a framed, floating tile */

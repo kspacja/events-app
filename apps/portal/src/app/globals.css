@@ -18,11 +18,11 @@ body {
 }
 
 a {
-  color: var(--color-accent);
+  color: var(--color-accent-strong);
 }
 
 a:hover {
-  color: var(--color-accent-strong);
+  color: var(--color-text);
 }
 
 .visually-hidden {

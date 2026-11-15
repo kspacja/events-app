@@ -44,9 +44,9 @@ describe('formatPassedWeeks', () => {
   it('agrees the verb with the count', () => {
     const range = { from: '2026-11-02', to: '2026-11-08' } as const;
 
-    expect(formatPassedWeeks({ range, count: 1 })).toBe('2—8.11 · 1 wydarzenie minęło');
-    expect(formatPassedWeeks({ range, count: 3 })).toBe('2—8.11 · 3 wydarzenia minęły');
-    expect(formatPassedWeeks({ range, count: 12 })).toBe('2—8.11 · 12 wydarzeń minęło');
+    expect(formatPassedWeeks({ range, count: 1 })).toBe('2–8.11 · 1 wydarzenie minęło');
+    expect(formatPassedWeeks({ range, count: 3 })).toBe('2–8.11 · 3 wydarzenia minęły');
+    expect(formatPassedWeeks({ range, count: 12 })).toBe('2–8.11 · 12 wydarzeń minęło');
   });
 });
 
@@ -54,11 +54,11 @@ describe('weekJumpsOf', () => {
   it('jumps to the first day with events of each week, or nowhere when it has none', () => {
     expect(weekJumpsOf([week('2026-11-02', 6, 1), week('2026-11-09', 0, 0)], '2026-11-02')).toEqual([
       { label: '8.11', target: '2026-11-08' },
-      { label: '9—15.11', target: null },
+      { label: '9–15.11', target: null },
     ]);
   });
 
   it('skips the days already gone, as phones hide them', () => {
-    expect(weekJumpsOf([week('2026-11-09', 0, 1)], '2026-11-12')).toEqual([{ label: '9—15.11', target: '2026-11-12' }]);
+    expect(weekJumpsOf([week('2026-11-09', 0, 1)], '2026-11-12')).toEqual([{ label: '9–15.11', target: '2026-11-12' }]);
   });
 });

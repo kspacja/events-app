@@ -5,6 +5,7 @@ import { toSearchParams, type SearchParamsInput } from '@/lib/searchParams';
 import { DATE_PRESETS, resolvePreset, shiftRange, type DatePreset } from '../dateRange';
 import { RANGE_NAVIGATION_LABELS } from '../labels';
 import { hrefFor } from '../searchQuery';
+import { Chevron } from '@/components/Chevron';
 import styles from './RangeArrows.module.css';
 
 interface RangeLinksInput {
@@ -44,16 +45,16 @@ export function rangeArrows(links: RangeLinks): RangeNavigation {
   return {
     previous: links.previous ? (
       <Link href={links.previous} scroll={false} className={styles.arrow} aria-label={RANGE_NAVIGATION_LABELS.previous}>
-        ‹
+        <Chevron direction={-1} size={24} />
       </Link>
     ) : (
       <span className={`${styles.arrow} ${styles.disabled}`} aria-hidden="true">
-        ‹
+        <Chevron direction={-1} size={24} />
       </span>
     ),
     next: (
       <Link href={links.next} scroll={false} className={styles.arrow} aria-label={RANGE_NAVIGATION_LABELS.next}>
-        ›
+        <Chevron direction={1} size={24} />
       </Link>
     ),
   };

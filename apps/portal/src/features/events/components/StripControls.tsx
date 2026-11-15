@@ -5,6 +5,7 @@ import type { CalendarDay } from '@events/time';
 import { STRIP_LABELS } from '../labels';
 import { dayDomId } from '../scheduleDom';
 import { scrollStripToDay } from './DayStrip';
+import { Chevron } from '@/components/Chevron';
 import styles from './StripControls.module.css';
 
 // Sub-pixel rounding can leave the strip a pixel short of its edge
@@ -121,8 +122,6 @@ export function StripControls({ days }: StripControlsProps) {
 
 function ArrowIcon({ flipped = false }: { readonly flipped?: boolean }) {
   return (
-    <svg viewBox="0 0 16 16" width="25" height="25" aria-hidden="true" style={flipped ? { transform: 'scaleX(-1)' } : undefined}>
-      <path d="M2 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" strokeWidth="2" />
-    </svg>
+    <Chevron direction={flipped ? -1 : 1} size={24} />
   );
 }

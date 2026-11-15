@@ -30,7 +30,7 @@ const CUSTOM_TIME: TimeSearchResult = {
 describe('dateFilter', () => {
   it('labels the chip by preset and by custom range', () => {
     expect(dateFilter(WEEK).chipLabel).toBe('w tym tygodniu');
-    expect(dateFilter(CUSTOM).chipLabel).toBe('5—9.10');
+    expect(dateFilter(CUSTOM).chipLabel).toBe('5–9.10');
   });
 
   it('presses only the active preset', () => {

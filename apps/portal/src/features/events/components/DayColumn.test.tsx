@@ -42,7 +42,7 @@ describe('DayColumn', () => {
   it('says nothing matches on an empty in-range day', () => {
     renderColumn(makeDay());
 
-    expect(screen.getByText('Tego dnia nic pasującego.')).toBeInTheDocument();
+    expect(screen.getByText('Tego dnia nic pasującego')).toBeInTheDocument();
   });
 
   it('says the day is outside the range on an empty out-of-range day', () => {

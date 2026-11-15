@@ -86,7 +86,7 @@
   height: var(--arrow-size);
   padding: 0;
   border-radius: var(--radius-md);
-  border: solid 1px rgba(255, 255, 255, 0.75);
+  border: solid 1px rgb(255 255 255 / 35%);
   background: var(--color-accent-strong);
   color: var(--color-on-accent);
   cursor: pointer;

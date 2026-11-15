@@ -49,7 +49,7 @@
 .link {
   margin-left: var(--space-6);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-on-accent);
   text-decoration: none;
 }

@@ -93,7 +93,7 @@ export function weeksCovering(range: DateRange): CalendarDay[][] {
   );
 }
 
-const RANGE_SEPARATOR = '—';
+const RANGE_SEPARATOR = '–';
 
 export function formatRangeLabel({ from, to }: DateRange): string {
   const dayMonth = (day: CalendarDay) => formatDay(day, 'd.MM');

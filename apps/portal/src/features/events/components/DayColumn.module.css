@@ -11,7 +11,7 @@
   scroll-snap-align: start;
   padding: var(--space-5) var(--space-3-5) var(--space-6);
   background: var(--day-bg);
-  border-top: 2px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
   border-left: 1px solid var(--color-border);
 }
 
@@ -47,21 +47,19 @@
 }
 
 .name {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: var(--text-md);
+  font-weight: 500;
   color: var(--color-text-secondary);
+}
+
+/* Today's column keeps the green time on its cards */
+.day[aria-current='date'] {
+  --meta-color: var(--color-accent-strong);
 }
 
 .today {
   margin-left: var(--space-2);
-  padding: var(--space-0-5) var(--space-2);
-  border-radius: var(--radius-full);
-  background: var(--color-accent-strong);
-  color: var(--color-on-accent);
-  font-size: var(--text-xs);
-  letter-spacing: 0.08em;
+  color: var(--color-accent-strong);
 }
 
 
@@ -88,14 +86,14 @@
 .more {
   color: var(--color-accent-strong);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1;
 }
 
 .number {
   font-family: var(--font-heading);
   font-size: var(--text-display);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1;
   letter-spacing: -0.04em;
   color: var(--day-number);
@@ -114,9 +112,7 @@
   margin: 0;
   padding-top: var(--space-3-5);
   font-size: var(--text-md);
-  font-style: italic;
   color: var(--color-text-muted);
-  border-top: 2px solid var(--color-border);
 }
 
 @media (max-width: 768px) {
@@ -130,7 +126,6 @@
   .day:last-child {
     min-height: 0;
     border: 1px solid var(--color-border);
-    border-top-width: 2px;
     border-radius: var(--radius-3xl);
     box-shadow: var(--shadow-edge);
   }

@@ -12,6 +12,7 @@ import { DAY_NAMES, UI_LABELS } from '../labels';
 import { calendarDayMarker } from '../dayMarker';
 import { formatCount, type ScheduleDay } from '../schedule';
 import { dayDomId } from '../scheduleDom';
+import { Chevron } from '@/components/Chevron';
 import { DayJump } from './DayJump';
 import styles from './PhoneDayRow.module.css';
 
@@ -69,7 +70,7 @@ function DayCell({ scheduleDay, today }: { readonly scheduleDay: ScheduleDay; re
 function Arrow({ href, direction }: { readonly href: string | null | undefined; readonly direction: -1 | 1 }) {
   const sign = (
     <span className={arrowStyles.sign} aria-hidden="true">
-      {direction < 0 ? '‹' : '›'}
+      <Chevron direction={direction} />
     </span>
   );
   const label = direction < 0 ? RANGE_NAVIGATION_LABELS.previous : RANGE_NAVIGATION_LABELS.next;
