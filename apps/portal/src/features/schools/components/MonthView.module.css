@@ -1,8 +1,9 @@
 .page {
   box-sizing: border-box;
   min-height: 100vh;
+  background: var(--color-ground);
   /* Room under the grid, so the dock never covers its last row */
-  padding: var(--space-5) var(--space-4) 200px;
+  padding: var(--space-3) var(--space-3) 200px;
 }
 
 @media (max-width: 768px) {

@@ -18,8 +18,8 @@ import { formatPassedWeeks, type PassedWeeks } from '../monthWeeks';
 import styles from './MonthGrid.module.css';
 
 // One source for the bar size, read by the CSS and by the count of bars that fit a day
-const BAR_HEIGHT = 24;
-const BAR_GAP = 2;
+const BAR_HEIGHT = 26;
+const BAR_GAP = 4;
 // Until the first measurement, e.g. in the server render
 const DEFAULT_CAPACITY = 4;
 // Thursday on: the tile opens to the left, so it stays on the page

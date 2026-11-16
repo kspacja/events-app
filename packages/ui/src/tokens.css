@@ -30,6 +30,11 @@
   --color-bg-weekday: #ffffff;
   --color-bg-weekend: #fff4e5;
 
+  /* Schools month: grey ground, white days, grey rules, event bars */
+  --color-ground: #eff1ee;
+  --color-rule: #d5d5d5;
+  --color-event-bar: #e8e8e8;
+
   --color-border: #dd9b0e;
   --color-map-water: #bfd7ea;
   --color-map-land: #f5f4f1;

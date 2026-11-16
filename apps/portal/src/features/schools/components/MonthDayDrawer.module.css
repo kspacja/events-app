@@ -1,4 +1,7 @@
+/* Grey rules, like the month grid it opens from; also reaches the event cards inside */
 .drawer {
+  --color-border: var(--color-rule);
+
   position: fixed;
   top: 0;
   bottom: 0;
