@@ -1,6 +1,7 @@
 import { eventIdSchema, occurrenceIdSchema, type Category, type Price } from '@events/contract/listing';
 import { addDays, currentEventDay, mondayOf, warsawIsoAt } from '@events/time';
 import { createEventsData, venueId, type EventsData, type Event, type Occurrence, type Venue } from './model';
+import { SAMPLE_DESCRIPTIONS } from './sampleDescriptions';
 import { sampleImageUrl } from './sampleImages';
 
 const WROCLAW = 'Wrocław';
@@ -190,6 +191,7 @@ export function createSampleEvents(now: Date): EventsData {
     title,
     categorySlugs: categories.map(({ slug }) => slug),
     imageUrl: sampleImageUrl(id, index),
+    ...(SAMPLE_DESCRIPTIONS[id] ? { description: SAMPLE_DESCRIPTIONS[id] } : {}),
     forSchools,
   }));
 

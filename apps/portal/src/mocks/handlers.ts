@@ -12,6 +12,18 @@ function badRequest(error: string) {
 
 const NO_TRAITS: FilterSelection = {};
 
+/** Cechy szkolne in the listing's own shape (stage 3.9); the real API does not send them yet. */
+function withSchoolTraits(listing: OccurrenceListing, traits: FilterSelection | undefined): OccurrenceListing {
+  if (!traits) return listing;
+  const school = {
+    ages: traits.wiek ?? [],
+    subjects: traits.przedmiot ?? [],
+    groupSizes: traits.grupa ?? [],
+    kinds: traits.rodzaj ?? [],
+  };
+  return { ...listing, event: { ...listing.event, school } };
+}
+
 /**
  * Serves the listings whose event day is in the validated range, for schools or the general programme; ordering is left to the adapter.
  * Prototype: school filter params narrow school listings by traits only MSW knows; the real API ignores them.
@@ -33,14 +45,16 @@ export function occurrencesHandler(
     const { forSchools, ...range } = parsed.data;
     const filters = forSchools ? parseFilters(params) : NO_TRAITS;
     return HttpResponse.json({
-      occurrences: getListings().filter(
-        ({ startsAt, event, price }) =>
-          event.forSchools === forSchools &&
-          isDayInRange(eventDayOf(startsAt), range) &&
-          // The price band comes from the listing itself, the other traits only from MSW
-          (!hasFilters(filters) ||
-            matchesFilters({ ...(schoolTraits[event.id] ?? NO_TRAITS), cena: priceBands(price) }, filters)),
-      ),
+      occurrences: getListings()
+        .map((listing) => withSchoolTraits(listing, schoolTraits[listing.event.id]))
+        .filter(
+          ({ startsAt, event, price }) =>
+            event.forSchools === forSchools &&
+            isDayInRange(eventDayOf(startsAt), range) &&
+            // The price band comes from the listing itself, the other traits only from MSW
+            (!hasFilters(filters) ||
+              matchesFilters({ ...(schoolTraits[event.id] ?? NO_TRAITS), cena: priceBands(price) }, filters)),
+        ),
     });
   });
 }

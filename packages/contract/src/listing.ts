@@ -53,6 +53,17 @@ export const startsAtSchema = z.iso
   .datetime({ offset: true })
   .refine(isWarsawIso, { error: 'startsAt must be a Europe/Warsaw ISO string with its offset.' });
 
+const traitValues = z.array(z.string()).readonly();
+
+export const schoolTraitsSchema = z
+  .object({
+    ages: traitValues,
+    subjects: traitValues,
+    groupSizes: traitValues,
+    kinds: traitValues,
+  })
+  .readonly();
+
 export const listedEventSchema = z
   .object({
     id: eventIdSchema,
@@ -60,8 +71,12 @@ export const listedEventSchema = z
     /** At least one; the first is the main category, which sets the card's colour and label. */
     categories: z.array(categorySchema).min(1).readonly(),
     imageUrl: z.string().optional(),
+    /** Paragraphs split by a blank line; optional until the API stores it (stage 3.9). */
+    description: z.string().optional(),
     /** Oznaczenie szkolne: shown only on the schools page, never in the general programme. */
     forSchools: z.boolean(),
+    /** Cechy szkolne, as the schools filters' option values; only MSW sends them for now (stage 3.9). */
+    school: schoolTraitsSchema.optional(),
   })
   .readonly();
 

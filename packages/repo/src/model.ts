@@ -33,6 +33,8 @@ export interface Event {
   /** At least one, no repeats; the first is the main category. */
   readonly categorySlugs: readonly Category['slug'][];
   readonly imageUrl?: string;
+  /** Paragraphs split by a blank line. */
+  readonly description?: string;
   readonly forSchools: boolean;
 }
 

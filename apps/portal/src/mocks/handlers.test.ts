@@ -89,4 +89,16 @@ describe('occurrencesHandler', () => {
       occurrences: [free, dear],
     });
   });
+
+  it('adds the school traits to the listing in the contract shape', async () => {
+    const listing = occurrenceListingSchema.parse({ ...LATE_NIGHT, event: { ...LATE_NIGHT.event, forSchools: true } });
+    const traits = { wiek: ['1-3'], przedmiot: ['muzyka'], grupa: ['do-30'], rodzaj: ['cykliczne'] };
+    server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => [listing], { [listing.event.id]: traits }));
+
+    const { body } = await call('?from=2030-01-05&to=2030-01-05&forSchools=true');
+
+    expect((body as { occurrences: Array<{ event: unknown }> }).occurrences[0].event).toMatchObject({
+      school: { ages: ['1-3'], subjects: ['muzyka'], groupSizes: ['do-30'], kinds: ['cykliczne'] },
+    });
+  });
 });
