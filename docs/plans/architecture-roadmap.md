@@ -23,7 +23,7 @@ Na razie (od 2026-11-16) omijamy stronę główną i tydzień `/dla-szkol`; stro
 | 0.5 Porządki | czas lokalny, seam odczytu Terminów, wybór Terminu na mapie | zrobione | historia gita |
 | 0.6 Gotowość do etapu 1 | interfejs źródła Terminów w pakiecie, Kategoria jako dane, przykładowy Katalog | zrobione | [stages/0.6-gotowosc-do-etapu-1.md](stages/0.6-gotowosc-do-etapu-1.md) |
 | 1. Backend + baza | `apps/api` (Hono + Drizzle) serwuje Terminy z Postgresa, portal czyta przez HTTP (ADR-0008) | zrobione | [stages/1-baza-i-katalog.md](stages/1-baza-i-katalog.md) |
-| 1.5 Obserwowalność | ślady, metryki, logi i błędy z portalu i API (OpenTelemetry, Sentry — ADR-0011); worker w etapie 5 | w toku | [stages/1.5-obserwowalnosc.md](stages/1.5-obserwowalnosc.md) |
+| 1.5 Obserwowalność | ślady, metryki, logi i błędy z portalu i API (OpenTelemetry, Sentry — ADR-0011); worker w etapie 5; nagrywanie sesji w Clarity na MSW | zrobione (bez wybranego backendu i DSN) | [stages/1.5-obserwowalnosc.md](stages/1.5-obserwowalnosc.md) |
 | 2. Tożsamość | konta `Attendee`, `Organizer`, `Moderator`, `Guest` (ADR-0004, 0005) | — | — |
 | 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia; ustawia też Oznaczenie szkolne (`forSchools`, etap 3.5); formularze na Mantine (ADR-0010) | — | — |
 | 3.5 Strona dla szkół | podstrona portalu: Kalendarz miesiąca zamiast Zapytania, afisz wybranego tygodnia, tylko Wydarzenia z Oznaczeniem szkolnym | zrobione (na MSW i przykładowych danych; Oznaczenie szkolne ustawi Studio w etapie 3) | [stages/3.5-strona-dla-szkol.md](stages/3.5-strona-dla-szkol.md) |
