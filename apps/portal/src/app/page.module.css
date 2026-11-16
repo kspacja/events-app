@@ -1,9 +1,9 @@
-/* The week strip reaches into the left padding, so its start bleed equals it */
 /* As in the schools month: a grey ground around white days */
 :global(body):has(.page) {
   background: var(--color-ground);
 }
 
+/* The week strip reaches into the left padding, so its start bleed equals it */
 .page {
   /* As in the schools month: grey rules, no frame or shadow around the week, the weekend untinted */
   --color-border: var(--color-rule);

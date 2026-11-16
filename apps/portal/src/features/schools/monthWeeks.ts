@@ -1,4 +1,5 @@
 import type { CalendarDay, DateRange } from '@events/time';
+import type { MapPoint } from '@/features/events/mapView';
 import { formatCount, type ScheduleDay } from '@/features/events/schedule';
 import { formatRangeLabel } from '@/features/search/dateRange';
 import { isPastWeek } from './weekShift';
@@ -49,4 +50,10 @@ export function weekJumpsOf(weeks: readonly Week[], today: CalendarDay): WeekJum
     const first = inMonth.find(({ day, entries }) => day >= today && entries.some(({ active }) => active));
     return [{ label: formatRangeLabel({ from: inMonth[0].day, to: inMonth[inMonth.length - 1].day }), target: first?.day ?? null }];
   });
+}
+
+/** The map shows only what the grid shows, so "Pokaż w miesiącu" always finds its bar. */
+export function pointsInWeeks(points: readonly MapPoint[], weeks: readonly Week[]): MapPoint[] {
+  const ids = new Set(weeks.flat().flatMap(({ entries }) => entries.map(({ listing }) => listing.occurrenceId)));
+  return points.filter(({ occurrenceId }) => ids.has(occurrenceId));
 }

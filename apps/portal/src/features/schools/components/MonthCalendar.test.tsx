@@ -77,15 +77,6 @@ describe('MonthCalendar', () => {
   });
 
 
-  it('goes back to the current week and month with "Obecny tydz."', async () => {
-    await renderCalendar('2026-11');
-
-    expect(screen.getByRole('link', { name: 'Obecny tydz.' })).toHaveAttribute(
-      'href',
-      '/dla-szkol/2026-10-12',
-    );
-  });
-
   it('goes back a month once ahead of the current one', async () => {
     await renderCalendar('2026-11');
 

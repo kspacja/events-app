@@ -18,7 +18,6 @@ export const CALENDAR_LABELS = {
   nextMonth: 'Następny miesiąc',
   previousWeek: 'Poprzedni tydzień',
   nextWeek: 'Następny tydzień',
-  today: 'Obecny tydz.',
   noEvents: 'brak wydarzeń',
   currentWeek: 'bieżący tydzień',
   selectedWeek: 'wybrany tydzień',

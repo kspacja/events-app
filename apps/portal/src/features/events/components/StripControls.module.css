@@ -12,25 +12,25 @@
 }
 
 .fadeEnd {
-  /* Fades into the page: white by default, a page on another ground sets --strip-fade */
+  /* A page on another ground sets --strip-fade */
   --eased-gradient: linear-gradient(
       to right,
-      color-mix(in srgb, var(--strip-fade, #fff) 0%, transparent) 0%,
-      color-mix(in srgb, var(--strip-fade, #fff) 0.9%, transparent) 8.1%,
-      color-mix(in srgb, var(--strip-fade, #fff) 3.5%, transparent) 15.5%,
-      color-mix(in srgb, var(--strip-fade, #fff) 7.6%, transparent) 22.5%,
-      color-mix(in srgb, var(--strip-fade, #fff) 12.8%, transparent) 29%,
-      color-mix(in srgb, var(--strip-fade, #fff) 18.9%, transparent) 35.3%,
-      color-mix(in srgb, var(--strip-fade, #fff) 25.7%, transparent) 41.2%,
-      color-mix(in srgb, var(--strip-fade, #fff) 32.9%, transparent) 47.1%,
-      color-mix(in srgb, var(--strip-fade, #fff) 40.1%, transparent) 52.9%,
-      color-mix(in srgb, var(--strip-fade, #fff) 47.3%, transparent) 58.8%,
-      color-mix(in srgb, var(--strip-fade, #fff) 54.1%, transparent) 64.7%,
-      color-mix(in srgb, var(--strip-fade, #fff) 65.2%, transparent) 71%,
-      color-mix(in srgb, var(--strip-fade, #fff) 80%, transparent) 77.5%,
-      color-mix(in srgb, var(--strip-fade, #fff) 90%, transparent) 84.5%,
-      color-mix(in srgb, var(--strip-fade, #fff) 100%, transparent) 91.9%,
-      color-mix(in srgb, var(--strip-fade, #fff) 100%, transparent) 100%
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 0%, transparent) 0%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 0.9%, transparent) 8.1%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 3.5%, transparent) 15.5%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 7.6%, transparent) 22.5%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 12.8%, transparent) 29%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 18.9%, transparent) 35.3%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 25.7%, transparent) 41.2%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 32.9%, transparent) 47.1%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 40.1%, transparent) 52.9%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 47.3%, transparent) 58.8%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 54.1%, transparent) 64.7%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 65.2%, transparent) 71%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 80%, transparent) 77.5%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 90%, transparent) 84.5%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 100%, transparent) 91.9%,
+      color-mix(in srgb, var(--strip-fade, var(--color-bg)) 100%, transparent) 100%
     );
 
 
@@ -88,7 +88,7 @@
   height: var(--arrow-size);
   padding: 0;
   border-radius: var(--radius-md);
-  border: solid 1px rgb(255 255 255 / 35%);
+  border: solid 1px color-mix(in srgb, var(--color-on-accent) 35%, transparent);
   background: var(--color-accent-strong);
   color: var(--color-on-accent);
   cursor: pointer;

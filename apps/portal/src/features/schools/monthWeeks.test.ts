@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { CalendarDay } from '@events/time';
 import type { ScheduleDay, ScheduleEntry } from '@/features/events/schedule';
-import { formatPassedWeeks, splitPassedWeeks, weekJumpsOf } from './monthWeeks';
+import type { MapPoint } from '@/features/events/mapView';
+import { formatPassedWeeks, pointsInWeeks, splitPassedWeeks, weekJumpsOf } from './monthWeeks';
 
 function week(monday: string, firstInMonth: number, eventsPerDay: number) {
   return Array.from({ length: 7 }, (_, offset): ScheduleDay => {
@@ -60,5 +61,16 @@ describe('weekJumpsOf', () => {
 
   it('skips the days already gone, as phones hide them', () => {
     expect(weekJumpsOf([week('2026-11-09', 0, 1)], '2026-11-12')).toEqual([{ label: '9–15.11', target: '2026-11-12' }]);
+  });
+});
+
+describe('pointsInWeeks', () => {
+  const point = (occurrenceId: string) => ({ occurrenceId }) as MapPoint;
+  const day = (...ids: string[]) =>
+    ({ entries: ids.map((occurrenceId) => ({ listing: { occurrenceId }, active: true })) }) as unknown as ScheduleDay;
+
+  it('keeps only the points of events in the given weeks', () => {
+    const shown = [[day('a'), day()], [day('c')]];
+    expect(pointsInWeeks([point('a'), point('b'), point('c')], shown)).toEqual([point('a'), point('c')]);
   });
 });

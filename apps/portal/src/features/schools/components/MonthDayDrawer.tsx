@@ -61,7 +61,8 @@ export function MonthDayDrawer({
 
   useEffect(() => {
     function closeOnEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose();
+      // Esc inside the filters or map dialog closes only that dialog
+      if (event.key === 'Escape' && !(event.target instanceof Element && event.target.closest('dialog'))) onClose();
     }
     document.addEventListener('keydown', closeOnEscape);
     return () => document.removeEventListener('keydown', closeOnEscape);

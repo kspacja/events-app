@@ -23,8 +23,7 @@
   gap: var(--space-1);
 }
 
-.arrow,
-.todayLink {
+.arrow {
   appearance: none;
   border: 0;
   background: transparent;
@@ -41,21 +40,11 @@
   text-decoration: none;
 }
 
-/* Text link, not an arrow: small type, but the 44px box stays as the touch target */
-.todayLink {
-  min-width: 0;
-  padding: 0 var(--space-2);
-  font-size: var(--text-sm);
-  font-weight: 500;
-}
-
-.arrow:hover,
-.todayLink:hover {
+.arrow:hover {
   background: var(--color-bg-subtle);
 }
 
 .arrow:focus-visible,
-.todayLink:focus-visible,
 .day:focus-visible {
   outline: 2px solid var(--color-text);
   outline-offset: 2px;

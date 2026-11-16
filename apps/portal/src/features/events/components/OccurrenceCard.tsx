@@ -20,8 +20,6 @@ export function OccurrenceCard({ listing, muted = false, variant = 'strip' }: Oc
   const { title, imageUrl } = event;
   const main = mainCategory(event);
 
-  console.log(event);
-
   return (
     <article
       id={variant === 'strip' ? occurrenceDomId(occurrenceId) : undefined}

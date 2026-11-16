@@ -31,8 +31,7 @@
   margin-right: var(--strip-bleed);
   margin-left: var(--strip-bleed-start);
 
-  /* On the whole week, not each day, so the shadow only shows outside it; the radius matches the end days.
-     A page can drop the frame through --week-radius and --week-shadow */
+  /* On the whole week, not each day, so the shadow only shows outside it; a page can drop both */
   border-radius: var(--week-radius, var(--radius-3xl));
   box-shadow: var(--week-shadow, var(--shadow-edge));
 }
