@@ -48,6 +48,19 @@
   font-weight: 500;
 }
 
+.sheetHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+/* Hidden but still holding its place */
+.clearSlot[hidden] {
+  display: inline;
+  visibility: hidden;
+}
+
 .group {
   display: flex;
   flex-direction: column;

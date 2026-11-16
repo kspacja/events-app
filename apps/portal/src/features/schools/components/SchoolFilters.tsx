@@ -170,6 +170,12 @@ export function SchoolFilters({ placement, layout = 'inline' }: SchoolFiltersPro
   const { selection, pending, apply } = useFilterNavigation();
   const filters = SCHOOL_FILTERS.filter((filter) => filter.placement === placement);
   if (filters.length === 0) return null;
+  const clearable = hasOwn(selection, placement);
+  const clear = (
+    <button type="button" className={styles.clear} onClick={() => apply(withoutPlacement(selection, placement))}>
+      {FILTER_LABELS.clear}
+    </button>
+  );
 
   return (
     <div className={styles.filtersContainer} data-layout={layout}>
@@ -180,7 +186,17 @@ export function SchoolFilters({ placement, layout = 'inline' }: SchoolFiltersPro
       data-pending={pending || undefined}
       aria-label={placement === 'main' ? FILTER_LABELS.main : FILTER_LABELS.advanced}
     >
-      {placement === 'advanced' ? <h2 className={styles.heading}>{FILTER_LABELS.advanced}</h2> : null}
+      {layout === 'sheet' ? (
+        // In the dialog it sits at the top and only hides, so choosing a filter never moves the rest
+        <div className={styles.sheetHeader}>
+          {placement === 'advanced' ? <h2 className={styles.heading}>{FILTER_LABELS.advanced}</h2> : <span />}
+          <span className={styles.clearSlot} hidden={!clearable}>
+            {clear}
+          </span>
+        </div>
+      ) : placement === 'advanced' ? (
+        <h2 className={styles.heading}>{FILTER_LABELS.advanced}</h2>
+      ) : null}
       {filters.map((filter) => {
         const Group = filter.param === 'cena' ? PriceFilterGroup : FilterGroup;
         return (
@@ -195,11 +211,7 @@ export function SchoolFilters({ placement, layout = 'inline' }: SchoolFiltersPro
       })}
     </section>
       {/* The month dock has no room for it: chips are toggled off one by one */}
-      {layout !== 'rows' && hasOwn(selection, placement) ? (
-        <button type="button" className={styles.clear} onClick={() => apply(withoutPlacement(selection, placement))}>
-          {FILTER_LABELS.clear}
-        </button>
-      ) : null}
+      {layout === 'inline' && clearable ? clear : null}
     </div>
   );
 }
