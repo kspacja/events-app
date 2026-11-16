@@ -12,31 +12,33 @@
 }
 
 .fadeEnd {
+  /* Fades into the page: white by default, a page on another ground sets --strip-fade */
   --eased-gradient: linear-gradient(
       to right,
-      hsla(0, 0%, 100%, 0) 0%,
-      hsla(0, 0%, 100%, 0.009) 8.1%,
-      hsla(0, 0%, 100%, 0.035) 15.5%,
-      hsla(0, 0%, 100%, 0.076) 22.5%,
-      hsla(0, 0%, 100%, 0.128) 29%,
-      hsla(0, 0%, 100%, 0.189) 35.3%,
-      hsla(0, 0%, 100%, 0.257) 41.2%,
-      hsla(0, 0%, 100%, 0.329) 47.1%,
-      hsla(0, 0%, 100%, 0.401) 52.9%,
-      hsla(0, 0%, 100%, 0.473) 58.8%,
-      hsla(0, 0%, 100%, 0.541) 64.7%,
-      hsla(0, 0%, 100%, 0.652) 71%,
-      hsla(0, 0%, 100%, 0.8) 77.5%,
-      hsla(0, 0%, 100%, 0.9) 84.5%,
-      hsla(0, 0%, 100%, 1) 91.9%,
-      hsla(0, 0%, 100%, 1) 100%
+      color-mix(in srgb, var(--strip-fade, #fff) 0%, transparent) 0%,
+      color-mix(in srgb, var(--strip-fade, #fff) 0.9%, transparent) 8.1%,
+      color-mix(in srgb, var(--strip-fade, #fff) 3.5%, transparent) 15.5%,
+      color-mix(in srgb, var(--strip-fade, #fff) 7.6%, transparent) 22.5%,
+      color-mix(in srgb, var(--strip-fade, #fff) 12.8%, transparent) 29%,
+      color-mix(in srgb, var(--strip-fade, #fff) 18.9%, transparent) 35.3%,
+      color-mix(in srgb, var(--strip-fade, #fff) 25.7%, transparent) 41.2%,
+      color-mix(in srgb, var(--strip-fade, #fff) 32.9%, transparent) 47.1%,
+      color-mix(in srgb, var(--strip-fade, #fff) 40.1%, transparent) 52.9%,
+      color-mix(in srgb, var(--strip-fade, #fff) 47.3%, transparent) 58.8%,
+      color-mix(in srgb, var(--strip-fade, #fff) 54.1%, transparent) 64.7%,
+      color-mix(in srgb, var(--strip-fade, #fff) 65.2%, transparent) 71%,
+      color-mix(in srgb, var(--strip-fade, #fff) 80%, transparent) 77.5%,
+      color-mix(in srgb, var(--strip-fade, #fff) 90%, transparent) 84.5%,
+      color-mix(in srgb, var(--strip-fade, #fff) 100%, transparent) 91.9%,
+      color-mix(in srgb, var(--strip-fade, #fff) 100%, transparent) 100%
     );
 
 
   position: absolute;
-  top: 0;
+  /* Only over the days: past the overlay's 25px overhang and the week's own margins, so no white shows on a grey page */
+  top: calc(25px + var(--space-4));
   right: 0;
-  bottom: 0;
+  bottom: calc(25px + var(--space-8));
   width: 110px;
   background: var(--eased-gradient);
   transition: opacity 200ms ease;
@@ -112,6 +114,11 @@
 @media (max-width: 768px) {
   .rail {
     display: none;
+  }
+
+  /* A page with one whole day per screen drops the fade, which would only veil that day */
+  .fadeEnd {
+    display: var(--strip-fade-phone, block);
   }
 }
 

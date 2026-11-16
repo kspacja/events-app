@@ -12,3 +12,12 @@
     font-size: var(--text-2xl);
   }
 }
+
+.joined {
+  white-space: nowrap;
+}
+
+/* Only the break before the mark is held; the chip and its dialog wrap as before */
+.joined > * {
+  white-space: normal;
+}

@@ -1,5 +1,19 @@
 /* The week strip reaches into the left padding, so its start bleed equals it */
+/* As in the schools month: a grey ground around white days */
+:global(body):has(.page) {
+  background: var(--color-ground);
+}
+
 .page {
+  /* As in the schools month: grey rules, no frame or shadow around the week, the weekend untinted */
+  --color-border: var(--color-rule);
+  --color-bg-weekend: var(--color-bg-weekday);
+  --week-frame: 0;
+  --week-radius: 0;
+  --week-shadow: none;
+  --day-card-radius: var(--radius-xl);
+  --day-card-shadow: none;
+  --strip-fade: var(--color-ground);
   --strip-bleed: var(--space-16);
   --strip-bleed-start: var(--space-10);
   box-sizing: border-box;
@@ -13,6 +27,11 @@
   .page {
     --strip-bleed: var(--space-7-5);
     --strip-bleed-start: var(--space-7-5);
+    /* One whole day per screen, no cut-off neighbour */
+    --day-card-width: calc(100vw - var(--strip-bleed-start) - var(--strip-bleed));
+    --strip-fade-phone: none;
+    /* Every day as tall as the busiest one, as on desktop */
+    --week-align-phone: stretch;
     padding: var(--space-4) 0 var(--space-10) var(--strip-bleed-start);
   }
 }

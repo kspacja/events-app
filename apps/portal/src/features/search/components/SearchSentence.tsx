@@ -20,9 +20,14 @@ export function SearchSentence({ date, time }: SearchSentenceProps) {
     <div className={styles.container}>
       {SENTENCE_LABELS.lead}{' '}
       <SentenceChip label={SENTENCE_LABELS.category} />{' '}
-      <SentenceChip label={SENTENCE_LABELS.place} />,{' '}
+      {/* Each punctuation mark stays on the line of the chip before it */}
+      <span className={styles.joined}>
+        <SentenceChip label={SENTENCE_LABELS.place} />,
+      </span>{' '}
       <FilterChip definition={dateFilter(date)} />{' '}
-      <FilterChip definition={timeFilter(time)} />.
+      <span className={styles.joined}>
+        <FilterChip definition={timeFilter(time)} />.
+      </span>
     </div>
   );
 }

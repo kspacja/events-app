@@ -10,8 +10,9 @@
     z-index: 3;
     display: block;
     margin-top: var(--space-3);
-    margin-right: var(--strip-bleed);
-    padding: var(--space-2) 0;
-    background: var(--color-bg);
+    /* Edge to edge, so the row covers the whole width once it sticks; the padding keeps the arrows in line with the page */
+    margin-left: calc(-1 * var(--strip-bleed-start));
+    padding: var(--space-2) var(--strip-bleed) var(--space-2) var(--strip-bleed-start);
+    background: var(--color-ground);
   }
 }

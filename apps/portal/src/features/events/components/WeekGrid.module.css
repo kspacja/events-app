@@ -31,15 +31,17 @@
   margin-right: var(--strip-bleed);
   margin-left: var(--strip-bleed-start);
 
-  /* On the whole week, not each day, so the shadow only shows outside it; the radius matches the end days */
-  border-radius: var(--radius-3xl);
-  box-shadow: var(--shadow-edge);
+  /* On the whole week, not each day, so the shadow only shows outside it; the radius matches the end days.
+     A page can drop the frame through --week-radius and --week-shadow */
+  border-radius: var(--week-radius, var(--radius-3xl));
+  box-shadow: var(--week-shadow, var(--shadow-edge));
 }
 
 /* Phones see one day at a time: each day is its own card as tall as its events, not as tall as the busiest day */
 @media (max-width: 768px) {
   .week {
-    align-items: flex-start;
+    /* A page can keep every day as tall as the busiest one, as on desktop, through --week-align-phone */
+    align-items: var(--week-align-phone, flex-start);
     gap: var(--space-3);
     box-shadow: none;
   }

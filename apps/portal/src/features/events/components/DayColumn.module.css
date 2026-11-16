@@ -11,7 +11,8 @@
   scroll-snap-align: start;
   padding: var(--space-5) var(--space-3-5) var(--space-6);
   background: var(--day-bg);
-  border-top: 1px solid var(--color-border);
+  /* --week-frame is the week's outer edge (top and the first day's left); the rules between days stay */
+  border-top: var(--week-frame, 1px solid var(--color-border));
   border-left: 1px solid var(--color-border);
 }
 
@@ -32,11 +33,12 @@
 }
 
 .day:first-child {
-  border-radius: var(--radius-3xl) 0 0 var(--radius-3xl);
+  border-left: var(--week-frame, 1px solid var(--color-border));
+  border-radius: var(--week-radius, var(--radius-3xl)) 0 0 var(--week-radius, var(--radius-3xl));
 }
 
 .day:last-child {
-  border-radius: 0 var(--radius-3xl) var(--radius-3xl) 0;
+  border-radius: 0 var(--week-radius, var(--radius-3xl)) var(--week-radius, var(--radius-3xl)) 0;
 }
 
 .heading {
@@ -124,9 +126,12 @@
   .day,
   .day:first-child,
   .day:last-child {
+    /* A page can make each phone card as wide as the screen through --day-card-width */
+    flex-basis: var(--day-card-width, var(--day-column-width));
     min-height: 0;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-3xl);
-    box-shadow: var(--shadow-edge);
+    /* A page can calm the phone cards through --day-card-radius and --day-card-shadow */
+    border-radius: var(--day-card-radius, var(--radius-3xl));
+    box-shadow: var(--day-card-shadow, var(--shadow-edge));
   }
 }

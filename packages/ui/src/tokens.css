@@ -33,7 +33,7 @@
   /* Schools month: grey ground, white days, grey rules, event bars */
   --color-ground: #eff1ee;
   --color-rule: #d5d5d5;
-  --color-event-bar: #e8e8e8;
+  --color-event-bar: var(--color-ground);
 
   --color-border: #dd9b0e;
   --color-map-water: #bfd7ea;
