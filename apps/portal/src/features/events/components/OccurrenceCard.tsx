@@ -11,9 +11,11 @@ interface OccurrenceCardProps {
   readonly muted?: boolean;
   /** `popup`: framed and without the anchor id; shown over a month bar and in the day drawer. */
   readonly variant?: 'strip' | 'popup';
+  /** Makes the whole card a button that opens the event's details. */
+  readonly onSelect?: () => void;
 }
 
-export function OccurrenceCard({ listing, muted = false, variant = 'strip' }: OccurrenceCardProps) {
+export function OccurrenceCard({ listing, muted = false, variant = 'strip', onSelect }: OccurrenceCardProps) {
   const { occurrenceId, startsAt, event, venue, price } = listing;
   // Schools filter by price, so their cards say when an event costs nothing
   const free = event.forSchools && price?.kind === 'free';
@@ -27,6 +29,7 @@ export function OccurrenceCard({ listing, muted = false, variant = 'strip' }: Oc
       className={styles.card}
       data-muted={muted}
       data-variant={variant}
+      data-selectable={onSelect ? true : undefined}
     >
       <div className={styles.image}>
         {imageUrl ? (
@@ -51,7 +54,13 @@ export function OccurrenceCard({ listing, muted = false, variant = 'strip' }: Oc
         ) : null}
       </p>
       <h3 className={styles.title}>
-        {title}
+        {onSelect ? (
+          <button type="button" className={styles.select} onClick={onSelect}>
+            {title}
+          </button>
+        ) : (
+          title
+        )}
         {muted ? (
           <>
             {' '}

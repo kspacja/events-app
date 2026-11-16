@@ -10,6 +10,8 @@ import { occurrenceDomId } from '@/features/events/scheduleDom';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import { MonthDayDrawer } from './MonthDayDrawer';
+import { EventDetailsDialog } from '../eventDetails/EventDetailsDialog';
+import { openEventDetails } from '../eventDetails/eventParam';
 import { useFiltersQuery } from '../filtersQueryContext';
 import { addMonths, firstDayOf, monthOf, type CalendarMonth } from '../monthCalendar';
 import { schoolsMonthHref } from '../schoolsHref';
@@ -86,54 +88,24 @@ interface MonthBarProps {
   readonly upward: boolean;
 }
 
-/** "10:00 Title"; hovering, focusing or tapping it shows the event's tile. */
+/** "10:00 Title"; hovering or focusing it shows the event's tile, clicking it opens the details. */
 function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
-  const [open, setOpen] = useState(false);
-  // A tapped bar opens its tile towards the larger part of the screen
-  const [tappedUpward, setTappedUpward] = useState<boolean | null>(null);
   const tileId = useId();
-  const entryRef = useRef<HTMLLIElement>(null);
-
-  // Safari does not focus a tapped button, so blur alone would never close the tile
-  useEffect(() => {
-    if (!open) return;
-    function closeOutside(event: PointerEvent) {
-      if (!entryRef.current?.contains(event.target as Node)) setOpen(false);
-    }
-    document.addEventListener('pointerdown', closeOutside);
-    return () => document.removeEventListener('pointerdown', closeOutside);
-  }, [open]);
 
   return (
-    <li
-      ref={entryRef}
-      className={styles.entry}
-      data-open={open || undefined}
-      data-align={alignEnd ? 'end' : 'start'}
-      data-upward={(tappedUpward ?? upward) || undefined}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') setOpen(false);
-      }}
-    >
+    <li className={styles.entry} data-align={alignEnd ? 'end' : 'start'} data-upward={upward || undefined}>
       <button
         type="button"
         id={occurrenceDomId(listing.occurrenceId)}
         className={styles.bar}
-        aria-expanded={open}
-        aria-controls={tileId}
-        onClick={(event) => {
-          setTappedUpward(event.currentTarget.getBoundingClientRect().top > window.innerHeight / 2);
-          setOpen((value) => !value);
-        }}
+        aria-describedby={tileId}
+        onClick={() => openEventDetails(listing.occurrenceId)}
       >
         <span className={styles.time}>{formatLocalTime(listing.startsAt)}</span>{' '}
         <span className={styles.title}>{listing.event.title}</span>
       </button>
       <div id={tileId} className={styles.tile}>
-        <OccurrenceCard listing={listing} variant="popup" />
+        <OccurrenceCard listing={listing} variant="popup" onSelect={() => openEventDetails(listing.occurrenceId)} />
       </div>
     </li>
   );
@@ -346,6 +318,7 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
           onClosed={closed}
         />
       ) : null}
+      <EventDetailsDialog listings={weeks.flat().flatMap(activeListings)} />
     </section>
   );
 }

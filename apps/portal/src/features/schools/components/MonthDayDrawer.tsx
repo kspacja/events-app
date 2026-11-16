@@ -4,6 +4,7 @@ import { useEffect, useId, useRef } from 'react';
 import type { CalendarDay } from '@events/time';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
+import { openEventDetails } from '../eventDetails/eventParam';
 import { formatDay } from '@/lib/format';
 import { MONTH_LABELS } from '../labels';
 import styles from './MonthDayDrawer.module.css';
@@ -90,7 +91,7 @@ export function MonthDayDrawer({
       <ul ref={listRef} className={styles.list}>
         {listings.map((listing) => (
           <li key={listing.occurrenceId}>
-            <OccurrenceCard listing={listing} variant="popup" />
+            <OccurrenceCard listing={listing} variant="popup" onSelect={() => openEventDetails(listing.occurrenceId)} />
           </li>
         ))}
       </ul>

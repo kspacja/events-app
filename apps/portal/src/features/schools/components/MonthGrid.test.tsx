@@ -6,6 +6,9 @@ import { OccurrenceSelectionProvider } from '@/features/events/OccurrenceSelecti
 import type { ScheduleDay } from '@/features/events/schedule';
 import { MonthGrid } from './MonthGrid';
 
+// The dialog reads ?wydarzenie= from the address, as Next's useSearchParams would
+vi.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams(window.location.search) }));
+
 function listing(id: string, startsAt: string, title: string): OccurrenceListing {
   return {
     occurrenceId: occurrenceIdSchema.parse(id),
@@ -31,6 +34,7 @@ function renderGrid(days: ScheduleDay[]) {
 beforeEach(() => {
   // jsdom does not lay out, so the default number of bars per day applies
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
+  window.history.replaceState(null, '', '/dla-szkol/miesiac/2026-11?wiek=1-3');
 });
 
 describe('MonthGrid', () => {
@@ -95,12 +99,40 @@ describe('MonthGrid', () => {
     expect(screen.queryByRole('link', { name: 'Poprzedni miesiąc' })).not.toBeInTheDocument();
   });
 
-  it('opens the tile when the bar is tapped', () => {
+  it('puts the clicked event into the address, beside the filters', () => {
     renderGrid([day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]);
-    const bar = screen.getByRole('button', { name: '10:00 Lekcja w muzeum' });
 
-    fireEvent.click(bar);
+    fireEvent.click(screen.getByRole('button', { name: '10:00 Lekcja w muzeum' }));
 
-    expect(bar).toHaveAttribute('aria-expanded', 'true');
+    expect(window.location.search).toBe('?wiek=1-3&wydarzenie=a');
+  });
+
+  it('opens the details of the event named in the address', () => {
+    window.history.replaceState(null, '', '/dla-szkol/miesiac/2026-11?wydarzenie=a');
+    const event = {
+      ...listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum'),
+      price: { kind: 'free' as const },
+    };
+    renderGrid([
+      day('2026-11-02', [
+        {
+          ...event,
+          event: {
+            ...event.event,
+            description: 'Pierwszy akapit.\n\nDrugi akapit.',
+            school: { ages: ['1-3'], subjects: ['historia'], groupSizes: [], kinds: ['jednorazowe'] },
+          },
+        },
+      ]),
+    ]);
+
+    const details = within(screen.getByRole('dialog', { hidden: true }));
+    expect(details.getByRole('heading', { name: 'Lekcja w muzeum', hidden: true })).toBeInTheDocument();
+    expect(details.getByText('bezpłatne')).toBeInTheDocument();
+    expect(details.getByText('Klasy 1–3')).toBeInTheDocument();
+    expect(details.getByText('historia')).toBeInTheDocument();
+    expect(details.queryByText('Liczba uczestników')).not.toBeInTheDocument();
+    expect(details.getByText('Drugi akapit.')).toBeInTheDocument();
+    expect(details.getByRole('button', { name: 'Skontaktuj się', hidden: true })).toBeInTheDocument();
   });
 });

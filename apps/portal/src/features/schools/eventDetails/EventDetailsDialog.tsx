@@ -1,0 +1,107 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+import type { OccurrenceListing } from '@events/contract/listing';
+import { localDayOf } from '@events/time';
+import { formatDay, formatLocalTime } from '@/lib/format';
+import { eventFacts, formatPrice } from './eventFacts';
+import { closeEventDetails, EVENT_PARAM } from './eventParam';
+import { EVENT_DETAILS_LABELS as LABELS } from './labels';
+import styles from './EventDetailsDialog.module.css';
+
+/** Opens for `?wydarzenie=` when the month has that occurrence; Esc, the close button and the backdrop close it. */
+export function EventDetailsDialog({ listings }: { readonly listings: readonly OccurrenceListing[] }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const id = useSearchParams().get(EVENT_PARAM);
+  const listing = id ? listings.find(({ occurrenceId }) => occurrenceId === id) : undefined;
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (listing && !dialog.open) dialog.showModal();
+    if (!listing && dialog.open) dialog.close();
+  }, [listing]);
+
+  if (!listing) return <dialog ref={ref} className={styles.dialog} />;
+
+  const { event, venue, startsAt, price } = listing;
+  const day = formatDay(localDayOf(startsAt), 'EEEE, d MMMM');
+  const paragraphs = event.description?.split(/\n\s*\n/) ?? [];
+
+  return (
+    <dialog
+      ref={ref}
+      className={styles.dialog}
+      aria-labelledby="event-details-title"
+      // Esc: the URL decides, so closing goes through it
+      onCancel={(cancel) => {
+        cancel.preventDefault();
+        closeEventDetails();
+      }}
+      // A click on the backdrop lands on the dialog itself
+      onClick={(click) => {
+        if (click.target === click.currentTarget) closeEventDetails();
+      }}
+    >
+      <article className={styles.content}>
+        <div className={styles.photo}>
+          {event.imageUrl ? <Image src={event.imageUrl} alt="" fill unoptimized sizes="720px" className={styles.image} /> : null}
+          <button type="button" className={styles.close} onClick={closeEventDetails} aria-label={LABELS.close}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </div>
+
+        <div className={styles.body}>
+          <header className={styles.header}>
+            <h2 id="event-details-title" className={styles.title}>
+              {event.title}
+            </h2>
+            <p className={styles.when}>
+              {day} · <span className={styles.time}>{formatLocalTime(startsAt)}</span>
+              {price ? (
+                <>
+                  {' · '}
+                  <span className={styles.price}>
+                    {formatPrice(price)}
+                    <span className="visually-hidden"> ({LABELS.price.toLowerCase()})</span>
+                  </span>
+                </>
+              ) : null}
+            </p>
+            <p className={styles.where}>
+              {venue.name}, {venue.address}, {venue.city}
+            </p>
+          </header>
+
+          {paragraphs.length > 0 ? (
+            <section className={styles.about} aria-label={LABELS.about}>
+              {paragraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </section>
+          ) : null}
+
+          <dl className={styles.facts}>
+            {eventFacts(listing).map(({ label, value }) => (
+              <div key={label} className={styles.fact}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <footer className={styles.footer}>
+          {/* No action yet: chat or another way of contact comes later (stage 3.9); Clarity shows who clicks */}
+          <button type="button" className={styles.contact}>
+            {LABELS.contact}
+          </button>
+        </footer>
+      </article>
+    </dialog>
+  );
+}
