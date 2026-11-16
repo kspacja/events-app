@@ -1,5 +1,7 @@
+import { trace } from '@opentelemetry/api';
 import { Hono } from 'hono';
 import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
+import { logger } from '../../observability/logger';
 import type { ListOccurrences } from './occurrences';
 
 const UNAVAILABLE = 'The programme is temporarily unavailable.';
@@ -16,9 +18,9 @@ export function occurrencesRoute(listOccurrences: ListOccurrences) {
     try {
       return c.json({ occurrences: await listOccurrences(parsed.data) });
     } catch (error: unknown) {
-      // The cause stays in the server log; the client gets no database details
-      console.error('Listing occurrences failed', error);
-      return c.json({ error: UNAVAILABLE }, 500);
+      // The cause stays in the server log; the client gets only the trace id to report it by
+      logger.error({ err: error }, 'Listing occurrences failed');
+      return c.json({ error: UNAVAILABLE, traceId: trace.getActiveSpan()?.spanContext().traceId }, 500);
     }
   });
 }

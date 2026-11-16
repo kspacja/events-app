@@ -7,3 +7,5 @@ allowBuilds:
   unrs-resolver: false
   # tsx's esbuild ships its binary as an optional platform package
   esbuild: false
+  # OpenTelemetry's OTLP exporters pull it in; its postinstall only checks versions
+  protobufjs: false

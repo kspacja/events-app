@@ -62,8 +62,6 @@ describe('GET /occurrences', () => {
   });
 
   it('answers 500 without database details when reading fails', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
-
     const result = await get('?from=2030-01-01&to=2030-01-01', async () => {
       throw new Error('connection refused to 10.0.0.5');
     });

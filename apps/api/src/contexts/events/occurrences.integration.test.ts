@@ -1,4 +1,4 @@
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { occurrenceListingSchema } from '@events/contract/listing';
 import { compareListings } from '@events/contract/source';
@@ -162,7 +162,6 @@ describe('createOccurrenceReader on Postgres', () => {
   });
 
   it('skips an occurrence that breaks the contract and serves the rest', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     await db.delete(eventCategories).where(eq(eventCategories.eventId, 'market'));
 
     expect(ids(await general({ from: '2030-01-05', to: '2030-01-05' }))).toEqual(['abc', 'after-midnight']);
