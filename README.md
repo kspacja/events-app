@@ -44,6 +44,9 @@ API: [http://localhost:3001/health](http://localhost:3001/health) oraz `GET /occ
 | `DATABASE_URL` | `postgres://events:events@localhost:5432/events` | baza z `docker-compose.yml`; wymagany adres `postgres://` (komunikat błędu nie pokazuje wartości) |
 | `PORT` | `3001` (domyślnie) | port API |
 | `CORS_ORIGIN` | `http://localhost:3000` (domyślnie) | origin portalu, z którego przeglądarka może czytać API |
+| `SENTRY_DSN` | (puste) | raportowanie błędów API do Sentry; bez wartości nic nie jest wysyłane |
+
+Telemetria (API i portal): bez `OTEL_EXPORTER_OTLP_ENDPOINT` nic nie wychodzi z procesu (ADR-0011); do podglądu śladów lokalnie wystarczy `OTEL_TRACES_EXPORTER=console`. Próbkowanie 50% (`OTEL_TRACES_SAMPLER_ARG`). Logi to linie JSON z `trace_id`; `LOG_LEVEL` zmienia poziom.
 
 #### Portal na lokalnym API
 
@@ -67,6 +70,7 @@ Domyślnie portal działa na MSW i nie potrzebuje bazy. Żeby czytał Terminy z 
 | `EVENTS_API_URL` | `http://api.events.local` (MSW) albo `http://localhost:3001` (lokalne `apps/api`) | adres API, z którego portal pobiera Terminy. Wymagany, musi być poprawnym adresem http(s). Brak wartości domyślnej. |
 | `API_MOCKING` | `enabled` | uruchamia MSW, który w procesie odpowiada pod `EVENTS_API_URL`. Bez tego portal pyta prawdziwe API pod `EVENTS_API_URL` — zob. „Portal na lokalnym API”. |
 | `ALLOW_PRODUCTION_MOCKING` | `yes` | tylko na produkcji Vercela (`VERCEL_ENV=production`): pozwala na `API_MOCKING=enabled`. Poza produkcją bez znaczenia. |
+| `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | (puste) | raportowanie błędów serwera / przeglądarki do Sentry; bez wartości Sentry się nie uruchamia |
 
 Konfiguracja jest walidowana przy starcie serwera, w hooku instrumentacji (`apps/portal/src/config/runtimeConfig.ts`). Błędna konfiguracja nie zatrzymuje serwera (Next 16): serwer działa dalej i odpowiada 500, a w logu jest czytelny komunikat z nazwami zmiennych (bez ich wartości). Na Vercel błąd ujawni się więc w czasie działania (po deployu), nie podczas builda.
 

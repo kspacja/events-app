@@ -57,7 +57,10 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - `apps/api/src/config.ts` składa komunikaty inline zamiast nazwanej `problemsOf` jak w portalu — kosmetyka.
 - Postgres z `docker-compose.yml` nasłuchuje na wszystkich interfejsach (`5432:5432`), nie tylko `127.0.0.1` — lokalne hasło deweloperskie.
 - Wspólny kod konfiguracji (klasa błędu, `blankAsUnset`, komunikaty bez wartości) jest w portalu i w API — wydzielamy przy trzeciej aplikacji.
-- `console.*` w API (start, seed, błędy `/occurrences`) i w przeglądarce (start workera MSW) i brak identyfikatora korelacji w odpowiedzi 500 — dochodzą z loggerem w etapie 1.5.
+- `console.*` w seedzie API (narzędzie CLI) i w przeglądarce (start workera MSW) — logger pino jest tylko na serwerach.
+- Sentry 10.78 ciągnie `@opentelemetry/core` 2.12, który chce `@opentelemetry/api` <1.10 (mamy 1.10) — ostrzeżenie peer; Sentry nie stawia własnego SDK, więc konflikt nie działa. Przy aktualizacji Sentry sprawdzamy, czy znikło.
+- Mapy źródeł do Sentry (`withSentryConfig`, `@sentry/cli`) — gdy Sentry dostanie DSN i token.
+- Next wypisuje „Unexpected root span type 'AppRender.fetch'” przy `fetch` poza żądaniem (MSW na starcie) — ostrzeżenie Nexta, bez wpływu na ślady żądań.
 - Baza nie pilnuje formatu danych: format id i sluga, niepusta etykieta, niepuste `name` i `city` Miejsca (także w kontrakcie i modelu), powtórzone Kategorie w kontrakcie, `NaN` we współrzędnych i cenach, ceny z więcej niż 2 miejscami po przecinku (`numeric(10,2)` je zaokrągla) — dziś dane wchodzą tylko przez seed ze sprawdzonego modelu; wracamy, gdy Studio zacznie zapisywać (etap 3).
 - Tabele bez `created_at` / `updated_at` — dochodzą z pierwszymi zapisami w Studio (etap 3).
 - Cechy szkolne Wydarzenia (wiek, klasy) i filtry strony dla szkół — po researchu (etap 3.5, „Otwarte”).
