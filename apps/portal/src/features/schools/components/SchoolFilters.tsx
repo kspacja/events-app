@@ -151,7 +151,10 @@ function PriceFilterGroup({ filter, selection, onChange, labelled }: FilterGroup
           </button>
         ))}
       </div>
-      {mode.per === 'osoba' && <p className={styles.hint}>{FILTER_LABELS.groupPriceHint}</p>}
+      {/* Kept but hidden per group, so the dialog does not jump when the mode changes */}
+      <p className={styles.hint} hidden={mode.per === 'grupa'}>
+        {FILTER_LABELS.groupPriceHint}
+      </p>
     </fieldset>
   );
 }

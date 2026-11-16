@@ -467,6 +467,12 @@
   font-size: var(--text-xs);
 }
 
+/* Hidden but still taking its line */
+.hint[hidden] {
+  display: block;
+  visibility: hidden;
+}
+
 .mode:focus-visible,
 .peopleInput:focus-visible {
   outline: 2px solid var(--color-text);
