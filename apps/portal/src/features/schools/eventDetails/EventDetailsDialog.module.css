@@ -145,13 +145,13 @@
   flex: none;
   display: flex;
   justify-content: flex-end;
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-3) var(--space-6);
   border-top: 1px solid var(--color-rule);
 }
 
 .contact {
-  min-height: 44px;
-  padding: 0 var(--space-5);
+  min-height: 36px;
+  padding: 0 var(--space-4);
   border: 0;
   border-radius: var(--radius-lg);
   background: var(--color-accent-strong);
@@ -204,10 +204,11 @@
   }
 
   .footer {
-    padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+    padding: var(--space-2) var(--space-4) calc(var(--space-2) + env(safe-area-inset-bottom));
   }
 
   .contact {
     width: 100%;
+    min-height: 40px;
   }
 }
