@@ -76,4 +76,17 @@ describe('occurrencesHandler', () => {
       occurrences: [schoolListing],
     });
   });
+
+  it('narrows school listings by price band, read from the listing itself', async () => {
+    const school = (id: string, price: unknown) =>
+      occurrenceListingSchema.parse({ ...LATE_NIGHT, occurrenceId: id, price, event: { ...LATE_NIGHT.event, id, forSchools: true } });
+    const free = school('free', { kind: 'free' });
+    const cheap = school('cheap', { kind: 'paid', from: 15, to: null, currency: 'PLN' });
+    const dear = school('dear', { kind: 'paid', from: 40, to: null, currency: 'PLN' });
+    server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => [free, cheap, dear]));
+
+    expect((await call('?from=2030-01-05&to=2030-01-05&forSchools=true&cena=bezplatne,ponad-30')).body).toEqual({
+      occurrences: [free, dear],
+    });
+  });
 });

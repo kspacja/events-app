@@ -66,6 +66,11 @@
   color: var(--meta-color, var(--color-text-secondary));
 }
 
+.free {
+  color: var(--color-accent-strong);
+  font-weight: 500;
+}
+
 .title {
   margin: 0;
   font-size: var(--text-lg);

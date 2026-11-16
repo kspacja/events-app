@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filtersQuery, matchesFilters, parseFilters, toggleOption, withoutPlacement } from './schoolFilters';
+import { filtersQuery, matchesFilters, parseFilters, priceBands, toggleOption, withoutPlacement } from './schoolFilters';
 
 describe('parseFilters', () => {
   it('keeps known options in config order and drops the rest', () => {
@@ -51,5 +51,29 @@ describe('matchesFilters', () => {
 
   it('does not match a filter the event has no traits for', () => {
     expect(matchesFilters(traits, { rodzaj: ['cykliczne'] })).toBe(false);
+  });
+});
+
+describe('priceBands', () => {
+  const paid = (from: number, to: number | null = null) => ({ kind: 'paid' as const, from, to, currency: 'PLN' as const });
+
+  it('puts a free event only in its own band', () => {
+    expect(priceBands({ kind: 'free' })).toEqual(['bezplatne']);
+  });
+
+  it('counts a price up to 20 zł in both overlapping bands', () => {
+    expect(priceBands(paid(20))).toEqual(['do-20', 'do-30']);
+  });
+
+  it('counts a range by its lowest price', () => {
+    expect(priceBands(paid(25, 45))).toEqual(['do-30']);
+  });
+
+  it('puts a price above 30 zł in the top band', () => {
+    expect(priceBands(paid(30.5))).toEqual(['ponad-30']);
+  });
+
+  it('has no band without a price', () => {
+    expect(priceBands(null)).toEqual([]);
   });
 });

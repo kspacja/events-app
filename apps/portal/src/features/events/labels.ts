@@ -35,6 +35,7 @@ export const UI_LABELS = {
 export const CARD_LABELS = {
   showOnMap: 'Pokaż na mapie',
   outsideRange: '(poza wybranym terminem)',
+  free: 'bezpłatne',
 } as const;
 
 export const STATE_LABELS = {

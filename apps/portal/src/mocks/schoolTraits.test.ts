@@ -8,9 +8,9 @@ const schoolEventIds = createSampleEvents(new Date())
   .map(({ id }) => id);
 
 describe('sample school traits', () => {
-  it.each(schoolEventIds)('%s has a known option for every filter', (id) => {
+  it.each(schoolEventIds)('%s has a known option for every trait filter', (id) => {
     const traits = SAMPLE_SCHOOL_TRAITS[id];
-    for (const { param, options } of SCHOOL_FILTERS) {
+    for (const { param, options } of SCHOOL_FILTERS.filter(({ fromListing }) => !fromListing)) {
       const known = options.map(({ value }) => value);
       expect(traits?.[param]?.length, `${id}: ${param}`).toBeGreaterThan(0);
       expect(traits[param].every((value) => known.includes(value)), `${id}: ${param}`).toBe(true);

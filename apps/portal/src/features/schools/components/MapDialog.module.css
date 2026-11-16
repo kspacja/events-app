@@ -30,7 +30,10 @@
   border-color: var(--color-accent);
 }
 
+/* Grey rules, as in the month it opens from; reaches the week arrows and the event card inside */
 .dialog {
+  --color-border: var(--color-rule);
+
   width: min(1100px, 90vw);
   padding: 0;
   border: 0;

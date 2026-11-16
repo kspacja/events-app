@@ -1,3 +1,5 @@
+import type { Price } from '@events/contract/listing';
+
 /** Prototype: the schools page filters, served by MSW only. Flip `placement` to move a filter between the two places. */
 
 export type FilterPlacement = 'main' | 'advanced';
@@ -13,6 +15,8 @@ export interface SchoolFilter {
   readonly label: string;
   readonly placement: FilterPlacement;
   readonly options: readonly FilterOption[];
+  /** Matched from the listing itself (see `priceBands`), not from the traits only MSW knows. */
+  readonly fromListing?: true;
 }
 
 export const SCHOOL_FILTERS: readonly SchoolFilter[] = [
@@ -33,6 +37,7 @@ export const SCHOOL_FILTERS: readonly SchoolFilter[] = [
     label: 'Przedmiot',
     placement: 'advanced',
     options: [
+      { value: 'wczesnoszkolna', label: 'edukacja wczesnoszkolna' },
       { value: 'polski', label: 'polski' },
       { value: 'matematyka', label: 'matematyka' },
       { value: 'historia', label: 'historia' },
@@ -70,7 +75,30 @@ export const SCHOOL_FILTERS: readonly SchoolFilter[] = [
       { value: 'calodzienne', label: 'całodzienne' },
     ],
   },
+  {
+    param: 'cena',
+    label: 'Cena za osobę',
+    placement: 'advanced',
+    fromListing: true,
+    options: [
+      { value: 'bezplatne', label: 'wydarzenie bezpłatne' },
+      { value: 'do-20', label: 'do 20 zł' },
+      { value: 'do-30', label: 'do 30 zł' },
+      { value: 'ponad-30', label: 'powyżej 30 zł' },
+    ],
+  },
 ];
+
+/**
+ * The `cena` options a price falls into, read from the listing rather than from traits.
+ * A range counts by its lowest price; the bands overlap ("do 20" is also "do 30"), and paid bands leave free events out.
+ */
+export function priceBands(price: Price | null): readonly string[] {
+  if (price === null) return [];
+  if (price.kind === 'free') return ['bezplatne'];
+  if (price.from > 30) return ['ponad-30'];
+  return price.from <= 20 ? ['do-20', 'do-30'] : ['do-30'];
+}
 
 /** Chosen option values per filter param; a filter with nothing chosen is absent. */
 export type FilterSelection = Readonly<Record<string, readonly string[]>>;

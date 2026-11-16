@@ -14,7 +14,9 @@ interface OccurrenceCardProps {
 }
 
 export function OccurrenceCard({ listing, muted = false, variant = 'strip' }: OccurrenceCardProps) {
-  const { occurrenceId, startsAt, event, venue } = listing;
+  const { occurrenceId, startsAt, event, venue, price } = listing;
+  // Schools filter by price, so their cards say when an event costs nothing
+  const free = event.forSchools && price?.kind === 'free';
   const { title, imageUrl } = event;
   const main = mainCategory(event);
 
@@ -43,6 +45,12 @@ export function OccurrenceCard({ listing, muted = false, variant = 'strip' }: Oc
       </div>
       <p className={styles.meta}>
         {formatLocalTime(startsAt)} · {main.label}
+        {free ? (
+          <>
+            {' · '}
+            <span className={styles.free}>{CARD_LABELS.free}</span>
+          </>
+        ) : null}
       </p>
       <h3 className={styles.title}>
         {title}

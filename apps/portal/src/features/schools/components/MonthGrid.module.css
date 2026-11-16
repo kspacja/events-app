@@ -147,12 +147,12 @@
   position: relative;
 }
 
-/* Set the colour in --color-event-bar: the ink turns black or white to stand out from it, the hour follows at 60% */
+/* Set the colour in --color-event-bar: the ink turns black or white to stand out from it, the hour is the accent at 80% */
 .bar {
   --bar-bg: var(--color-event-bar);
   /* OKLCH lightness above 0.62 gives black ink, below it white */
   --bar-ink: oklch(from var(--bar-bg) clamp(0, (0.62 - l) * 100000, 1) 0 0);
-  --bar-ink-muted: color-mix(in oklch, var(--bar-ink) 60%, var(--bar-bg));
+  --bar-ink-muted: color-mix(in oklch, var(--color-accent-strong) 100%, var(--bar-bg));
 
   display: flex;
   align-items: center;
@@ -187,12 +187,12 @@
 /* A fixed, right-aligned column, so the hours line up from bar to bar */
 .time {
   flex: none;
-  /* "00:00" in an 11px mono is ~33px wide */
-  width: 36px;
+  /* "00:00" in a 12px mono is ~36px wide */
+  width: 40px;
   color: var(--bar-ink-muted);
   /* Albert Sans has no tabular figures, so the hours take a system mono */
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 11px;
+  font-size: 12px;
   text-align: right;
 }
 
