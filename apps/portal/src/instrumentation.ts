@@ -4,6 +4,7 @@ type MockingGlobal = typeof globalThis & { [MOCKING_STARTED]?: boolean };
 
 export async function register() {
   if (process.env.NEXT_RUNTIME !== 'nodejs') return;
+  await import('./observability/telemetry.node');
 
   const { getRuntimeConfig } = await import('./config/runtimeConfig');
   const config = getRuntimeConfig();

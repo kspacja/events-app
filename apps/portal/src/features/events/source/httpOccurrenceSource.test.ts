@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { OccurrenceSourceError } from '@events/contract/source';
 import { addDays, localDayOf, mondayOf, type DateRange } from '@events/time';
 import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
@@ -73,7 +73,6 @@ describe('HTTP occurrence source', () => {
   });
 
   it('wraps a 500 response in OccurrenceSourceError with the status as cause', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     server.use(http.get(OCCURRENCES_URL, () => new HttpResponse(null, { status: 500 })));
 
     const failure = listOccurrences({ from: firstMonday, to: firstMonday });
@@ -83,7 +82,6 @@ describe('HTTP occurrence source', () => {
   });
 
   it('wraps a malformed body in OccurrenceSourceError', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     server.use(
       http.get(OCCURRENCES_URL, () => HttpResponse.json({ occurrences: [{ occurrenceId: 1 }] })),
     );
@@ -116,7 +114,6 @@ describe('HTTP occurrence source', () => {
   });
 
   it('retries once when the first body is malformed and succeeds on the valid second one', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const urls = countRequests();
     let calls = 0;
     server.use(
@@ -133,7 +130,6 @@ describe('HTTP occurrence source', () => {
   });
 
   it('retries once when the first body is not valid JSON', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const urls = countRequests();
     let calls = 0;
     server.use(
@@ -152,7 +148,6 @@ describe('HTTP occurrence source', () => {
   });
 
   it('gives up after one retry when the body stays malformed', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const urls = countRequests();
     server.use(
       http.get(OCCURRENCES_URL, () => HttpResponse.json({ occurrences: [{ occurrenceId: 1 }] })),
@@ -166,7 +161,6 @@ describe('HTTP occurrence source', () => {
   });
 
   it('wraps a network failure in OccurrenceSourceError', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => undefined);
     server.use(http.get(OCCURRENCES_URL, () => HttpResponse.error()));
 
     await expect(
