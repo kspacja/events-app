@@ -1,6 +1,6 @@
 # Plan wdrożenia architektury
 
-Realizacja ADR-0001…0008 etapami. Pojęcia: `CONTEXT-MAP.md`. Decyzje: `docs/adr/`.
+Realizacja ADR-0001…0010 etapami. Pojęcia: `CONTEXT-MAP.md`. Decyzje: `docs/adr/`.
 
 **Bramki** = `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build` uruchomione z katalogu głównego.
 
@@ -23,12 +23,12 @@ Koniec etapu: **code review w dwóch osiach** całego etapu (Standards + Spec, r
 | 1. Backend + baza | `apps/api` (Hono + Drizzle) serwuje Terminy z Postgresa, portal czyta przez HTTP (ADR-0008) | zrobione | [stages/1-baza-i-katalog.md](stages/1-baza-i-katalog.md) |
 | 1.5 Obserwowalność | ślady, metryki, logi i błędy z aplikacji i workera | — | [stages/1.5-obserwowalnosc.md](stages/1.5-obserwowalnosc.md) |
 | 2. Tożsamość | konta `Attendee`, `Organizer`, `Moderator`, `Guest` (ADR-0004, 0005) | — | — |
-| 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia; ustawia też Oznaczenie szkolne (`forSchools`, etap 3.5) | — | — |
+| 3. Studio | `apps/studio`: Organizator dodaje Wydarzenia, Terminy, Miejsca, Zgłoszenia; ustawia też Oznaczenie szkolne (`forSchools`, etap 3.5); formularze na Mantine (ADR-0010) | — | — |
 | 3.5 Strona dla szkół | podstrona portalu: Kalendarz miesiąca zamiast Zapytania, afisz wybranego tygodnia, tylko Wydarzenia z Oznaczeniem szkolnym | zrobione (na MSW i przykładowych danych; Oznaczenie szkolne ustawi Studio w etapie 3) | [stages/3.5-strona-dla-szkol.md](stages/3.5-strona-dla-szkol.md) |
 | 3.6 Filtry dla szkół | prototyp UI filtrów strony dla szkół na MSW (grupa wiekowa, przedmiot, liczba uczestników, rodzaj); mapa w oknie modalnym | w toku | [stages/3.6-filtry-dla-szkol.md](stages/3.6-filtry-dla-szkol.md) |
 | 3.7 Widok miesiąca dla szkół | alternatywny widok `/dla-szkol/miesiac/RRRR-MM`: siatka miesiąca z paskami Wydarzeń, kafelek po najechaniu, szuflada dnia, pływające filtry i mapa | w toku | [stages/3.7-miesiac-dla-szkol.md](stages/3.7-miesiac-dla-szkol.md) |
 | 3.8 Miejscowość | filtr Miejscowości z zasięgiem (km) na stronie głównej i `/dla-szkol` z UI wyboru (wyszukiwanie, zasięg, „Użyj mojej lokalizacji”); słownik Miejscowości z PRNG; Miejsce wskazuje Miejscowość; domyślnie zgadnięta z IP, zasięg 25 km | — | [stages/3.8-miejscowosc.md](stages/3.8-miejscowosc.md) |
-| 4. Moderacja | `apps/moderation`: kolejka Zgłoszeń i decyzje | — | — |
+| 4. Moderacja | `apps/moderation`: kolejka Zgłoszeń i decyzje | odłożony: rola Moderatora jest w Tożsamości (etap 2); `apps/moderation` i jej UI nie budujemy na razie. Do tego czasu Zgłoszenia ze Studio są dopuszczane automatycznie (Zgłoszenie i jego stan zostają w modelu, decyzję podejmuje system) | — |
 | 5. Rekomendacje | `packages/recommendations`, `apps/worker`, Reakcje, `ColdStart` (ADR-0003, 0007) | — | — |
 | 6. Import i Kanały | import CSV, Kanał JSON Zaufanego Organizatora (cyklicznie i na webhook) | — | [stages/6-import-i-kanaly.md](stages/6-import-i-kanaly.md) |
 | 7. Wdrożenie | Vercel, Neon, Railway/Fly, CI (ADR-0006) | w toku: release Preview na MSW | [stages/7-wdrozenie.md](stages/7-wdrozenie.md) |
@@ -60,6 +60,7 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Cechy szkolne Wydarzenia (wiek, klasy) i filtry strony dla szkół — po researchu (etap 3.5, „Otwarte”).
 - Obwódka fokusu dni na skrajnych kolumnach Kalendarza miesiąca może być przycięta — sprawdzamy w Chrome na końcu planu.
 - Publiczne API Organizatorów — zastąpione Kanałem; wracamy, gdy pojawi się potrzeba zapisu z zewnątrz.
+- `apps/moderation` i jej UI (etap 4) — rola Moderatora zostaje w Tożsamości i w domenie; Zgłoszenia dopuszczane automatycznie, dopóki nie ma UI decyzji.
 - Szybsze przełączanie tygodni na `/dla-szkol` (produkcyjnie): `experimental.staleTimes.dynamic` (np. 300 s), żeby odwiedzony tydzień wracał z cache przeglądarki, oraz `router.prefetch` dwóch następnych tygodni w `WeekNavigationProvider` (pełne pobranie, 5 min). Szkielet `WeekArea` zostaje na skoki do odległych tygodni. `'use cache'` na `loadWeekSchedule` niepotrzebne: wymaga `cacheComponents`, a dane już cache'uje `fetch` z `revalidate` (ADR-0008).
 
 ## Testowanie
