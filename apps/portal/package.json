@@ -22,6 +22,7 @@
     "@opentelemetry/api": "1.10.0",
     "@opentelemetry/instrumentation-undici": "0.34.0",
     "@opentelemetry/sdk-node": "0.300.0",
+    "@sentry/nextjs": "10.78.0",
     "date-fns": "^4.4.0",
     "maplibre-gl": "^6.11.2",
     "msw": "^3.0.1",

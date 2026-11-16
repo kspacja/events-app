@@ -25,6 +25,7 @@
     "@opentelemetry/instrumentation-pg": "0.77.0",
     "@opentelemetry/instrumentation-pino": "0.70.0",
     "@opentelemetry/sdk-node": "0.300.0",
+    "@sentry/node": "10.78.0",
     "drizzle-orm": "^0.45.3",
     "hono": "^4.13.13",
     "pg": "^8.23.1",

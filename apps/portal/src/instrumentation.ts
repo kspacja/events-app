@@ -1,3 +1,5 @@
+import type { Instrumentation } from 'next';
+
 const MOCKING_STARTED = Symbol.for('events-app.msw-started');
 
 type MockingGlobal = typeof globalThis & { [MOCKING_STARTED]?: boolean };
@@ -5,6 +7,7 @@ type MockingGlobal = typeof globalThis & { [MOCKING_STARTED]?: boolean };
 export async function register() {
   if (process.env.NEXT_RUNTIME !== 'nodejs') return;
   await import('./observability/telemetry.node');
+  await import('./observability/sentry.node');
 
   const { getRuntimeConfig } = await import('./config/runtimeConfig');
   const config = getRuntimeConfig();
@@ -35,3 +38,10 @@ function keepMockedFetch(mockedFetch: typeof fetch) {
     },
   });
 }
+
+/** Server errors go to Sentry once a DSN is set (ADR-0011). */
+export const onRequestError: Instrumentation.onRequestError = async (...args) => {
+  if (!process.env.SENTRY_DSN) return;
+  const { captureRequestError } = await import('@sentry/nextjs');
+  captureRequestError(...args);
+};

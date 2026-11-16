@@ -9,3 +9,5 @@ allowBuilds:
   esbuild: false
   # OpenTelemetry's OTLP exporters pull it in; its postinstall only checks versions
   protobufjs: false
+  # Downloads a binary for uploading source maps; not used until Sentry gets a DSN and an auth token
+  '@sentry/cli': false
