@@ -3,7 +3,7 @@ import { createSampleEvents, toListings } from '@events/repo';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
 import { eventDayOf, isDayInRange } from '@events/time';
-import { hasFilters, matchesFilters, parseFilters, priceBands, priceModeOf, type FilterSelection } from '@/features/schools/schoolFilters';
+import { hasFilters, matchesFilters, parseFilters, priceBands, priceModeOf, TRAIT_PARAMS, type FilterSelection } from '@/features/schools/schoolFilters';
 import { SAMPLE_SCHOOL_TRAITS } from './schoolTraits';
 
 function badRequest(error: string) {
@@ -15,12 +15,9 @@ const NO_TRAITS: FilterSelection = {};
 /** Cechy szkolne in the listing's own shape (stage 3.9); the real API does not send them yet. */
 function withSchoolTraits(listing: OccurrenceListing, traits: FilterSelection | undefined): OccurrenceListing {
   if (!traits) return listing;
-  const school = {
-    ages: traits.wiek ?? [],
-    subjects: traits.przedmiot ?? [],
-    groupSizes: traits.grupa ?? [],
-    kinds: traits.rodzaj ?? [],
-  };
+  const school = Object.fromEntries(
+    Object.entries(TRAIT_PARAMS).map(([trait, param]) => [trait, traits[param] ?? []]),
+  ) as Record<keyof typeof TRAIT_PARAMS, readonly string[]>;
   return { ...listing, event: { ...listing.event, school } };
 }
 

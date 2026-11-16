@@ -1,28 +1,32 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useId, useLayoutEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { localDayOf } from '@events/time';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { eventFacts, formatPrice } from './eventFacts';
-import { closeEventDetails, EVENT_PARAM } from './eventParam';
+import { closeEventDetails, dropEventParam, EVENT_PARAM } from './eventParam';
 import { EVENT_DETAILS_LABELS as LABELS } from './labels';
 import styles from './EventDetailsDialog.module.css';
 
 /** Opens for `?wydarzenie=` when the month has that occurrence; Esc, the close button and the backdrop close it. */
 export function EventDetailsDialog({ listings }: { readonly listings: readonly OccurrenceListing[] }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   const id = useSearchParams().get(EVENT_PARAM);
   const listing = id ? listings.find(({ occurrenceId }) => occurrenceId === id) : undefined;
 
-  useEffect(() => {
+  // Before paint, so a closing dialog never shows empty for a frame
+  useLayoutEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
     if (listing && !dialog.open) dialog.showModal();
     if (!listing && dialog.open) dialog.close();
-  }, [listing]);
+    // An occurrence this month does not show (another month, filtered out): drop it from the address
+    if (id && !listing) dropEventParam();
+  }, [id, listing]);
 
   if (!listing) return <dialog ref={ref} className={styles.dialog} />;
 
@@ -34,11 +38,15 @@ export function EventDetailsDialog({ listings }: { readonly listings: readonly O
     <dialog
       ref={ref}
       className={styles.dialog}
-      aria-labelledby="event-details-title"
+      aria-labelledby={titleId}
       // Esc: the URL decides, so closing goes through it
       onCancel={(cancel) => {
         cancel.preventDefault();
         closeEventDetails();
+      }}
+      // Closed by the browser itself (a second Esc may skip cancel): bring the address along
+      onClose={() => {
+        if (new URL(window.location.href).searchParams.has(EVENT_PARAM)) closeEventDetails();
       }}
       // A click on the backdrop lands on the dialog itself
       onClick={(click) => {
@@ -57,7 +65,7 @@ export function EventDetailsDialog({ listings }: { readonly listings: readonly O
 
         <div className={styles.body}>
           <header className={styles.header}>
-            <h2 id="event-details-title" className={styles.title}>
+            <h2 id={titleId} className={styles.title}>
               {event.title}
             </h2>
             <p className={styles.when}>

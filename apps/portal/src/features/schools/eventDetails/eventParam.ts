@@ -18,6 +18,11 @@ export function closeEventDetails(): void {
     window.history.back();
     return;
   }
+  dropEventParam();
+}
+
+/** Removes the parameter without a new history entry. */
+export function dropEventParam(): void {
   const url = new URL(window.location.href);
   url.searchParams.delete(EVENT_PARAM);
   window.history.replaceState(null, '', url);

@@ -15,6 +15,13 @@
       "when": 1791537626153,
       "tag": "0001_events_for_schools",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794871802980,
+      "tag": "0002_price_per",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,7 @@ export const OCCURRENCE_ROW: OccurrenceRow = {
   priceFrom: null,
   priceTo: null,
   priceCurrency: null,
+  pricePer: null,
   eventId: 'jazz',
   title: 'Jazz',
   imageUrl: null,

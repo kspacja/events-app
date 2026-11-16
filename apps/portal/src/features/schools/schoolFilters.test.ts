@@ -127,6 +127,19 @@ describe('price per group', () => {
     expect(withPriceMode(withPriceMode(perPupil, 'grupa'), 'osoba')).toEqual({ wiek: ['1-3'] });
   });
 
+  it('keeps "free" when the mode changes, since it means the same in both', () => {
+    expect(withPriceMode(parseFilters(new URLSearchParams('cena=bezplatne,do-20')), 'grupa')).toEqual({
+      cena: ['bezplatne'],
+      cenaZa: ['grupa'],
+      osob: ['25'],
+    });
+  });
+
+  it('rounds a fractional count and falls back for an unreadable one', () => {
+    expect(priceModeOf(parseFilters(new URLSearchParams('cenaZa=grupa&osob=12.6'))).people).toBe(13);
+    expect(priceModeOf(parseFilters(new URLSearchParams('cenaZa=grupa&osob=abc'))).people).toBe(25);
+  });
+
   it('changes the pupils and does not count the mode as a filter', () => {
     const selection = withPeople(withPriceMode({}, 'grupa'), 40);
 

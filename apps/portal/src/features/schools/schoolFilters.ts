@@ -100,27 +100,38 @@ export interface PriceMode {
   readonly people: number;
 }
 
-const PRICE_PARAM = 'cena';
+export const PRICE_PARAM = 'cena';
 const PRICE_MODE_PARAM = 'cenaZa';
 const PEOPLE_PARAM = 'osob';
 /** Not filters of their own: they say how `cena` compares, so they travel with it in the URL. */
 const PRICE_MODIFIERS = [PRICE_MODE_PARAM, PEOPLE_PARAM];
-export const DEFAULT_PEOPLE = 25;
+const DEFAULT_PEOPLE = 25;
 const MAX_PEOPLE = 500;
 
 function clampPeople(value: number): number {
-  return Number.isInteger(value) ? Math.min(MAX_PEOPLE, Math.max(1, value)) : DEFAULT_PEOPLE;
+  return Number.isFinite(value) && value > 0 ? Math.min(MAX_PEOPLE, Math.max(1, Math.round(value))) : DEFAULT_PEOPLE;
 }
+
+/** A filter's param, followed by the price modifiers when it is the price. */
+function withModifiers(param: string): string[] {
+  return param === PRICE_PARAM ? [param, ...PRICE_MODIFIERS] : [param];
+}
+
+/** Which filter holds each school trait of the contract, so the mocks and the details read them the same way. */
+export const TRAIT_PARAMS = { ages: 'wiek', subjects: 'przedmiot', groupSizes: 'grupa', kinds: 'rodzaj' } as const;
 
 export function priceModeOf(selection: FilterSelection): PriceMode {
   if (selection[PRICE_MODE_PARAM]?.[0] !== 'grupa') return { per: 'osoba', people: DEFAULT_PEOPLE };
   return { per: 'grupa', people: clampPeople(Number(selection[PEOPLE_PARAM]?.[0])) };
 }
 
-/** Switching the mode drops the chosen bands: a pupil's 20 zł means nothing for a group. */
+/** Switching the mode drops the chosen paid bands (a pupil's 20 zł means nothing for a group); "free" stays. */
 export function withPriceMode(selection: FilterSelection, per: PriceMode['per']): FilterSelection {
-  const rest = Object.fromEntries(Object.entries(selection).filter(([param]) => param !== PRICE_PARAM && !PRICE_MODIFIERS.includes(param)));
-  return per === 'grupa' ? { ...rest, [PRICE_MODE_PARAM]: ['grupa'], [PEOPLE_PARAM]: [String(DEFAULT_PEOPLE)] } : rest;
+  const rest = Object.fromEntries(Object.entries(selection).filter(([param]) => !withModifiers(PRICE_PARAM).includes(param)));
+  const free: FilterSelection = selection[PRICE_PARAM]?.includes('bezplatne') ? { [PRICE_PARAM]: ['bezplatne'] } : {};
+  return per === 'grupa'
+    ? { ...rest, ...free, [PRICE_MODE_PARAM]: ['grupa'], [PEOPLE_PARAM]: [String(DEFAULT_PEOPLE)] }
+    : { ...rest, ...free };
 }
 
 export function withPeople(selection: FilterSelection, people: number): FilterSelection {
@@ -181,7 +192,7 @@ export function parseFilters(source: ParamSource): FilterSelection {
 
 /** `?wiek=1-3,4-6&przedmiot=fizyka`, or '' with nothing chosen. Commas stay readable in the URL. */
 export function filtersQuery(selection: FilterSelection): string {
-  const params = SCHOOL_FILTERS.flatMap(({ param }) => (param === PRICE_PARAM ? [param, ...PRICE_MODIFIERS] : [param]));
+  const params = SCHOOL_FILTERS.flatMap(({ param }) => withModifiers(param));
   const parts = params
     .filter((param) => selection[param]?.length)
     .map((param) => `${param}=${selection[param].map(encodeURIComponent).join(',')}`);
@@ -205,9 +216,7 @@ export function hasFilters(selection: FilterSelection): boolean {
 
 /** Without the given placement's filters, e.g. to clear only the advanced ones. */
 export function withoutPlacement(selection: FilterSelection, placement: FilterPlacement): FilterSelection {
-  const kept = SCHOOL_FILTERS.filter((filter) => filter.placement !== placement).flatMap(({ param }) =>
-    param === PRICE_PARAM ? [param, ...PRICE_MODIFIERS] : [param],
-  );
+  const kept = SCHOOL_FILTERS.filter((filter) => filter.placement !== placement).flatMap(({ param }) => withModifiers(param));
   return Object.fromEntries(Object.entries(selection).filter(([param]) => kept.includes(param)));
 }
 

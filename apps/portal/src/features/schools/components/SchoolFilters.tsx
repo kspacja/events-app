@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, useTransition } from 'rea
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { FILTER_LABELS } from '../labels';
 import {
+  PRICE_PARAM,
   SCHOOL_FILTERS,
   filtersQuery,
   parseFilters,
@@ -98,8 +99,11 @@ function PriceFilterGroup({ filter, selection, onChange, labelled }: FilterGroup
   const mode = priceModeOf(selection);
   const chosen = selection[filter.param] ?? [];
   const optionsRef = useEndFade();
-  const commitPeople = (value: string) => {
-    if (Number(value) !== mode.people) onChange(withPeople(selection, Number(value)));
+  // An empty or unreadable field keeps the number in the URL
+  const commitPeople = (input: HTMLInputElement) => {
+    const people = input.valueAsNumber;
+    if (!Number.isFinite(people) || people < 1) input.value = String(mode.people);
+    else if (people !== mode.people) onChange(withPeople(selection, people));
   };
   return (
     <fieldset className={styles.group} data-price>
@@ -130,9 +134,9 @@ function PriceFilterGroup({ filter, selection, onChange, labelled }: FilterGroup
               max={500}
               defaultValue={mode.people}
               className={styles.peopleInput}
-              onBlur={(event) => commitPeople(event.currentTarget.value)}
+              onBlur={(event) => commitPeople(event.currentTarget)}
               onKeyDown={(event) => {
-                if (event.key === 'Enter') commitPeople(event.currentTarget.value);
+                if (event.key === 'Enter') commitPeople(event.currentTarget);
               }}
             />
           </label>
@@ -198,7 +202,7 @@ export function SchoolFilters({ placement, layout = 'inline' }: SchoolFiltersPro
         <h2 className={styles.heading}>{FILTER_LABELS.advanced}</h2>
       ) : null}
       {filters.map((filter) => {
-        const Group = filter.param === 'cena' ? PriceFilterGroup : FilterGroup;
+        const Group = filter.param === PRICE_PARAM ? PriceFilterGroup : FilterGroup;
         return (
           <Group
             key={filter.param}

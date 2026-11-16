@@ -21,7 +21,7 @@ Pozycja z zarządzanej listy rodzajów Wydarzeń (np. muzyka, film); Organizator
 _Avoid_: typ, tag, Klaster tematyczny
 
 **Cena** (`Price`):
-Informacja o koszcie wstępu na Termin: bezpłatny albo kwota od–do; jej brak oznacza, że Organizator jej nie podał.
+Informacja o koszcie wstępu na Termin: bezpłatny albo kwota od–do, płatna za osobę (domyślnie), za grupę albo za godzinę zajęć; jej brak oznacza, że Organizator jej nie podał.
 _Avoid_: bilet, koszt
 
 ## Publikacja
@@ -55,5 +55,9 @@ Pole Wydarzenia z Kanału poprawione przez Organizatora w Studio, którego kolej
 _Avoid_: nadpisanie, override
 
 **Oznaczenie szkolne** (`SchoolSuitability`, pole `forSchools`):
-Cecha Wydarzenia „dla grup szkolnych”, ustawiana przez Organizatora; takie Wydarzenie nie pojawia się w programie ogólnym, tylko na stronie dla szkół; szczegóły (wiek, klasy) czekają na research.
+Cecha Wydarzenia „dla grup szkolnych”, ustawiana przez Organizatora; takie Wydarzenie nie pojawia się w programie ogólnym, tylko na stronie dla szkół.
 _Avoid_: kategoria szkolna, tag
+
+**Cechy szkolne** (`SchoolTraits`, pole `school`):
+To, czym nauczyciel wybiera Wydarzenie z Oznaczeniem szkolnym: grupy wiekowe, przedmioty, liczba uczestników i rodzaj (jednorazowe, cykliczne, całodzienne); wartości jak w filtrach strony dla szkół. Na razie podaje je tylko MSW (etap 3.9).
+_Avoid_: tagi szkolne, atrybuty

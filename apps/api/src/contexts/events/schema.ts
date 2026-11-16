@@ -18,6 +18,9 @@ export const eventsSchema = pgSchema('events');
 
 export const priceKind = eventsSchema.enum('price_kind', ['free', 'paid']);
 
+// What a paid price covers; null on a paid price means per person (stage 3.9)
+export const pricePer = eventsSchema.enum('price_per', ['person', 'group', 'hour']);
+
 export const categories = eventsSchema.table('categories', {
   slug: text('slug').primaryKey(),
   label: text('label').notNull(),
@@ -77,6 +80,7 @@ export const occurrences = eventsSchema.table(
     priceFrom: numeric('price_from', { precision: 10, scale: 2, mode: 'number' }),
     priceTo: numeric('price_to', { precision: 10, scale: 2, mode: 'number' }),
     priceCurrency: text('price_currency'),
+    pricePer: pricePer('price_per'),
   },
   (table) => [
     index('occurrences_starts_at_idx').on(table.startsAt),
@@ -85,7 +89,7 @@ export const occurrences = eventsSchema.table(
     check(
       'occurrences_price_valid',
       sql`(${table.priceKind} IS DISTINCT FROM 'paid'
-          AND ${table.priceFrom} IS NULL AND ${table.priceTo} IS NULL AND ${table.priceCurrency} IS NULL)
+          AND ${table.priceFrom} IS NULL AND ${table.priceTo} IS NULL AND ${table.priceCurrency} IS NULL AND ${table.pricePer} IS NULL)
         OR (${table.priceKind} = 'paid'
           AND ${table.priceFrom} IS NOT NULL AND ${table.priceFrom} >= 0 AND ${table.priceCurrency} IS NOT DISTINCT FROM 'PLN'
           AND (${table.priceTo} IS NULL OR ${table.priceTo} >= ${table.priceFrom}))`,

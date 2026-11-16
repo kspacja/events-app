@@ -1,14 +1,11 @@
 import type { OccurrenceListing, Price } from '@events/contract/listing';
-import { SCHOOL_FILTERS } from '../schoolFilters';
+import { SCHOOL_FILTERS, TRAIT_PARAMS } from '../schoolFilters';
 import { EVENT_DETAILS_LABELS as LABELS } from './labels';
 
 export interface EventFact {
   readonly label: string;
   readonly value: string;
 }
-
-// Which filter names each school trait; its options give the labels
-const TRAIT_FILTERS = { ages: 'wiek', subjects: 'przedmiot', groupSizes: 'grupa', kinds: 'rodzaj' } as const;
 
 const PER = { person: 'os.', group: 'grupa', hour: 'godz.' } as const;
 
@@ -19,8 +16,8 @@ export function formatPrice(price: Price): string {
   return `${amount} zł / ${PER[price.per ?? 'person']}`;
 }
 
-function traitFact(trait: keyof typeof TRAIT_FILTERS, values: readonly string[]): EventFact | null {
-  const filter = SCHOOL_FILTERS.find(({ param }) => param === TRAIT_FILTERS[trait]);
+function traitFact(trait: keyof typeof TRAIT_PARAMS, values: readonly string[]): EventFact | null {
+  const filter = SCHOOL_FILTERS.find(({ param }) => param === TRAIT_PARAMS[trait]);
   if (!filter || values.length === 0) return null;
   const labels = filter.options.filter(({ value }) => values.includes(value)).map(({ label }) => label);
   return labels.length > 0 ? { label: filter.label, value: labels.join(', ') } : null;

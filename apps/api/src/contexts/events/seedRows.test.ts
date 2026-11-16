@@ -32,7 +32,12 @@ describe('toSeedRows', () => {
     [
       'a paid price',
       { kind: 'paid', from: 40, to: 80, currency: 'PLN' },
-      { priceKind: 'paid', priceFrom: 40, priceTo: 80, priceCurrency: 'PLN' },
+      { priceKind: 'paid', priceFrom: 40, priceTo: 80, priceCurrency: 'PLN', pricePer: null },
+    ],
+    [
+      'a price per group',
+      { kind: 'paid', from: 350, to: null, currency: 'PLN', per: 'group' },
+      { priceKind: 'paid', priceFrom: 350, priceTo: null, priceCurrency: 'PLN', pricePer: 'group' },
     ],
   ] as const)('spreads %s over the price columns', (_name, price, columns) => {
     const [occurrence] = toSeedRows(dataWithPrice(price)).occurrences;

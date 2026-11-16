@@ -11,13 +11,13 @@ export interface EventsSeedRows {
 
 type PriceColumns = Pick<
   typeof occurrences.$inferInsert,
-  'priceKind' | 'priceFrom' | 'priceTo' | 'priceCurrency'
+  'priceKind' | 'priceFrom' | 'priceTo' | 'priceCurrency' | 'pricePer'
 >;
 
 function priceColumns(price: Price | null): PriceColumns {
-  if (price === null) return { priceKind: null, priceFrom: null, priceTo: null, priceCurrency: null };
-  if (price.kind === 'free') return { priceKind: 'free', priceFrom: null, priceTo: null, priceCurrency: null };
-  return { priceKind: 'paid', priceFrom: price.from, priceTo: price.to, priceCurrency: price.currency };
+  if (price === null) return { priceKind: null, priceFrom: null, priceTo: null, priceCurrency: null, pricePer: null };
+  if (price.kind === 'free') return { priceKind: 'free', priceFrom: null, priceTo: null, priceCurrency: null, pricePer: null };
+  return { priceKind: 'paid', priceFrom: price.from, priceTo: price.to, priceCurrency: price.currency, pricePer: price.per ?? null };
 }
 
 /** Rows for the `events` schema; category order becomes `position`, so the main category is 0. */

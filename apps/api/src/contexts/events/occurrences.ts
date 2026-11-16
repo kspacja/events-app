@@ -18,6 +18,7 @@ export interface OccurrenceRow {
   readonly priceFrom: number | null;
   readonly priceTo: number | null;
   readonly priceCurrency: string | null;
+  readonly pricePer: 'person' | 'group' | 'hour' | null;
   readonly eventId: string;
   readonly title: string;
   readonly imageUrl: string | null;
@@ -32,7 +33,9 @@ export interface OccurrenceRow {
 // Unchecked shape; toListing parses it against the contract
 function priceOf(row: OccurrenceRow): unknown {
   if (row.priceKind === 'free') return { kind: 'free' };
-  if (row.priceKind === 'paid') return { kind: 'paid', from: row.priceFrom, to: row.priceTo, currency: row.priceCurrency };
+  if (row.priceKind === 'paid') {
+    return { kind: 'paid', from: row.priceFrom, to: row.priceTo, currency: row.priceCurrency, ...(row.pricePer ? { per: row.pricePer } : {}) };
+  }
   return null;
 }
 
@@ -83,6 +86,7 @@ export function createOccurrenceReader(db: Db): ListOccurrences {
         priceFrom: occurrences.priceFrom,
         priceTo: occurrences.priceTo,
         priceCurrency: occurrences.priceCurrency,
+        pricePer: occurrences.pricePer,
         eventId: events.id,
         title: events.title,
         imageUrl: events.imageUrl,

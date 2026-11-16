@@ -14,7 +14,7 @@ export const FILTER_LABELS = {
   perPupil: 'za osobę',
   perGroup: 'za grupę',
   people: 'Ile osób?',
-  groupPriceHint: 'Wydarzenia z ceną za grupę zobaczysz po wybraniu „za grupę”.',
+  groupPriceHint: 'Wydarzenia z ceną za grupę albo za godzinę zobaczysz po wybraniu „za grupę”.',
 } as const;
 
 export const CALENDAR_LABELS = {

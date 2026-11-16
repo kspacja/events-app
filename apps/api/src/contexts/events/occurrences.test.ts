@@ -22,6 +22,11 @@ describe('toListing', () => {
       { priceKind: 'paid' as const, priceFrom: 40, priceTo: null, priceCurrency: 'PLN' },
       { kind: 'paid', from: 40, to: null, currency: 'PLN' },
     ],
+    [
+      'a price per hour',
+      { priceKind: 'paid' as const, priceFrom: 120, priceTo: null, priceCurrency: 'PLN', pricePer: 'hour' as const },
+      { kind: 'paid', from: 120, to: null, currency: 'PLN', per: 'hour' },
+    ],
   ])('reads %s from the price columns', (_name, columns, price) => {
     expect(toListing({ ...OCCURRENCE_ROW, ...columns }, [MUSIC]).price).toEqual(price);
   });
