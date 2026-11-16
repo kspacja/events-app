@@ -17,7 +17,6 @@ Koniec etapu: **code review w dwóch osiach** całego etapu (Standards + Spec, r
 
 Na razie (od 2026-11-16) omijamy stronę główną i tydzień `/dla-szkol`; strona dla szkół to widok miesiąca.
 
-
 | Etap | Cel | Status | Szczegóły |
 | --- | --- | --- | --- |
 | 0. Monorepo | pnpm + Turborepo, `apps/portal`, pakiety współdzielone | zrobione | historia gita |
@@ -61,6 +60,11 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Sentry 10.78 ciągnie `@opentelemetry/core` 2.12, który chce `@opentelemetry/api` <1.10 (mamy 1.10) — ostrzeżenie peer; Sentry nie stawia własnego SDK, więc konflikt nie działa. Przy aktualizacji Sentry sprawdzamy, czy znikło.
 - Mapy źródeł do Sentry (`withSentryConfig`, `@sentry/cli`) — gdy Sentry dostanie DSN i token.
 - Next wypisuje „Unexpected root span type 'AppRender.fetch'” przy `fetch` poza żądaniem (MSW na starcie) — ostrzeżenie Nexta, bez wpływu na ślady żądań.
+- Logi portalu nie idą przez OTLP: Next pakuje pino, więc instrumentacja pino go nie łata — przy wyborze backendu (np. `serverExternalPackages` + instrumentacja pino).
+- Wspólny moduł telemetrii portalu i API — wydzielamy, gdy dojdzie worker (trzecia aplikacja).
+- Telemetria ustawia domyślne wartości przez zmianę `process.env` zamiast opcji `NodeSDK` — przy wyborze backendu.
+- Sentry w przeglądarce ładuje się przez dynamiczny import, więc błędy sprzed jego załadowania (np. hydratacji) przepadają — wracamy, gdy ustawimy DSN.
+- `Sentry.init` w API wykonuje się jako efekt uboczny importu modułu `errors.ts`.
 - Baza nie pilnuje formatu danych: format id i sluga, niepusta etykieta, niepuste `name` i `city` Miejsca (także w kontrakcie i modelu), powtórzone Kategorie w kontrakcie, `NaN` we współrzędnych i cenach, ceny z więcej niż 2 miejscami po przecinku (`numeric(10,2)` je zaokrągla) — dziś dane wchodzą tylko przez seed ze sprawdzonego modelu; wracamy, gdy Studio zacznie zapisywać (etap 3).
 - Tabele bez `created_at` / `updated_at` — dochodzą z pierwszymi zapisami w Studio (etap 3).
 - Cechy szkolne Wydarzenia (wiek, klasy) i filtry strony dla szkół — po researchu (etap 3.5, „Otwarte”).
@@ -71,6 +75,7 @@ Plik etapu powstaje, gdy etap rusza: cel, kroki, decyzje, otwarte pytania, kryte
 - Powielenia tydzień/miesiąc: odczyt filtrów i źródła w `loadWeekSchedule`/`loadMonthSchedule`, liczenie aktywnych wpisów, odmiana z `Intl.PluralRules` w trzech plikach, `@keyframes revealed` w dwóch, przygaszanie minionych dni (0.1 i 0.4) — wydzielamy przy następnej zmianie któregoś z widoków.
 - `WEEK_DAYS` w `monthCounts.ts` zamiast `DAYS_IN_WEEK` z `@events/time` i podwójny filtr `isPastWeek` w `splitPassedWeeks` — kosmetyka.
 - Na telefonie minione dni bieżącego tygodnia w miesiącu są ukryte stylem, a ich punkty zostają na mapie — „Pokaż w miesiącu” trafia wtedy w ukryty pasek.
+- Drizzle wpisuje parametry zapytania także do `err.message` i `err.stack` („params: …”), więc maska `err.params` ich tam nie zakrywa — dziś to daty; przed pierwszym zapytaniem z danymi osobowymi (etap 2) filtr komunikatu błędu.
 - `apps/moderation` i jej UI (etap 4) — rola Moderatora zostaje w Tożsamości i w domenie; Zgłoszenia dopuszczane automatycznie, dopóki nie ma UI decyzji.
 - Szybsze przełączanie tygodni na `/dla-szkol` (produkcyjnie): `experimental.staleTimes.dynamic` (np. 300 s), żeby odwiedzony tydzień wracał z cache przeglądarki, oraz `router.prefetch` dwóch następnych tygodni w `WeekNavigationProvider` (pełne pobranie, 5 min). Szkielet `WeekArea` zostaje na skoki do odległych tygodni. `'use cache'` na `loadWeekSchedule` niepotrzebne: wymaga `cacheComponents`, a dane już cache'uje `fetch` z `revalidate` (ADR-0008).
 

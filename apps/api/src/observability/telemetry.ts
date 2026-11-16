@@ -4,14 +4,14 @@ import { register } from 'node:module';
 register('@opentelemetry/instrumentation/hook.mjs', import.meta.url);
 
 const env = process.env;
-// Nothing leaves the process until a backend is chosen (ADR-0011); OTEL_TRACES_EXPORTER=console still works locally
-const exportsTraces = Boolean(env.OTEL_EXPORTER_OTLP_ENDPOINT || env.OTEL_TRACES_EXPORTER);
+// No export without a backend (ADR-0011), except the local console exporter
+const exportsTraces = Boolean(env.OTEL_EXPORTER_OTLP_ENDPOINT) || env.OTEL_TRACES_EXPORTER === 'console';
 if (!env.OTEL_EXPORTER_OTLP_ENDPOINT) {
   env.OTEL_METRICS_EXPORTER ??= 'none';
   env.OTEL_LOGS_EXPORTER ??= 'none';
 }
-// With no processor the SDK would not start at all ("none" disables it); this one exports nothing but keeps real trace ids
-const KEEP_IDS_ONLY = { onStart() {}, onEnd() {}, forceFlush: async () => {}, shutdown: async () => {} };
+// Keeps real trace ids without exporting anything ("none" would stop the SDK)
+const noExportSpanProcessor = { onStart() {}, onEnd() {}, forceFlush: async () => {}, shutdown: async () => {} };
 // Half of the traces, following the portal's decision when it sends one
 env.OTEL_TRACES_SAMPLER ??= 'parentbased_traceidratio';
 env.OTEL_TRACES_SAMPLER_ARG ??= '0.5';
@@ -25,6 +25,11 @@ const [{ NodeSDK }, { HttpInstrumentation }, { PgInstrumentation }, { PinoInstru
 ]);
 
 new NodeSDK({
-  spanProcessors: exportsTraces ? undefined : [KEEP_IDS_ONLY],
-  instrumentations: [new HttpInstrumentation(), new PgInstrumentation(), new PinoInstrumentation()],
+  spanProcessors: exportsTraces ? undefined : [noExportSpanProcessor],
+  instrumentations: [
+    // Undefined drops the attribute: no client IP addresses in traces (ADR-0011)
+    new HttpInstrumentation({ startIncomingSpanHook: () => ({ 'client.address': undefined, 'network.peer.address': undefined }) }),
+    new PgInstrumentation(),
+    new PinoInstrumentation(),
+  ],
 }).start();

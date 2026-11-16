@@ -2,8 +2,7 @@ import { and, asc, eq, gte, inArray, lt, sql } from 'drizzle-orm';
 import { occurrenceListingSchema, type Category, type OccurrenceListing } from '@events/contract/listing';
 import { eventDayBounds, toWarsawIso, type DateRange } from '@events/time';
 import type { Db } from '../../db';
-import { reportError } from '../../observability/errors';
-import { logger } from '../../observability/logger';
+import { logError } from '../../observability/errors';
 import { categories, eventCategories, events, occurrences, venues } from './schema';
 
 export interface OccurrencesQuery extends DateRange {
@@ -107,8 +106,7 @@ export function createOccurrenceReader(db: Db): ListOccurrences {
       try {
         return [toListing(row, byEvent.get(row.eventId) ?? [])];
       } catch (error: unknown) {
-        logger.error({ occurrenceId: row.id, err: error }, 'Skipping an occurrence that breaks the contract');
-        reportError(error);
+        logError(error, 'Skipping an occurrence that breaks the contract', { occurrenceId: row.id });
         return [];
       }
     });

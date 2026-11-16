@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from './app';
+import { logger } from './observability/logger';
 
 const PORTAL_ORIGIN = 'http://portal.test';
 const app = createApp({ listOccurrences: async () => [], corsOrigin: PORTAL_ORIGIN });
@@ -38,5 +39,27 @@ describe('CORS', () => {
 
     expect(response.status).toBe(204);
     expect(response.headers.get('Access-Control-Allow-Methods')).toContain('GET');
+  });
+});
+
+describe('unhandled errors', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('answer 500 without internal details and log the cause', async () => {
+    const logged = vi.spyOn(logger, 'error');
+    const failure = new Error('secret at 10.0.0.5');
+    const failing = createApp({ listOccurrences: async () => [], corsOrigin: PORTAL_ORIGIN }).get('/boom', () => {
+      throw failure;
+    });
+
+    const response = await failing.request('/boom');
+    const body = JSON.stringify(await response.json());
+
+    expect(response.status).toBe(500);
+    expect(body).toContain('The programme is temporarily unavailable.');
+    expect(body).not.toContain('10.0.0.5');
+    expect(logged).toHaveBeenCalledWith(expect.objectContaining({ err: failure, path: '/boom' }), 'Unhandled error');
   });
 });

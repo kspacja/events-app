@@ -1,10 +1,16 @@
-import { describe, expect, it, vi } from 'vitest';
+import { trace, TraceFlags } from '@opentelemetry/api';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { OCCURRENCES_QUERY_ERRORS, occurrencesResponseSchema } from '@events/contract/occurrences-http';
 import { createApp } from '../../app';
 import { OCCURRENCE_ROW } from './occurrenceRow.testing';
 import { toListing, type ListOccurrences, type OccurrencesQuery } from './occurrences';
 
 const PORTAL_ORIGIN = 'http://localhost:3000';
+const TRACE_ID = '0af7651916cd43dd8448eb211c80319c';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 async function get(query: string, listOccurrences: ListOccurrences) {
   const response = await createApp({ listOccurrences, corsOrigin: PORTAL_ORIGIN }).request(`/occurrences${query}`);
@@ -68,5 +74,17 @@ describe('GET /occurrences', () => {
 
     expect(result.status).toBe(500);
     expect(JSON.stringify(result.body)).not.toContain('10.0.0.5');
+  });
+
+  it('answers 500 with the active trace id so the failure can be found in the logs', async () => {
+    vi.spyOn(trace, 'getActiveSpan').mockReturnValue(
+      trace.wrapSpanContext({ traceId: TRACE_ID, spanId: 'b7ad6b7169203331', traceFlags: TraceFlags.SAMPLED }),
+    );
+
+    const result = await get('?from=2030-01-01&to=2030-01-01', async () => {
+      throw new Error('connection refused');
+    });
+
+    expect(result).toEqual({ status: 500, body: { error: 'The programme is temporarily unavailable.', traceId: TRACE_ID } });
   });
 });

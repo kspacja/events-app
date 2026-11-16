@@ -41,7 +41,7 @@ function keepMockedFetch(mockedFetch: typeof fetch) {
 
 /** Server errors go to Sentry once a DSN is set (ADR-0011). */
 export const onRequestError: Instrumentation.onRequestError = async (...args) => {
-  if (!process.env.SENTRY_DSN) return;
+  if (process.env.NEXT_RUNTIME !== 'nodejs' || !process.env.SENTRY_DSN) return;
   const { captureRequestError } = await import('@sentry/nextjs');
   captureRequestError(...args);
 };

@@ -6,7 +6,7 @@ export const logger = pino({
   level: process.env.LOG_LEVEL ?? 'info',
   // Personal data never reaches the logs (ADR-0011)
   redact: {
-    paths: ['email', '*.email', 'ip', '*.ip', 'guestId', '*.guestId', 'headers.cookie', 'headers.authorization', 'err.params'],
+    paths: ['email', '*.email', 'ip', '*.ip', 'guestId', '*.guestId', 'headers.cookie', 'headers.authorization', 'err.params', 'error.params'],
     censor: '[redacted]',
   },
 });
