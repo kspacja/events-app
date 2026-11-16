@@ -96,6 +96,8 @@ export const SCHOOL_FILTERS: readonly SchoolFilter[] = [
 export function priceBands(price: Price | null): readonly string[] {
   if (price === null) return [];
   if (price.kind === 'free') return ['bezplatne'];
+  // Bands are per pupil; group and hourly prices wait for a rule (stage 3.9)
+  if (price.per && price.per !== 'person') return [];
   if (price.from > 30) return ['ponad-30'];
   return price.from <= 20 ? ['do-20', 'do-30'] : ['do-30'];
 }

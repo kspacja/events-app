@@ -10,9 +10,13 @@ export interface EventFact {
 // Which filter names each school trait; its options give the labels
 const TRAIT_FILTERS = { ages: 'wiek', subjects: 'przedmiot', groupSizes: 'grupa', kinds: 'rodzaj' } as const;
 
+const PER = { person: 'os.', group: 'grupa', hour: 'godz.' } as const;
+
+/** "bezpłatne", "15 zł / os.", "15–25 zł / os.", "350 zł / grupa", "120 zł / godz." */
 export function formatPrice(price: Price): string {
   if (price.kind === 'free') return LABELS.free;
-  return price.to === null || price.to === price.from ? `${price.from} zł` : `${price.from}–${price.to} zł`;
+  const amount = price.to === null || price.to === price.from ? `${price.from}` : `${price.from}–${price.to}`;
+  return `${amount} zł / ${PER[price.per ?? 'person']}`;
 }
 
 function traitFact(trait: keyof typeof TRAIT_FILTERS, values: readonly string[]): EventFact | null {

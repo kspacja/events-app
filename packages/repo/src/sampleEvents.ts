@@ -73,11 +73,12 @@ const SAMPLE_VENUES: readonly Venue[] = [
 
 const free: Price = { kind: 'free' };
 
-const paid = (from: number, to: number | null = null): Price => ({
+const paid = (from: number, to: number | null = null, per?: 'group' | 'hour'): Price => ({
   kind: 'paid',
   from,
   to,
   currency: 'PLN',
+  ...(per ? { per } : {}),
 });
 
 interface SampleEventTemplate {
@@ -130,7 +131,7 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'krk-school-history', title: 'Lekcja historii na Kazimierzu', categories: [MEETUPS], venue: KAZIMIERZ, dayOffset: 1, time: '10:00', price: free, forSchools: true },
   { id: 'wro-school-museum', title: 'Lekcja muzealna: sztuka średniowiecza', categories: [ART], venue: MUZEUM_NARODOWE, dayOffset: 2, time: '09:00', price: free, forSchools: true },
   { id: 'wro-school-science', title: 'Pokaz naukowy dla klas 4–6', categories: [WORKSHOPS], venue: HALA_STULECIA, dayOffset: 2, time: '10:00', price: paid(12), forSchools: true },
-  { id: 'wro-school-ceramics', title: 'Warsztaty ceramiki dla szkół', categories: [WORKSHOPS, ART], venue: OLBIN, dayOffset: 2, time: '11:00', price: paid(15), forSchools: true },
+  { id: 'wro-school-ceramics', title: 'Warsztaty ceramiki dla szkół', categories: [WORKSHOPS, ART], venue: OLBIN, dayOffset: 2, time: '11:00', price: paid(350, null, 'group'), forSchools: true },
   { id: 'wro-school-organ', title: 'Lekcja o organach', categories: [MUSIC], venue: KOSCIOL_PRZY_RYNKU, dayOffset: 2, time: '12:00', price: free, forSchools: true },
   { id: 'wro-school-walk', title: 'Spacer historyczny po Rynku', categories: [MOVEMENT], venue: RYNEK, dayOffset: 2, time: '12:30', price: free, forSchools: true },
   { id: 'gdn-school-port', title: 'Lekcja w porcie', categories: [MOVEMENT], venue: DLUGIE_POBRZEZE, dayOffset: 3, time: '09:30', forSchools: true },
@@ -138,11 +139,11 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   // More school events, so the schools page filters have something to narrow down
   { id: 'wro-school-theatre', title: 'Teatrzyk dla przedszkolaków', categories: [ART], venue: OLBIN, dayOffset: 0, time: '09:30', price: free, forSchools: true },
   { id: 'wro-school-botany', title: 'Lekcja biologii nad Odrą', categories: [MOVEMENT], venue: WYSPA_SLODOWA, dayOffset: 0, time: '11:00', price: free, forSchools: true },
-  { id: 'krk-school-maths', title: 'Matematyka w grach planszowych', categories: [WORKSHOPS], venue: KAZIMIERZ, dayOffset: 1, time: '11:00', price: paid(8), forSchools: true },
+  { id: 'krk-school-maths', title: 'Matematyka w grach planszowych', categories: [WORKSHOPS], venue: KAZIMIERZ, dayOffset: 1, time: '11:00', price: paid(120, null, 'hour'), forSchools: true },
   { id: 'gdn-school-physics', title: 'Fizyka na plaży: fale i dźwięk', categories: [WORKSHOPS], venue: PLAZA_JELITKOWO, dayOffset: 1, time: '10:00', price: free, forSchools: true },
   { id: 'gdn-school-film', title: 'Kino szkolne: historia Gdańska', categories: [FILM], venue: DLUGIE_POBRZEZE, dayOffset: 1, time: '12:00', price: paid(12), forSchools: true },
   { id: 'wro-school-sports', title: 'Dzień sportu szkolnego', categories: [MOVEMENT], venue: OSTROW_TUMSKI_BRZEG, dayOffset: 3, time: '09:00', price: free, forSchools: true },
-  { id: 'wro-school-coding', title: 'Programowanie robotów', categories: [WORKSHOPS], venue: SRODMIESCIE, dayOffset: 3, time: '10:00', price: paid(25), forSchools: true },
+  { id: 'wro-school-coding', title: 'Programowanie robotów', categories: [WORKSHOPS], venue: SRODMIESCIE, dayOffset: 3, time: '10:00', price: paid(400, 600, 'group'), forSchools: true },
   { id: 'poz-school-writing', title: 'Warsztaty pisarskie z poetką', categories: [MEETUPS], venue: STARY_RYNEK, dayOffset: 3, time: '12:00', price: free, forSchools: true },
   { id: 'wro-school-chemistry', title: 'Pokazy chemiczne', categories: [WORKSHOPS], venue: HALA_STULECIA, dayOffset: 4, time: '09:00', price: paid(40), forSchools: true },
   { id: 'krk-school-english', title: 'Spacer po Krakowie po angielsku', categories: [MOVEMENT], venue: PLAC_NOWY, dayOffset: 4, time: '10:30', price: paid(15), forSchools: true },
@@ -150,7 +151,7 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   { id: 'wro-school-astronomy', title: 'Astronomia dla najmłodszych', categories: [WORKSHOPS], venue: HALA_STULECIA, dayOffset: 3, time: '08:00', price: paid(8), forSchools: true },
   { id: 'krk-school-legends', title: 'Legendy krakowskie w teatrze lalek', categories: [ART], venue: KAZIMIERZ, dayOffset: 3, time: '08:30', price: paid(35), forSchools: true },
   { id: 'wro-school-choir', title: 'Próba chóru szkolnego', categories: [MUSIC], venue: KOSCIOL_PRZY_RYNKU, dayOffset: 3, time: '09:15', price: free, forSchools: true },
-  { id: 'gdn-school-amber', title: 'Bursztyn: skąd się bierze', categories: [WORKSHOPS], venue: DLUGIE_POBRZEZE, dayOffset: 3, time: '10:30', price: paid(10), forSchools: true },
+  { id: 'gdn-school-amber', title: 'Bursztyn: skąd się bierze', categories: [WORKSHOPS], venue: DLUGIE_POBRZEZE, dayOffset: 3, time: '10:30', price: paid(10, 18), forSchools: true },
   { id: 'wro-school-bridges', title: 'Mosty Wrocławia: lekcja w terenie', categories: [MOVEMENT], venue: WYSPA_SLODOWA, dayOffset: 3, time: '11:00', price: free, forSchools: true },
   { id: 'poz-school-comics', title: 'Rysujemy komiks', categories: [WORKSHOPS, ART], venue: GALERIA_JEZYCE, dayOffset: 3, time: '11:30', price: paid(15), forSchools: true },
   { id: 'krk-school-debate', title: 'Debata oksfordzka dla licealistów', categories: [MEETUPS], venue: PLAC_NOWY, dayOffset: 3, time: '12:30', price: free, forSchools: true },

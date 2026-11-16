@@ -26,6 +26,9 @@ export const venueSchema = z
   })
   .readonly();
 
+/** What a paid price covers; absent means per person (stage 3.9). */
+export const priceUnitSchema = z.enum(['person', 'group', 'hour']);
+
 /** `to` is always present: a number, or null when there is no upper bound. */
 export const priceSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('free') }).readonly(),
@@ -35,6 +38,7 @@ export const priceSchema = z.discriminatedUnion('kind', [
       from: z.number().nonnegative(),
       to: z.number().nonnegative().nullable(),
       currency: z.literal('PLN'),
+      per: priceUnitSchema.optional(),
     })
     .refine(({ from, to }) => to === null || to >= from, { message: '"to" must not be below "from".', path: ['to'] })
     .readonly(),

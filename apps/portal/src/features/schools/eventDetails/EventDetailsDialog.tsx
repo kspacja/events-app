@@ -65,10 +65,7 @@ export function EventDetailsDialog({ listings }: { readonly listings: readonly O
               {price ? (
                 <>
                   {' · '}
-                  <span className={styles.price}>
-                    {formatPrice(price)}
-                    <span className="visually-hidden"> ({LABELS.price.toLowerCase()})</span>
-                  </span>
+                  <span className={styles.price}>{formatPrice(price)}</span>
                 </>
               ) : null}
             </p>
