@@ -10,6 +10,7 @@ Powód: OpenTelemetry jest neutralny wobec dostawcy i wspierany przez Next.js i 
 
 - Próbkowanie 50% śladów, zależnie od rodzica, żeby ślad portal → API był cały albo wcale.
 - W telemetrii i raportach nie ma e-maili, adresów IP ani identyfikatorów Gościa (RODO).
+- Nagrywanie sesji (Microsoft Clarity) działa tylko na przykładowych danych (MSW) i dopiero po zgodzie użytkownika — to obserwacja testowych użytkowników, nie telemetria produkcji.
 
 ## Considered Options
 

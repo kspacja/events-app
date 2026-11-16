@@ -71,6 +71,7 @@ Domyślnie portal działa na MSW i nie potrzebuje bazy. Żeby czytał Terminy z 
 | `API_MOCKING` | `enabled` | uruchamia MSW, który w procesie odpowiada pod `EVENTS_API_URL`. Bez tego portal pyta prawdziwe API pod `EVENTS_API_URL` — zob. „Portal na lokalnym API”. |
 | `ALLOW_PRODUCTION_MOCKING` | `yes` | tylko na produkcji Vercela (`VERCEL_ENV=production`): pozwala na `API_MOCKING=enabled`. Poza produkcją bez znaczenia. |
 | `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | (puste) | raportowanie błędów serwera / przeglądarki do Sentry; bez wartości Sentry się nie uruchamia |
+| `CLARITY_PROJECT_ID` | (puste) | nagrywanie sesji w Microsoft Clarity, tylko przy `API_MOCKING=enabled` i po zgodzie użytkownika na pasku na dole strony; bez wartości paska nie ma |
 
 Konfiguracja jest walidowana przy starcie serwera, w hooku instrumentacji (`apps/portal/src/config/runtimeConfig.ts`). Błędna konfiguracja nie zatrzymuje serwera (Next 16): serwer działa dalej i odpowiada 500, a w logu jest czytelny komunikat z nazwami zmiennych (bez ich wartości). Na Vercel błąd ujawni się więc w czasie działania (po deployu), nie podczas builda.
 

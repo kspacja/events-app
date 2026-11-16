@@ -1,0 +1,75 @@
+/* Above the schools month dock, until the visitor answers */
+.bar {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  left: var(--space-4);
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-edge);
+}
+
+.text {
+  flex: 1 1 320px;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.title {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.accept,
+.decline {
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-lg);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.accept {
+  border: 0;
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+}
+
+.accept:hover {
+  background: color-mix(in srgb, var(--color-accent-strong) 88%, black);
+}
+
+.decline {
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.decline:hover {
+  background: var(--color-bg-subtle);
+}
+
+.accept:focus-visible,
+.decline:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
