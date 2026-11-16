@@ -7,6 +7,8 @@ export type FilterPlacement = 'main' | 'advanced';
 export interface FilterOption {
   readonly value: string;
   readonly label: string;
+  /** Price options only: shown for prices per pupil, per group, or in both modes when absent. */
+  readonly priceMode?: PriceMode['per'];
 }
 
 export interface SchoolFilter {
@@ -77,29 +79,76 @@ export const SCHOOL_FILTERS: readonly SchoolFilter[] = [
   },
   {
     param: 'cena',
-    label: 'Cena za osobę',
+    label: 'Cena',
     placement: 'advanced',
     fromListing: true,
     options: [
       { value: 'bezplatne', label: 'wydarzenie bezpłatne' },
-      { value: 'do-20', label: 'do 20 zł' },
-      { value: 'do-30', label: 'do 30 zł' },
-      { value: 'ponad-30', label: 'powyżej 30 zł' },
+      { value: 'do-20', label: 'do 20 zł', priceMode: 'osoba' },
+      { value: 'do-30', label: 'do 30 zł', priceMode: 'osoba' },
+      { value: 'ponad-30', label: 'powyżej 30 zł', priceMode: 'osoba' },
+      { value: 'do-300', label: 'do 300 zł', priceMode: 'grupa' },
+      { value: 'do-600', label: 'do 600 zł', priceMode: 'grupa' },
+      { value: 'ponad-600', label: 'powyżej 600 zł', priceMode: 'grupa' },
     ],
   },
 ];
 
+/** Whether the price filter compares a pupil's price or the whole group's, and for how many pupils. */
+export interface PriceMode {
+  readonly per: 'osoba' | 'grupa';
+  readonly people: number;
+}
+
+const PRICE_PARAM = 'cena';
+const PRICE_MODE_PARAM = 'cenaZa';
+const PEOPLE_PARAM = 'osob';
+/** Not filters of their own: they say how `cena` compares, so they travel with it in the URL. */
+const PRICE_MODIFIERS = [PRICE_MODE_PARAM, PEOPLE_PARAM];
+export const DEFAULT_PEOPLE = 25;
+const MAX_PEOPLE = 500;
+
+function clampPeople(value: number): number {
+  return Number.isInteger(value) ? Math.min(MAX_PEOPLE, Math.max(1, value)) : DEFAULT_PEOPLE;
+}
+
+export function priceModeOf(selection: FilterSelection): PriceMode {
+  if (selection[PRICE_MODE_PARAM]?.[0] !== 'grupa') return { per: 'osoba', people: DEFAULT_PEOPLE };
+  return { per: 'grupa', people: clampPeople(Number(selection[PEOPLE_PARAM]?.[0])) };
+}
+
+/** Switching the mode drops the chosen bands: a pupil's 20 zł means nothing for a group. */
+export function withPriceMode(selection: FilterSelection, per: PriceMode['per']): FilterSelection {
+  const rest = Object.fromEntries(Object.entries(selection).filter(([param]) => param !== PRICE_PARAM && !PRICE_MODIFIERS.includes(param)));
+  return per === 'grupa' ? { ...rest, [PRICE_MODE_PARAM]: ['grupa'], [PEOPLE_PARAM]: [String(DEFAULT_PEOPLE)] } : rest;
+}
+
+export function withPeople(selection: FilterSelection, people: number): FilterSelection {
+  return { ...selection, [PEOPLE_PARAM]: [String(clampPeople(people))] };
+}
+
+/** The price options of the current mode. */
+export function priceOptions(filter: SchoolFilter, mode: PriceMode): readonly FilterOption[] {
+  return filter.options.filter(({ priceMode }) => !priceMode || priceMode === mode.per);
+}
+
 /**
  * The `cena` options a price falls into, read from the listing rather than from traits.
- * A range counts by its lowest price; the bands overlap ("do 20" is also "do 30"), and paid bands leave free events out.
+ * A range counts by its lowest price; bands overlap ("do 20" is also "do 30") and paid bands leave free events out.
+ * Per pupil, a group's or an hour's price has no band; per group, a pupil's price is multiplied by the pupils and an hour counts as one session.
  */
-export function priceBands(price: Price | null): readonly string[] {
+export function priceBands(price: Price | null, mode: PriceMode = { per: 'osoba', people: DEFAULT_PEOPLE }): readonly string[] {
   if (price === null) return [];
   if (price.kind === 'free') return ['bezplatne'];
-  // Bands are per pupil; group and hourly prices wait for a rule (stage 3.9)
-  if (price.per && price.per !== 'person') return [];
-  if (price.from > 30) return ['ponad-30'];
-  return price.from <= 20 ? ['do-20', 'do-30'] : ['do-30'];
+  const perPupil = !price.per || price.per === 'person';
+  if (mode.per === 'osoba') {
+    if (!perPupil) return [];
+    if (price.from > 30) return ['ponad-30'];
+    return price.from <= 20 ? ['do-20', 'do-30'] : ['do-30'];
+  }
+  const total = perPupil ? price.from * mode.people : price.from;
+  if (total > 600) return ['ponad-600'];
+  return total <= 300 ? ['do-300', 'do-600'] : ['do-600'];
 }
 
 /** Chosen option values per filter param; a filter with nothing chosen is absent. */
@@ -116,19 +165,26 @@ function rawValue(source: ParamSource, param: string): string {
 /** Known options only, in config order, so the same choice always gives the same URL. */
 export function parseFilters(source: ParamSource): FilterSelection {
   const selection: Record<string, readonly string[]> = {};
-  for (const { param, options } of SCHOOL_FILTERS) {
-    const asked = new Set(rawValue(source, param).split(','));
+  if (rawValue(source, PRICE_MODE_PARAM) === 'grupa') {
+    selection[PRICE_MODE_PARAM] = ['grupa'];
+    selection[PEOPLE_PARAM] = [String(clampPeople(Number(rawValue(source, PEOPLE_PARAM) || DEFAULT_PEOPLE)))];
+  }
+  const mode = priceModeOf(selection);
+  for (const filter of SCHOOL_FILTERS) {
+    const asked = new Set(rawValue(source, filter.param).split(','));
+    const options = filter.param === PRICE_PARAM ? priceOptions(filter, mode) : filter.options;
     const chosen = options.map(({ value }) => value).filter((value) => asked.has(value));
-    if (chosen.length > 0) selection[param] = chosen;
+    if (chosen.length > 0) selection[filter.param] = chosen;
   }
   return selection;
 }
 
 /** `?wiek=1-3,4-6&przedmiot=fizyka`, or '' with nothing chosen. Commas stay readable in the URL. */
 export function filtersQuery(selection: FilterSelection): string {
-  const parts = SCHOOL_FILTERS.filter(({ param }) => selection[param]?.length).map(
-    ({ param }) => `${param}=${selection[param].map(encodeURIComponent).join(',')}`,
-  );
+  const params = SCHOOL_FILTERS.flatMap(({ param }) => (param === PRICE_PARAM ? [param, ...PRICE_MODIFIERS] : [param]));
+  const parts = params
+    .filter((param) => selection[param]?.length)
+    .map((param) => `${param}=${selection[param].map(encodeURIComponent).join(',')}`);
   return parts.length > 0 ? `?${parts.join('&')}` : '';
 }
 
@@ -142,19 +198,22 @@ function flatten(selection: FilterSelection): Record<string, string> {
   return Object.fromEntries(Object.entries(selection).map(([param, values]) => [param, values.join(',')]));
 }
 
+/** The price mode alone narrows nothing. */
 export function hasFilters(selection: FilterSelection): boolean {
-  return Object.keys(selection).length > 0;
+  return Object.keys(selection).some((param) => !PRICE_MODIFIERS.includes(param));
 }
 
 /** Without the given placement's filters, e.g. to clear only the advanced ones. */
 export function withoutPlacement(selection: FilterSelection, placement: FilterPlacement): FilterSelection {
-  const kept = SCHOOL_FILTERS.filter((filter) => filter.placement !== placement).map(({ param }) => param);
+  const kept = SCHOOL_FILTERS.filter((filter) => filter.placement !== placement).flatMap(({ param }) =>
+    param === PRICE_PARAM ? [param, ...PRICE_MODIFIERS] : [param],
+  );
   return Object.fromEntries(Object.entries(selection).filter(([param]) => kept.includes(param)));
 }
 
 /** "Or" within a filter, "and" across filters; traits are the event's options per filter param. */
 export function matchesFilters(traits: FilterSelection, selection: FilterSelection): boolean {
-  return Object.entries(selection).every(([param, chosen]) =>
-    chosen.some((value) => traits[param]?.includes(value)),
+  return Object.entries(selection).every(
+    ([param, chosen]) => PRICE_MODIFIERS.includes(param) || chosen.some((value) => traits[param]?.includes(value)),
   );
 }

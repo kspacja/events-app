@@ -10,6 +10,11 @@ export const FILTER_LABELS = {
   advanced: 'Więcej filtrów',
   clear: 'Wyczyść filtry',
   done: 'Gotowe',
+  priceMode: 'Cena liczona',
+  perPupil: 'za osobę',
+  perGroup: 'za grupę',
+  people: 'Ile osób?',
+  groupPriceHint: 'Wydarzenia z ceną za grupę zobaczysz po wybraniu „za grupę”.',
 } as const;
 
 export const CALENDAR_LABELS = {

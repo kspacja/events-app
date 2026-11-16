@@ -7,7 +7,11 @@ import {
   SCHOOL_FILTERS,
   filtersQuery,
   parseFilters,
+  priceModeOf,
+  priceOptions,
   toggleOption,
+  withPeople,
+  withPriceMode,
   withoutPlacement,
   type FilterPlacement,
   type FilterSelection,
@@ -84,6 +88,74 @@ function FilterGroup({ filter, selection, onChange, labelled }: FilterGroupProps
   );
 }
 
+const PRICE_MODES = [
+  ['osoba', FILTER_LABELS.perPupil],
+  ['grupa', FILTER_LABELS.perGroup],
+] as const;
+
+/** Price per pupil by default; per group it asks how many pupils and compares the whole group's cost. */
+function PriceFilterGroup({ filter, selection, onChange, labelled }: FilterGroupProps) {
+  const mode = priceModeOf(selection);
+  const chosen = selection[filter.param] ?? [];
+  const optionsRef = useEndFade();
+  const commitPeople = (value: string) => {
+    if (Number(value) !== mode.people) onChange(withPeople(selection, Number(value)));
+  };
+  return (
+    <fieldset className={styles.group} data-price>
+      {labelled && <legend className={styles.legend}>{filter.label}</legend>}
+      <div className={styles.priceControls}>
+        <div className={styles.modes} role="group" aria-label={FILTER_LABELS.priceMode}>
+          {PRICE_MODES.map(([per, label]) => (
+            <button
+              key={per}
+              type="button"
+              className={styles.mode}
+              aria-pressed={mode.per === per}
+              onClick={() => mode.per !== per && onChange(withPriceMode(selection, per))}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {mode.per === 'grupa' && (
+          <label className={styles.people}>
+            {FILTER_LABELS.people}
+            <input
+              // Re-created when the URL's number changes, so it never holds a stale value
+              key={mode.people}
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={500}
+              defaultValue={mode.people}
+              className={styles.peopleInput}
+              onBlur={(event) => commitPeople(event.currentTarget.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') commitPeople(event.currentTarget.value);
+              }}
+            />
+          </label>
+        )}
+      </div>
+      <div ref={optionsRef} className={styles.options}>
+        {priceOptions(filter, mode).map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            className={styles.option}
+            aria-pressed={chosen.includes(option.value)}
+            onClick={() => onChange(toggleOption(selection, filter.param, option.value))}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      {mode.per === 'osoba' && <p className={styles.hint}>{FILTER_LABELS.groupPriceHint}</p>}
+    </fieldset>
+  );
+}
+
 interface SchoolFiltersProps {
   readonly placement: FilterPlacement;
   /** `rows`: a scrolling row per filter, without names (the month dock). `sheet`: inside the filters dialog, every filter named. */
@@ -106,15 +178,18 @@ export function SchoolFilters({ placement, layout = 'inline' }: SchoolFiltersPro
       aria-label={placement === 'main' ? FILTER_LABELS.main : FILTER_LABELS.advanced}
     >
       {placement === 'advanced' ? <h2 className={styles.heading}>{FILTER_LABELS.advanced}</h2> : null}
-      {filters.map((filter) => (
-        <FilterGroup
-          key={filter.param}
-          filter={filter}
-          selection={selection}
-          onChange={apply}
-          labelled={placement === 'advanced' || layout === 'sheet'}
-        />
-      ))}
+      {filters.map((filter) => {
+        const Group = filter.param === 'cena' ? PriceFilterGroup : FilterGroup;
+        return (
+          <Group
+            key={filter.param}
+            filter={filter}
+            selection={selection}
+            onChange={apply}
+            labelled={placement === 'advanced' || layout === 'sheet'}
+          />
+        );
+      })}
     </section>
       {/* The month dock has no room for it: chips are toggled off one by one */}
       {layout !== 'rows' && hasOwn(selection, placement) ? (

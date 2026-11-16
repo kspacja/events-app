@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { filtersQuery, matchesFilters, parseFilters, priceBands, toggleOption, withoutPlacement } from './schoolFilters';
+import {
+  filtersQuery,
+  hasFilters,
+  matchesFilters,
+  parseFilters,
+  priceBands,
+  priceModeOf,
+  toggleOption,
+  withPeople,
+  withPriceMode,
+  withoutPlacement,
+} from './schoolFilters';
 
 describe('parseFilters', () => {
   it('keeps known options in config order and drops the rest', () => {
@@ -75,5 +86,52 @@ describe('priceBands', () => {
 
   it('has no band without a price', () => {
     expect(priceBands(null)).toEqual([]);
+  });
+});
+
+describe('price per group', () => {
+  const paid = (from: number, per?: 'person' | 'group' | 'hour') => ({ kind: 'paid' as const, from, to: null, currency: 'PLN' as const, ...(per ? { per } : {}) });
+  const group = (people: number) => ({ per: 'grupa' as const, people });
+
+  it('puts a group or hourly price in no band per pupil', () => {
+    expect(priceBands(paid(350, 'group'))).toEqual([]);
+    expect(priceBands(paid(120, 'hour'))).toEqual([]);
+  });
+
+  it('multiplies a pupil price by the pupils when comparing per group', () => {
+    expect(priceBands(paid(15), group(25))).toEqual(['do-600']);
+    expect(priceBands(paid(10), group(25))).toEqual(['do-300', 'do-600']);
+    expect(priceBands(paid(15), group(60))).toEqual(['ponad-600']);
+  });
+
+  it('compares a group price and an hour as they are', () => {
+    expect(priceBands(paid(350, 'group'), group(25))).toEqual(['do-600']);
+    expect(priceBands(paid(120, 'hour'), group(40))).toEqual(['do-300', 'do-600']);
+  });
+
+  it('keeps the mode and the pupils in the URL, after the price', () => {
+    const selection = parseFilters(new URLSearchParams('cena=do-600&cenaZa=grupa&osob=30&wiek=1-3'));
+
+    expect(priceModeOf(selection)).toEqual({ per: 'grupa', people: 30 });
+    expect(filtersQuery(selection)).toBe('?wiek=1-3&cena=do-600&cenaZa=grupa&osob=30');
+  });
+
+  it('drops options of the other mode and keeps the pupils in range', () => {
+    expect(parseFilters(new URLSearchParams('cena=do-20&cenaZa=grupa&osob=9999'))).toEqual({ cenaZa: ['grupa'], osob: ['500'] });
+  });
+
+  it('clears the chosen bands when the mode changes', () => {
+    const perPupil = parseFilters(new URLSearchParams('cena=do-20&wiek=1-3'));
+
+    expect(withPriceMode(perPupil, 'grupa')).toEqual({ wiek: ['1-3'], cenaZa: ['grupa'], osob: ['25'] });
+    expect(withPriceMode(withPriceMode(perPupil, 'grupa'), 'osoba')).toEqual({ wiek: ['1-3'] });
+  });
+
+  it('changes the pupils and does not count the mode as a filter', () => {
+    const selection = withPeople(withPriceMode({}, 'grupa'), 40);
+
+    expect(priceModeOf(selection).people).toBe(40);
+    expect(hasFilters(selection)).toBe(false);
+    expect(matchesFilters({}, selection)).toBe(true);
   });
 });

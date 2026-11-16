@@ -3,7 +3,7 @@ import { createSampleEvents, toListings } from '@events/repo';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
 import { eventDayOf, isDayInRange } from '@events/time';
-import { hasFilters, matchesFilters, parseFilters, priceBands, type FilterSelection } from '@/features/schools/schoolFilters';
+import { hasFilters, matchesFilters, parseFilters, priceBands, priceModeOf, type FilterSelection } from '@/features/schools/schoolFilters';
 import { SAMPLE_SCHOOL_TRAITS } from './schoolTraits';
 
 function badRequest(error: string) {
@@ -53,7 +53,7 @@ export function occurrencesHandler(
             isDayInRange(eventDayOf(startsAt), range) &&
             // The price band comes from the listing itself, the other traits only from MSW
             (!hasFilters(filters) ||
-              matchesFilters({ ...(schoolTraits[event.id] ?? NO_TRAITS), cena: priceBands(price) }, filters)),
+              matchesFilters({ ...(schoolTraits[event.id] ?? NO_TRAITS), cena: priceBands(price, priceModeOf(filters)) }, filters)),
         ),
     });
   });
