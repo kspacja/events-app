@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { occurrenceListingSchema } from '@events/contract/listing';
 import { addDays, localDayOf, mondayOf } from '@events/time';
 import { server, TEST_EVENTS_API_URL } from '@/test/mockServer';
+import { SAMPLE_LOCALITIES } from '@events/repo';
 import { occurrencesHandler } from './handlers';
 
 const OCCURRENCES_URL = `${TEST_EVENTS_API_URL}/occurrences`;
@@ -99,6 +100,36 @@ describe('occurrencesHandler', () => {
 
     expect((body as { occurrences: Array<{ event: unknown }> }).occurrences[0].event).toMatchObject({
       school: { ages: ['1-3'], subjects: ['muzyka'], groupSizes: ['do-30'], kinds: ['cykliczne'] },
+    });
+  });
+
+  describe('Miejscowość and Zasięg', () => {
+    const at = (id: string, city: string, lat: number, lng: number) =>
+      occurrenceListingSchema.parse({ ...LATE_NIGHT, occurrenceId: id, venue: { ...LATE_NIGHT.venue, city, lat, lng } });
+    // Wrocław's centre is 51.108, 17.039; its edge is a few km out, Kobierzyce about 15 km, Sobótka about 32 km
+    const EDGE = at('edge', 'Wrocław', 51.15, 16.95);
+    const KOBIERZYCE = at('kobierzyce', 'Kobierzyce', 50.9705, 16.9312);
+    const SOBOTKA = at('sobotka', 'Sobótka', 50.8985, 16.744);
+    const placeData = {
+      localities: SAMPLE_LOCALITIES,
+      venueLocalities: { Wrocław: '0986283', Kobierzyce: '0875425', Sobótka: '0987294' },
+    };
+    const ids = (body: unknown) => (body as { occurrences: Array<{ occurrenceId: string }> }).occurrences.map(({ occurrenceId }) => occurrenceId);
+
+    it.each([
+      ['0', ['edge']],
+      ['10', ['edge']],
+      ['25', ['edge', 'kobierzyce']],
+      ['50', ['edge', 'kobierzyce', 'sobotka']],
+    ])('keeps venues within %s km of Wrocław (0 = Wrocław itself)', async (radius, expected) => {
+      server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => [EDGE, KOBIERZYCE, SOBOTKA], {}, placeData));
+      const result = await call(`?from=2030-01-05&to=2030-01-05&miejscowosc=0986283&zasieg=${radius}`);
+      expect(ids(result.body)).toEqual(expected);
+    });
+
+    it('serves nothing for a Miejscowość it does not know', async () => {
+      server.use(occurrencesHandler(TEST_EVENTS_API_URL, () => [EDGE], {}, placeData));
+      expect(ids((await call('?from=2030-01-05&to=2030-01-05&miejscowosc=0000001')).body)).toEqual([]);
     });
   });
 });

@@ -4,6 +4,7 @@ import {
   hasFilters,
   matchesFilters,
   parseFilters,
+  placeOf,
   priceBands,
   priceModeOf,
   toggleOption,
@@ -46,6 +47,31 @@ describe('toggleOption', () => {
 describe('withoutPlacement', () => {
   it('clears only the filters of one placement', () => {
     expect(withoutPlacement({ wiek: ['1-3'], rodzaj: ['cykliczne'] }, 'advanced')).toEqual({ wiek: ['1-3'] });
+  });
+});
+
+describe('Miejscowość and Zasięg', () => {
+  it('travels first in the URL and is no school filter', () => {
+    const selection = parseFilters(new URLSearchParams('wiek=1-3&zasieg=10&miejscowosc=0986283'));
+    expect(filtersQuery(selection)).toBe('?miejscowosc=0986283&zasieg=10&wiek=1-3');
+    expect(hasFilters(parseFilters(new URLSearchParams('miejscowosc=0986283')))).toBe(false);
+    expect(matchesFilters({ wiek: ['1-3'] }, selection)).toBe(true);
+  });
+
+  it('defaults the radius to 25 km and drops an id that is no SIMC', () => {
+    expect(placeOf(parseFilters(new URLSearchParams('miejscowosc=0986283&zasieg=7')))).toEqual({ localityId: '0986283', radiusKm: 25 });
+    expect(parseFilters(new URLSearchParams('miejscowosc=wroclaw&zasieg=10'))).toEqual({});
+  });
+
+  it('keeps the Miejscowość when filters are cleared; clearing the advanced ones resets the radius', () => {
+    const selection = parseFilters(new URLSearchParams('miejscowosc=0986283&zasieg=50&wiek=1-3&rodzaj=cykliczne'));
+    expect(withoutPlacement(selection, 'main')).toEqual({ miejscowosc: ['0986283'], zasieg: ['50'], rodzaj: ['cykliczne'] });
+    expect(filtersQuery(withoutPlacement(selection, 'advanced'))).toBe('?miejscowosc=0986283&wiek=1-3');
+  });
+
+  it('survives toggling an option', () => {
+    const selection = parseFilters(new URLSearchParams('miejscowosc=0986283&zasieg=5'));
+    expect(filtersQuery(toggleOption(selection, 'wiek', '4-6'))).toBe('?miejscowosc=0986283&zasieg=5&wiek=4-6');
   });
 });
 

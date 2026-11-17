@@ -6,6 +6,16 @@ import {
   type Locality,
 } from '@events/contract/localities';
 
+const EARTH_RADIUS_KM = 6371;
+
+/** Great-circle distance; the API does the same in SQL (haversine). */
+export function kmBetween(a: { lat: number; lng: number }, b: { lat: number; lng: number }): number {
+  const rad = (deg: number) => (deg * Math.PI) / 180;
+  const h =
+    Math.sin(rad(b.lat - a.lat) / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(rad(b.lng - a.lng) / 2) ** 2;
+  return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
+}
+
 /** Lower case without Polish marks, so "lodz" finds Łódź; the API does the same with `unaccent`. */
 export function searchKey(text: string): string {
   return text

@@ -1,4 +1,5 @@
 import type { Price } from '@events/contract/listing';
+import { LOCALITY_PARAM, parsePlace, RADIUS_PARAM, type Place } from '@/features/locality/place';
 
 /** Prototype: the schools page filters, served by MSW only. Flip `placement` to move a filter between the two places. */
 
@@ -105,6 +106,9 @@ const PRICE_MODE_PARAM = 'cenaZa';
 const PEOPLE_PARAM = 'osob';
 /** Not filters of their own: they say how `cena` compares, so they travel with it in the URL. */
 const PRICE_MODIFIERS = [PRICE_MODE_PARAM, PEOPLE_PARAM];
+/** Miejscowość and Zasięg travel with the filters but are no school trait; MSW matches them by distance. */
+const PLACE_PARAMS = [LOCALITY_PARAM, RADIUS_PARAM];
+const NOT_TRAITS = [...PRICE_MODIFIERS, ...PLACE_PARAMS];
 const DEFAULT_PEOPLE = 25;
 const MAX_PEOPLE = 500;
 
@@ -176,6 +180,11 @@ function rawValue(source: ParamSource, param: string): string {
 /** Known options only, in config order, so the same choice always gives the same URL. */
 export function parseFilters(source: ParamSource): FilterSelection {
   const selection: Record<string, readonly string[]> = {};
+  const place = parsePlace(rawValue(source, LOCALITY_PARAM), rawValue(source, RADIUS_PARAM));
+  if (place) {
+    selection[LOCALITY_PARAM] = [place.localityId];
+    selection[RADIUS_PARAM] = [String(place.radiusKm)];
+  }
   if (rawValue(source, PRICE_MODE_PARAM) === 'grupa') {
     selection[PRICE_MODE_PARAM] = ['grupa'];
     selection[PEOPLE_PARAM] = [String(clampPeople(Number(rawValue(source, PEOPLE_PARAM) || DEFAULT_PEOPLE)))];
@@ -192,7 +201,7 @@ export function parseFilters(source: ParamSource): FilterSelection {
 
 /** `?wiek=1-3,4-6&przedmiot=fizyka`, or '' with nothing chosen. Commas stay readable in the URL. */
 export function filtersQuery(selection: FilterSelection): string {
-  const params = SCHOOL_FILTERS.flatMap(({ param }) => withModifiers(param));
+  const params = [...PLACE_PARAMS, ...SCHOOL_FILTERS.flatMap(({ param }) => withModifiers(param))];
   const parts = params
     .filter((param) => selection[param]?.length)
     .map((param) => `${param}=${selection[param].map(encodeURIComponent).join(',')}`);
@@ -209,20 +218,28 @@ function flatten(selection: FilterSelection): Record<string, string> {
   return Object.fromEntries(Object.entries(selection).map(([param, values]) => [param, values.join(',')]));
 }
 
-/** The price mode alone narrows nothing. */
+/** Whether a school trait is chosen; the price mode alone narrows nothing, the place is matched apart. */
 export function hasFilters(selection: FilterSelection): boolean {
-  return Object.keys(selection).some((param) => !PRICE_MODIFIERS.includes(param));
+  return Object.keys(selection).some((param) => !NOT_TRAITS.includes(param));
 }
 
-/** Without the given placement's filters, e.g. to clear only the advanced ones. */
+export function placeOf(selection: FilterSelection): Place | null {
+  return parsePlace(selection[LOCALITY_PARAM]?.[0] ?? '', selection[RADIUS_PARAM]?.[0] ?? '');
+}
+
+/** Without the given placement's filters, e.g. to clear only the advanced ones; the Miejscowość stays, its radius lives in the advanced ones. */
 export function withoutPlacement(selection: FilterSelection, placement: FilterPlacement): FilterSelection {
-  const kept = SCHOOL_FILTERS.filter((filter) => filter.placement !== placement).flatMap(({ param }) => withModifiers(param));
+  const kept = [
+    LOCALITY_PARAM,
+    ...(placement === 'advanced' ? [] : [RADIUS_PARAM]),
+    ...SCHOOL_FILTERS.filter((filter) => filter.placement !== placement).flatMap(({ param }) => withModifiers(param)),
+  ];
   return Object.fromEntries(Object.entries(selection).filter(([param]) => kept.includes(param)));
 }
 
 /** "Or" within a filter, "and" across filters; traits are the event's options per filter param. */
 export function matchesFilters(traits: FilterSelection, selection: FilterSelection): boolean {
   return Object.entries(selection).every(
-    ([param, chosen]) => PRICE_MODIFIERS.includes(param) || chosen.some((value) => traits[param]?.includes(value)),
+    ([param, chosen]) => NOT_TRAITS.includes(param) || chosen.some((value) => traits[param]?.includes(value)),
   );
 }
