@@ -46,6 +46,11 @@ const STARY_RYNEK = venue('stary-rynek', 'Stary Rynek', 'Stary Rynek 1', 'Pozna�
 const GALERIA_JEZYCE = venue('galeria-jezyce', 'Galeria Jeżyce', 'ul. Kraszewskiego 10', 'Poznań', 52.4170, 16.9000);
 const PASAZ_NIEPOLDA = venue('pasaz-niepolda', 'Pasaż Niepolda', 'ul. Ruska 51', WROCLAW, 51.1103, 17.0222);
 const OLOWIANKA = venue('olowianka', 'Ołowianka', 'ul. Ołowianka 1', 'Gdańsk', 54.3490, 18.6650);
+// Towns and villages near Wrocław, so the locality radius has something to include or leave out
+const GOSPODARSTWO_KOBIERZYCE = venue('gospodarstwo-kobierzyce', 'Gospodarstwo edukacyjne', 'ul. Wiejska 12', 'Kobierzyce', 50.9705, 16.9312);
+const LAS_DLUGOLEKA = venue('las-dlugoleka', 'Ścieżka leśna', 'ul. Leśna 3', 'Długołęka', 51.1760, 17.1990);
+const MUZEUM_SLEZANSKIE = venue('muzeum-slezanskie', 'Muzeum Ślężańskie', 'ul. św. Jakuba 18', 'Sobótka', 50.8985, 16.7440);
+const ELEKTROCIEPLOWNIA_SIECHNICE = venue('elektrocieplownia-siechnice', 'Elektrociepłownia', 'ul. Fabryczna 1', 'Siechnice', 51.0360, 17.1430);
 
 const SAMPLE_VENUES: readonly Venue[] = [
   OSTROW_TUMSKI,
@@ -69,6 +74,10 @@ const SAMPLE_VENUES: readonly Venue[] = [
   GALERIA_JEZYCE,
   PASAZ_NIEPOLDA,
   OLOWIANKA,
+  GOSPODARSTWO_KOBIERZYCE,
+  LAS_DLUGOLEKA,
+  MUZEUM_SLEZANSKIE,
+  ELEKTROCIEPLOWNIA_SIECHNICE,
 ];
 
 const free: Price = { kind: 'free' };
@@ -161,6 +170,11 @@ const SAMPLE_EVENTS: readonly SampleEventTemplate[] = [
   // One school event on a Saturday and one on a Sunday, for the schools month's weekend column
   { id: 'wro-school-zoo', title: 'Sobota w zoo z klasą', categories: [MOVEMENT], venue: HALA_STULECIA, dayOffset: 5, time: '10:00', price: paid(20), forSchools: true, onlyInWeek: 0 },
   { id: 'krk-school-concert', title: 'Niedzielny koncert dla szkół', categories: [MUSIC], venue: PIWNICA_POD_BARANAMI, dayOffset: 6, time: '12:00', price: paid(15), forSchools: true, onlyInWeek: 1 },
+  // Near Wrocław: 15–35 km from its centre
+  { id: 'kob-school-farm', title: 'Lekcja w gospodarstwie edukacyjnym', categories: [MOVEMENT], venue: GOSPODARSTWO_KOBIERZYCE, dayOffset: 1, time: '09:00', price: paid(18), forSchools: true },
+  { id: 'dlu-school-forest', title: 'Leśna ścieżka przyrodnicza', categories: [MOVEMENT], venue: LAS_DLUGOLEKA, dayOffset: 2, time: '10:30', price: free, forSchools: true },
+  { id: 'sob-school-sleza', title: 'Ślęża: góra, muzeum i legendy', categories: [MOVEMENT, ART], venue: MUZEUM_SLEZANSKIE, dayOffset: 4, time: '08:30', price: paid(25), forSchools: true },
+  { id: 'sie-school-energy', title: 'Skąd się bierze prąd', categories: [WORKSHOPS], venue: ELEKTROCIEPLOWNIA_SIECHNICE, dayOffset: 0, time: '11:30', price: free, forSchools: true },
 ];
 
 // Every template occurs in the first week, except those kept to a later one

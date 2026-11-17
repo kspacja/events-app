@@ -33,4 +33,8 @@ export const SAMPLE_SCHOOL_TRAITS: Readonly<Record<string, FilterSelection>> = {
   'poz-school-poetry': { wiek: ['7-8', 'ponadpodstawowe'], przedmiot: ['polski'], grupa: ['ponad-60'], rodzaj: ['jednorazowe'] },
   'wro-school-zoo': { wiek: ['przedszkole', '1-3'], przedmiot: ['przyroda'], grupa: ['do-30'], rodzaj: ['jednorazowe'] },
   'krk-school-concert': { wiek: ['4-6', '7-8'], przedmiot: ['muzyka'], grupa: ['30-60'], rodzaj: ['jednorazowe'] },
+  'kob-school-farm': { wiek: ['przedszkole', '1-3'], przedmiot: ['wczesnoszkolna', 'przyroda'], grupa: ['30-60'], rodzaj: ['cykliczne'] },
+  'dlu-school-forest': { wiek: ['1-3', '4-6'], przedmiot: ['przyroda', 'biologia'], grupa: ['do-30'], rodzaj: ['cykliczne'] },
+  'sob-school-sleza': { wiek: ['4-6', '7-8', 'ponadpodstawowe'], przedmiot: ['historia', 'geografia'], grupa: ['ponad-60'], rodzaj: ['calodzienne'] },
+  'sie-school-energy': { wiek: ['7-8', 'ponadpodstawowe'], przedmiot: ['fizyka', 'technika'], grupa: ['30-60'], rodzaj: ['jednorazowe'] },
 };
