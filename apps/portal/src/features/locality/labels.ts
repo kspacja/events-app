@@ -10,6 +10,12 @@ export const LOCALITY_LABELS = {
   noHints: 'Nie znamy takiej miejscowości.',
   searchFailed: 'Wyszukiwanie chwilowo nie działa.',
   radiusHint: 'Zasięg zmienisz w filtrach.',
+  useMyLocation: 'Użyj mojej lokalizacji',
+  locating: 'Szukamy Twojej lokalizacji…',
+  locationDenied: 'Bez zgody przeglądarki nie znamy Twojej lokalizacji. Wpisz miejscowość.',
+  locationFailed: 'Nie udało się ustalić lokalizacji. Wpisz miejscowość.',
+  guessConfirm: 'Zgadza się',
+  guessChange: 'Zmień',
   radiusLegend: (name: string) => `Zasięg od: ${name}`,
   source: 'Opracowano na podstawie materiałów państwowego zasobu geodezyjnego i kartograficznego.',
 } as const;
@@ -39,6 +45,10 @@ export function radiusLabel(radiusKm: RadiusKm): string {
 /** A radius option in the filters: "tylko Wrocław", "25 km". */
 export function radiusOptionLabel(radiusKm: RadiusKm, name: string): string {
   return radiusKm === 0 ? `tylko ${name}` : `${radiusKm} km`;
+}
+
+export function guessedLabel(name: string): string {
+  return `Pokazujemy okolice: ${name} — tak wynika z Twojego połączenia.`;
 }
 
 export function hintsTotalLabel(more: number): string {

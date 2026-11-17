@@ -58,3 +58,15 @@ describe('localities handlers', () => {
     expect((await fetch(`${TEST_EVENTS_API_URL}/localities/0000000`)).status).toBe(404);
   });
 });
+
+describe('nearest locality', () => {
+  it('finds the Miejscowość closest to a point, a village included', async () => {
+    // A field just outside Kobierzyce
+    const response = await fetch(`${TEST_EVENTS_API_URL}/localities/nearest?lat=50.972&lng=16.93`);
+    expect(localityResponseSchema.parse(await response.json()).locality.name).toBe('Kobierzyce');
+  });
+
+  it('rejects a point that is no coordinates', async () => {
+    expect((await fetch(`${TEST_EVENTS_API_URL}/localities/nearest?lat=abc&lng=17`)).status).toBe(400);
+  });
+});

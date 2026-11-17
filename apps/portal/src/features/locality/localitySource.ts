@@ -38,3 +38,8 @@ export const findLocality = cache(async (id: LocalityId): Promise<Locality | nul
 export async function searchLocalities(query: string) {
   return localitiesResponseSchema.parse(await getJson(`/localities?${new URLSearchParams({ q: query })}`));
 }
+
+export async function nearestLocality(point: { lat: number; lng: number }): Promise<Locality | null> {
+  const body = await getJson(`/localities/nearest?${new URLSearchParams({ lat: String(point.lat), lng: String(point.lng) })}`);
+  return body === null ? null : localityResponseSchema.parse(body).locality;
+}

@@ -1,3 +1,8 @@
+.root {
+  position: relative;
+  max-width: 100%;
+}
+
 .trigger {
   display: inline-flex;
   align-items: center;
@@ -44,6 +49,76 @@
 .chevron {
   flex: none;
   color: var(--color-text-secondary);
+}
+
+.guess {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  width: min(320px, calc(100vw - 2 * var(--space-4)));
+  box-sizing: border-box;
+  padding: var(--space-3-5) var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.guessText {
+  margin: 0;
+}
+
+.guessActions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2-5);
+}
+
+.guessChange,
+.guessConfirm,
+.locate {
+  min-height: 36px;
+  padding: 0 var(--space-3-5);
+  border-radius: var(--radius-md);
+  font: inherit;
+  cursor: pointer;
+}
+
+.guessChange {
+  border: 0;
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+}
+
+.guessConfirm {
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.locate {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-right: auto;
+  padding: 0 var(--space-2);
+  border: 0;
+  background: transparent;
+  color: var(--color-accent-strong);
+}
+
+.locate:disabled {
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.guessChange:focus-visible,
+.guessConfirm:focus-visible,
+.locate:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
 }
 
 /* Wider screens: a dropdown under the button, placed by the component */
@@ -145,7 +220,10 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: flex-end;
+  gap: var(--space-2);
   padding-top: var(--space-3);
   border-top: 1px solid var(--color-ground);
 }

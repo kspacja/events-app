@@ -1,17 +1,19 @@
 'use client';
 
-import { useEffect, useId, useLayoutEffect, useRef, useState, useTransition, type KeyboardEvent } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore, useTransition, type KeyboardEvent } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   LOCALITY_QUERY_MIN_LENGTH,
   localitiesResponseSchema,
+  localityResponseSchema,
   type Locality,
 } from '@events/contract/localities';
 import { TopProgress } from '@/components/TopProgress';
 import { filtersQuery, parseFilters, placeOf, withPlace } from '@/features/schools/schoolFilters';
-import { hintsTotalLabel, kindLabel, LOCALITY_LABELS, radiusLabel, whereLabel } from '../labels';
+import { guessedLabel, hintsTotalLabel, kindLabel, LOCALITY_LABELS, radiusLabel, whereLabel } from '../labels';
 import { useLocality } from '../LocalityContext';
-import { DEFAULT_RADIUS_KM } from '../place';
+import { DEFAULT_RADIUS_KM, type Place } from '../place';
+import { guessedLocality, rememberPlace } from '../placeCookies';
 import styles from './LocalityPicker.module.css';
 
 const SEARCH_DELAY_MS = 150;
@@ -48,6 +50,41 @@ function useHints(query: string): Hints {
   return trimmed.length < LOCALITY_QUERY_MIN_LENGTH ? { state: 'idle' } : hints;
 }
 
+const noSubscription = () => () => {};
+
+/** The guessed Miejscowość from its cookie; nothing on the server, so the first render matches. */
+function useGuessedLocality(): string | undefined {
+  return useSyncExternalStore(noSubscription, guessedLocality, () => undefined);
+}
+
+type Locating = 'idle' | 'busy' | 'denied' | 'failed';
+
+/** "Użyj mojej lokalizacji": asks the browser only on the click, then the closest Miejscowość of any kind. */
+function useMyLocation(onFound: (locality: Locality) => void) {
+  const [state, setState] = useState<Locating>('idle');
+  function locate() {
+    if (!('geolocation' in navigator)) {
+      setState('failed');
+      return;
+    }
+    setState('busy');
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        fetch(`/api/localities/nearest?${new URLSearchParams({ lat: String(coords.latitude), lng: String(coords.longitude) })}`)
+          .then(async (response) => {
+            if (!response.ok) throw new Error(`status ${response.status}`);
+            setState('idle');
+            onFound(localityResponseSchema.parse(await response.json()).locality);
+          })
+          .catch(() => setState('failed'));
+      },
+      (error) => setState(error.code === error.PERMISSION_DENIED ? 'denied' : 'failed'),
+      { maximumAge: 10 * 60 * 1000, timeout: 15_000 },
+    );
+  }
+  return { state, locate };
+}
+
 function PinIcon() {
   return (
     <svg className={styles.pin} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -73,6 +110,9 @@ export function LocalityPicker() {
   const hints = useHints(query);
   const listId = useId();
   const options = hints.state === 'ready' ? hints.localities : [];
+  const guessed = useGuessedLocality();
+  const [guessSettled, setGuessSettled] = useState(false);
+  const showGuess = !guessSettled && !open && place !== null && locality !== null && guessed === place.localityId;
 
   useLayoutEffect(() => {
     const dialog = dialogRef.current;
@@ -92,7 +132,9 @@ export function LocalityPicker() {
     dialogRef.current?.close();
   }
 
-  function go(next: typeof place) {
+  function go(next: Place | null) {
+    // Before navigating: with no place in the URL the proxy reads it to keep all of Poland
+    rememberPlace(next);
     close();
     setQuery('');
     startTransition(() => router.replace(`${pathname}${filtersQuery(withPlace(selection, next))}`, { scroll: false }));
@@ -101,6 +143,8 @@ export function LocalityPicker() {
   function choose(chosen: Locality) {
     go({ localityId: chosen.id, radiusKm: place?.radiusKm ?? DEFAULT_RADIUS_KM });
   }
+
+  const myLocation = useMyLocation(choose);
 
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (options.length === 0) return;
@@ -122,7 +166,7 @@ export function LocalityPicker() {
   const optionId = (index: number) => `${listId}-${index}`;
 
   return (
-    <>
+    <div className={styles.root}>
       <TopProgress active={pending} />
       <button
         ref={buttonRef}
@@ -139,6 +183,26 @@ export function LocalityPicker() {
           <path d="M6 9l6 6 6-6" />
         </svg>
       </button>
+      {showGuess ? (
+        <div className={styles.guess} role="status">
+          <p className={styles.guessText}>{guessedLabel(locality.name)}</p>
+          <div className={styles.guessActions}>
+            <button type="button" className={styles.guessChange} onClick={() => setOpen(true)}>
+              {LOCALITY_LABELS.guessChange}
+            </button>
+            <button
+              type="button"
+              className={styles.guessConfirm}
+              onClick={() => {
+                rememberPlace(place);
+                setGuessSettled(true);
+              }}
+            >
+              {LOCALITY_LABELS.guessConfirm}
+            </button>
+          </div>
+        </div>
+      ) : null}
       {/* Mounted only while open, so a closed picker leaves no second dialog in the page */}
       {open ? (
       <dialog
@@ -200,7 +264,19 @@ export function LocalityPicker() {
             {hints.state === 'failed' ? LOCALITY_LABELS.searchFailed : null}
           </p>
           {place ? <p className={styles.note}>{LOCALITY_LABELS.radiusHint}</p> : null}
+          <p className={styles.status} role="status">
+            {myLocation.state === 'busy' ? LOCALITY_LABELS.locating : null}
+            {myLocation.state === 'denied' ? LOCALITY_LABELS.locationDenied : null}
+            {myLocation.state === 'failed' ? LOCALITY_LABELS.locationFailed : null}
+          </p>
           <div className={styles.actions}>
+            <button type="button" className={styles.locate} onClick={myLocation.locate} disabled={myLocation.state === 'busy'}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+              </svg>
+              {LOCALITY_LABELS.useMyLocation}
+            </button>
             <button type="button" className={styles.wholeCountry} onClick={() => go(null)} disabled={!place}>
               {LOCALITY_LABELS.wholeCountry}
             </button>
@@ -209,6 +285,6 @@ export function LocalityPicker() {
         </div>
       </dialog>
       ) : null}
-    </>
+    </div>
   );
 }

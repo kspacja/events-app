@@ -42,3 +42,9 @@ export const localitiesResponseSchema = z.object({
 });
 
 export const localityResponseSchema = z.object({ locality: localitySchema });
+
+/** `GET /localities/nearest?lat=&lng=`: the Miejscowość of any kind closest to a point, e.g. the browser's location. */
+export const nearestLocalityQuerySchema = z.object({
+  lat: z.coerce.number().min(-90).max(90),
+  lng: z.coerce.number().min(-180).max(180),
+});

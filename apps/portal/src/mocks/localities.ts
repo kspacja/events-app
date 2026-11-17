@@ -3,6 +3,7 @@ import {
   LOCALITY_HINTS_LIMIT,
   localitiesQuerySchema,
   localityIdSchema,
+  nearestLocalityQuerySchema,
   type Locality,
 } from '@events/contract/localities';
 
@@ -63,11 +64,30 @@ export function searchLocalities(indexed: readonly Indexed[], query: string): { 
   return { localities: matches.slice(0, LOCALITY_HINTS_LIMIT).map(({ locality }) => locality), total: matches.length };
 }
 
+export function nearestLocality(localities: readonly Locality[], point: { lat: number; lng: number }): Locality | null {
+  let best: Locality | null = null;
+  let bestKm = Number.POSITIVE_INFINITY;
+  for (const locality of localities) {
+    const km = kmBetween(point, locality);
+    if (km < bestKm) [best, bestKm] = [locality, km];
+  }
+  return best;
+}
+
 /** Prototype dictionary of Miejscowości (stage 3.8): a PRNG sample, until the API serves the full one. */
 export function localitiesHandlers(eventsApiUrl: string, localities: readonly Locality[]) {
   const indexed = indexLocalities(localities);
   const byId = new Map(localities.map((locality) => [locality.id, locality]));
   return [
+    // Before `/localities/:id`, which would take "nearest" for an id
+    http.get(`${eventsApiUrl}/localities/nearest`, ({ request }) => {
+      const params = new URL(request.url).searchParams;
+      const point = nearestLocalityQuerySchema.safeParse({ lat: params.get('lat') ?? undefined, lng: params.get('lng') ?? undefined });
+      if (!point.success) return HttpResponse.json({ error: 'Parameters "lat" and "lng" must be coordinates.' }, { status: 400 });
+      const locality = nearestLocality(localities, point.data);
+      if (!locality) return HttpResponse.json({ error: 'Locality not found.' }, { status: 404 });
+      return HttpResponse.json({ locality });
+    }),
     http.get(`${eventsApiUrl}/localities`, ({ request }) => {
       const parsed = localitiesQuerySchema.safeParse({ q: new URL(request.url).searchParams.get('q') ?? undefined });
       if (!parsed.success) return HttpResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });

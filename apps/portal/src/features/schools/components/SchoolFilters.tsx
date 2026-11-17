@@ -6,6 +6,7 @@ import { TopProgress } from '@/components/TopProgress';
 import { LOCALITY_LABELS, radiusOptionLabel } from '@/features/locality/labels';
 import { useLocality } from '@/features/locality/LocalityContext';
 import { DEFAULT_RADIUS_KM, RADII_KM } from '@/features/locality/place';
+import { rememberPlace } from '@/features/locality/placeCookies';
 import { FILTER_LABELS } from '../labels';
 import {
   PRICE_PARAM,
@@ -112,7 +113,11 @@ function RadiusGroup({ selection, onChange }: { readonly selection: FilterSelect
             type="button"
             className={styles.option}
             aria-pressed={place.radiusKm === radiusKm}
-            onClick={() => place.radiusKm !== radiusKm && onChange(withPlace(selection, { ...place, radiusKm }))}
+            onClick={() => {
+              if (place.radiusKm === radiusKm) return;
+              rememberPlace({ ...place, radiusKm });
+              onChange(withPlace(selection, { ...place, radiusKm }));
+            }}
           >
             {radiusOptionLabel(radiusKm, name)}
           </button>
