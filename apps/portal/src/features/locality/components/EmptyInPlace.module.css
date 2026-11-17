@@ -43,8 +43,9 @@
   color: var(--color-accent-strong);
 }
 
+/* Green ring, not black: it stays on the link after a click that leaves the month still empty */
 .widen:focus-visible,
 .whole:focus-visible {
-  outline: 2px solid var(--color-text);
+  outline: 2px solid var(--color-accent-strong);
   outline-offset: 2px;
 }
