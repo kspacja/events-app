@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { TopProgress } from '@/components/TopProgress';
 import { FILTER_LABELS } from '../labels';
 import {
   PRICE_PARAM,
@@ -183,6 +184,7 @@ export function SchoolFilters({ placement, layout = 'inline' }: SchoolFiltersPro
 
   return (
     <div className={styles.filtersContainer} data-layout={layout}>
+    <TopProgress active={pending} />
     <section
       className={styles.filters}
       data-placement={placement}
