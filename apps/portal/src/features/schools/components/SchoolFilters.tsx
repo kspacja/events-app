@@ -3,16 +3,21 @@
 import { useEffect, useLayoutEffect, useRef, useState, useTransition } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { TopProgress } from '@/components/TopProgress';
+import { LOCALITY_LABELS, radiusOptionLabel } from '@/features/locality/labels';
+import { useLocality } from '@/features/locality/LocalityContext';
+import { DEFAULT_RADIUS_KM, RADII_KM } from '@/features/locality/place';
 import { FILTER_LABELS } from '../labels';
 import {
   PRICE_PARAM,
   SCHOOL_FILTERS,
   filtersQuery,
   parseFilters,
+  placeOf,
   priceModeOf,
   priceOptions,
   toggleOption,
   withPeople,
+  withPlace,
   withPriceMode,
   withoutPlacement,
   type FilterPlacement,
@@ -83,6 +88,33 @@ function FilterGroup({ filter, selection, onChange, labelled }: FilterGroupProps
             onClick={() => onChange(toggleOption(selection, filter.param, option.value))}
           >
             {option.label}
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+/** Zasięg around the chosen Miejscowość; shown only once one is chosen. */
+function RadiusGroup({ selection, onChange }: { readonly selection: FilterSelection; readonly onChange: (next: FilterSelection) => void }) {
+  const place = placeOf(selection);
+  const locality = useLocality(place?.localityId);
+  const optionsRef = useEndFade();
+  if (!place) return null;
+  const name = locality?.name ?? '…';
+  return (
+    <fieldset className={styles.group}>
+      <legend className={styles.legend}>{LOCALITY_LABELS.radiusLegend(name)}</legend>
+      <div ref={optionsRef} className={styles.options}>
+        {RADII_KM.map((radiusKm) => (
+          <button
+            key={radiusKm}
+            type="button"
+            className={styles.option}
+            aria-pressed={place.radiusKm === radiusKm}
+            onClick={() => place.radiusKm !== radiusKm && onChange(withPlace(selection, { ...place, radiusKm }))}
+          >
+            {radiusOptionLabel(radiusKm, name)}
           </button>
         ))}
       </div>
@@ -203,6 +235,7 @@ export function SchoolFilters({ placement, layout = 'inline' }: SchoolFiltersPro
       ) : placement === 'advanced' ? (
         <h2 className={styles.heading}>{FILTER_LABELS.advanced}</h2>
       ) : null}
+      {placement === 'advanced' ? <RadiusGroup selection={selection} onChange={apply} /> : null}
       {filters.map((filter) => {
         const Group = filter.param === PRICE_PARAM ? PriceFilterGroup : FilterGroup;
         return (
@@ -222,14 +255,23 @@ export function SchoolFilters({ placement, layout = 'inline' }: SchoolFiltersPro
   );
 }
 
+/** A radius other than the default counts as an advanced filter: clearing them brings it back. */
+function changedRadius(selection: FilterSelection): boolean {
+  const place = placeOf(selection);
+  return place !== null && place.radiusKm !== DEFAULT_RADIUS_KM;
+}
+
 function hasOwn(selection: FilterSelection, placement: FilterPlacement): boolean {
-  return SCHOOL_FILTERS.some((filter) => filter.placement === placement && selection[filter.param]?.length);
+  return (
+    (placement === 'advanced' && changedRadius(selection)) ||
+    SCHOOL_FILTERS.some((filter) => filter.placement === placement && selection[filter.param]?.length)
+  );
 }
 
 function countOwn(selection: FilterSelection, placements: readonly FilterPlacement[]): number {
   return SCHOOL_FILTERS.filter((filter) => placements.includes(filter.placement)).reduce(
     (count, { param }) => count + (selection[param]?.length ?? 0),
-    0,
+    placements.includes('advanced') && changedRadius(selection) ? 1 : 0,
   );
 }
 

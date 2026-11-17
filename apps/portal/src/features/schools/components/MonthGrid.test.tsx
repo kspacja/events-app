@@ -7,7 +7,12 @@ import type { ScheduleDay } from '@/features/events/schedule';
 import { MonthGrid } from './MonthGrid';
 
 // The dialog reads ?wydarzenie= from the address, as Next's useSearchParams would
-vi.mock('next/navigation', () => ({ useSearchParams: () => new URLSearchParams(window.location.search) }));
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => new URLSearchParams(window.location.search),
+  // The Miejscowość picker in the caption navigates; these tests never choose one
+  useRouter: () => ({ replace: vi.fn() }),
+  usePathname: () => window.location.pathname,
+}));
 
 function listing(id: string, startsAt: string, title: string): OccurrenceListing {
   return {

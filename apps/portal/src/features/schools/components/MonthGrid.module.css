@@ -6,7 +6,7 @@
   --color-bg-weekend: var(--color-bg-weekday);
 }
 
-/* Month name in the middle, the passed-weeks note on the right */
+/* Miejscowość on the left, month name in the middle, the passed-weeks note on the right */
 .caption {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -14,6 +14,12 @@
   gap: var(--space-1) var(--space-3);
   padding: 0 var(--space-1);
   font-size: var(--text-sm);
+}
+
+.place {
+  grid-column: 1;
+  justify-self: start;
+  min-width: 0;
 }
 
 .monthNav {
@@ -322,13 +328,16 @@
     display: none;
   }
 
-  /* Phones: the name alone, centred, with the note under it; the dock switches months */
+  /* Phones: the Miejscowość on the left, the month's name on the right, the note under them; the dock switches months */
   .caption {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr) auto;
     margin-bottom: var(--space-3);
     padding: 0;
+  }
+
+  .passed {
+    grid-column: 1 / -1;
+    justify-self: center;
   }
 
   .monthNav > :not(.monthName) {

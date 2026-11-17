@@ -15,11 +15,11 @@ import {
   type MapLayerMouseEvent,
   type MapRef,
 } from 'react-map-gl/maplibre';
-import type { FeatureCollection, Point } from 'geojson';
+import type { Feature, FeatureCollection, Point, Polygon } from 'geojson';
 import { MAP_CONTROL_LOCALE, MAP_LABELS } from '../labels';
 import type { OccurrenceId } from '@events/contract/listing';
 import { onThemeChange } from '@/features/theme-lab/themeChange';
-import { viewFor, type MapPoint } from '../mapView';
+import { areaRing, viewFor, type MapArea, type MapPoint } from '../mapView';
 import { localizeBasemap, type BasemapPalette } from '../mapStyle';
 import styles from './EventsMap.module.css';
 
@@ -28,6 +28,7 @@ maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
 
 const MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/bright';
 const SOURCE_ID = 'events';
+const AREA_SOURCE_ID = 'area';
 const CLUSTER_LAYER_ID = 'event-clusters';
 const POINT_LAYER_ID = 'event-points';
 // One past clusterMaxZoom so a requested point is never inside a cluster
@@ -128,7 +129,20 @@ function layersFor({ accent, muted, halo }: Palette) {
     },
   };
 
-  return { clusterLayer, clusterCountLayer, pointLayer };
+  // Drawn under the points (the area source is added first)
+  const areaFillLayer: LayerProps = {
+    id: 'area-fill',
+    type: 'fill',
+    source: AREA_SOURCE_ID,
+    paint: { 'fill-color': accent, 'fill-opacity': 0.08 },
+  };
+  const areaLineLayer: LayerProps = {
+    id: 'area-line',
+    type: 'line',
+    source: AREA_SOURCE_ID,
+    paint: { 'line-color': accent, 'line-width': 2, 'line-dasharray': [2, 2] },
+  };
+  return { clusterLayer, clusterCountLayer, pointLayer, areaFillLayer, areaLineLayer };
 }
 
 type MapLayers = ReturnType<typeof layersFor>;
@@ -136,13 +150,15 @@ type MapLayers = ReturnType<typeof layersFor>;
 interface EventsMapProps {
   readonly points: readonly MapPoint[];
   readonly focus: readonly MapPoint[];
+  /** The chosen Miejscowość and radius: framed instead of the points, and drawn as a circle. */
+  readonly area?: MapArea | null;
   /** Makes the popup's title a button that takes the user to the occurrence in the list. */
   readonly onShowInWeek?: (occurrenceId: OccurrenceId) => void;
   /** Where that button takes the user, for screen readers. */
   readonly showInLabel?: string;
 }
 
-export function EventsMap({ points, focus, onShowInWeek, showInLabel = MAP_LABELS.showInWeek }: EventsMapProps) {
+export function EventsMap({ points, focus, area = null, onShowInWeek, showInLabel = MAP_LABELS.showInWeek }: EventsMapProps) {
   const mapRef = useRef<MapRef>(null);
   const [cursor, setCursor] = useState('');
   // Without the reworked style (e.g. the fetch failed) the map falls back to the original one
@@ -154,13 +170,16 @@ export function EventsMap({ points, focus, onShowInWeek, showInLabel = MAP_LABEL
   const { popup, flyTo } = useOccurrenceSelectionInstructions();
   const selected = points.find((p) => p.occurrenceId === popup?.occurrenceId);
   const flightTarget = points.find((p) => p.occurrenceId === flyTo);
-  const pointsKey = focus.map((p) => `${p.occurrenceId}:${p.lat}:${p.lng}`).join('|');
+  const areaKey = area ? `${area.lat}:${area.lng}:${area.radiusKm}` : '';
+  const pointsKey = `${areaKey}|${focus.map((p) => `${p.occurrenceId}:${p.lat}:${p.lng}`).join('|')}`;
   const data = useMemo(() => toFeatureCollection(points), [points]);
+  // Radius 0 is the Miejscowość itself, which has no circle
+  const areaShape = useMemo(() => (area && area.radiusKm > 0 ? toAreaFeature(area) : null), [area]);
 
   useEffect(() => {
-    const { bounds, maxZoom, padding } = viewFor(focus);
+    const { bounds, maxZoom, padding } = viewFor(focus, area);
     mapRef.current?.fitBounds(bounds, { maxZoom, padding, duration: 0 });
-    // focus is covered by pointsKey
+    // focus and area are covered by pointsKey
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pointsKey]);
 
@@ -243,7 +262,7 @@ export function EventsMap({ points, focus, onShowInWeek, showInLabel = MAP_LABEL
       mapLib={maplibregl}
       reuseMaps
       mapStyle={basemap}
-      initialViewState={initialViewStateFor(focus)}
+      initialViewState={initialViewStateFor(focus, area)}
       attributionControl={{ compact: true }}
       locale={MAP_CONTROL_LOCALE}
       interactiveLayerIds={[CLUSTER_LAYER_ID, POINT_LAYER_ID]}
@@ -255,6 +274,12 @@ export function EventsMap({ points, focus, onShowInWeek, showInLabel = MAP_LABEL
       style={{ width: '100%', height: '100%' }}
     >
       <NavigationControl position="top-right" showCompass={false} />
+      {areaShape && layers ? (
+        <Source id={AREA_SOURCE_ID} type="geojson" data={areaShape}>
+          <Layer {...layers.areaFillLayer} />
+          <Layer {...layers.areaLineLayer} />
+        </Source>
+      ) : null}
       <Source
         id={SOURCE_ID}
         type="geojson"
@@ -316,7 +341,11 @@ function toFeatureCollection(points: readonly MapPoint[]): FeatureCollection<Poi
   };
 }
 
-function initialViewStateFor(points: readonly MapPoint[]) {
-  const { bounds, maxZoom, padding } = viewFor(points);
+function toAreaFeature(area: MapArea): Feature<Polygon> {
+  return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [areaRing(area)] }, properties: {} };
+}
+
+function initialViewStateFor(points: readonly MapPoint[], area: MapArea | null) {
+  const { bounds, maxZoom, padding } = viewFor(points, area);
   return { bounds, fitBoundsOptions: { maxZoom, padding } };
 }

@@ -5,12 +5,14 @@ import type { OccurrenceId } from '@events/contract/listing';
 import { EventsMapLoader } from '@/features/events/components/EventsMapLoader';
 import { MAP_LABELS } from '@/features/events/labels';
 import { useOccurrenceSelection, useOccurrenceSelectionInstructions } from '@/features/events/OccurrenceSelectionProvider';
-import type { MapPoint } from '@/features/events/mapView';
+import type { MapArea, MapPoint } from '@/features/events/mapView';
 import styles from './MapDialog.module.css';
 
 export interface MapPointsState {
   readonly points: readonly MapPoint[];
   readonly focus: readonly MapPoint[];
+  /** The chosen Miejscowość and radius: the map frames it and draws the circle. */
+  readonly area?: MapArea | null;
 }
 
 const NO_POINTS: MapPointsState = { points: [], focus: [] };
@@ -94,7 +96,7 @@ export function MapDialog({ nav, busy = false, onShowIn, showInLabel }: MapDialo
       </div>
       <figure className={styles.panel} aria-busy={busy}>
         {open ? (
-          <EventsMapLoader points={map.points} focus={map.focus} onShowInWeek={showIn} showInLabel={showInLabel} />
+          <EventsMapLoader points={map.points} focus={map.focus} area={map.area} onShowInWeek={showIn} showInLabel={showInLabel} />
         ) : null}
       </figure>
     </dialog>
@@ -152,10 +154,10 @@ function MapIcon() {
 }
 
 /** A page hands its points to the dialog, which outlives it. */
-export function MapPoints({ points, focus }: MapPointsState) {
+export function MapPoints({ points, focus, area = null }: MapPointsState) {
   const { setMap } = useMapDialog();
   useEffect(() => {
-    setMap({ points, focus });
-  }, [points, focus, setMap]);
+    setMap({ points, focus, area });
+  }, [points, focus, area, setMap]);
   return null;
 }

@@ -227,6 +227,12 @@ export function placeOf(selection: FilterSelection): Place | null {
   return parsePlace(selection[LOCALITY_PARAM]?.[0] ?? '', selection[RADIUS_PARAM]?.[0] ?? '');
 }
 
+/** The same filters in another place, or all of Poland with null. */
+export function withPlace(selection: FilterSelection, place: Place | null): FilterSelection {
+  const rest = Object.fromEntries(Object.entries(selection).filter(([param]) => !PLACE_PARAMS.includes(param)));
+  return place ? { ...rest, [LOCALITY_PARAM]: [place.localityId], [RADIUS_PARAM]: [String(place.radiusKm)] } : rest;
+}
+
 /** Without the given placement's filters, e.g. to clear only the advanced ones; the Miejscowość stays, its radius lives in the advanced ones. */
 export function withoutPlacement(selection: FilterSelection, placement: FilterPlacement): FilterSelection {
   const kept = [

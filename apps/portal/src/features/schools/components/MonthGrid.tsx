@@ -1,12 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { CalendarDay } from '@events/time';
 import type { OccurrenceId, OccurrenceListing } from '@events/contract/listing';
 import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
 import { UI_LABELS } from '@/features/events/labels';
 import type { ScheduleDay } from '@/features/events/schedule';
 import { occurrenceDomId } from '@/features/events/scheduleDom';
+import { LocalityPicker } from '@/features/locality/components/LocalityPicker';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import { MonthDayDrawer } from './MonthDayDrawer';
@@ -200,11 +201,14 @@ interface MonthCaptionProps {
   readonly passed?: PassedWeeks | null;
 }
 
-/** The month's name between its arrows, and the note on the weeks that have passed. */
+/** The Miejscowość on the left, the month's name between its arrows, and the note on the weeks that have passed. */
 export function MonthCaption({ month, today, passed = null }: MonthCaptionProps) {
   const filtersQuery = useFiltersQuery();
   return (
     <div className={styles.caption}>
+      <div className={styles.place}>
+        <LocalityPicker />
+      </div>
       <div className={styles.monthNav}>
         <PeriodArrow
           direction={-1}
@@ -247,10 +251,12 @@ interface MonthGridProps {
   /** What the left-out weeks held, for a note above the grid. */
   readonly passed?: PassedWeeks | null;
   readonly today: CalendarDay;
+  /** Shown between the caption and the grid, e.g. when nothing lies within the chosen radius. */
+  readonly notice?: ReactNode;
 }
 
 /** The whole month on one and a half screens: equal week rows, events as bars. */
-export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps) {
+export function MonthGrid({ month, weeks, passed = null, today, notice = null }: MonthGridProps) {
   const { ref, capacity, weekendCapacity, isPhone } = useCapacity();
   const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
   // The drawer slides out before it goes
@@ -297,6 +303,7 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
   return (
     <section aria-label={CALENDAR_LABELS.region} style={monthGridStyle(weeks.length)}>
       <MonthCaption month={month} today={today} passed={passed} />
+      {notice}
       <div className={styles.grid}>
         <MonthWeekdays />
         <ol ref={ref} className={styles.days}>

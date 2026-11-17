@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import type { OccurrenceId } from '@events/contract/listing';
-import type { MapPoint } from '../mapView';
+import type { MapArea, MapPoint } from '../mapView';
 import styles from './EventsMapLoader.module.css';
 
 const EventsMap = dynamic(
@@ -13,6 +13,7 @@ const EventsMap = dynamic(
 interface EventsMapLoaderProps {
   readonly points: readonly MapPoint[];
   readonly focus: readonly MapPoint[];
+  readonly area?: MapArea | null;
   readonly onShowInWeek?: (occurrenceId: OccurrenceId) => void;
   readonly showInLabel?: string;
 }
