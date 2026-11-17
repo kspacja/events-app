@@ -9,7 +9,6 @@ export const LOCALITY_LABELS = {
   tooShort: 'Wpisz co najmniej 2 litery.',
   noHints: 'Nie znamy takiej miejscowości.',
   searchFailed: 'Wyszukiwanie chwilowo nie działa.',
-  radiusHint: 'Zasięg zmienisz w filtrach.',
   useMyLocation: 'Użyj mojej lokalizacji',
   locating: 'Szukamy Twojej lokalizacji…',
   locationDenied: 'Bez zgody przeglądarki nie znamy Twojej lokalizacji. Wpisz miejscowość.',

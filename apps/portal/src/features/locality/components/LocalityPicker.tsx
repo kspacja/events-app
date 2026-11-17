@@ -10,9 +10,9 @@ import {
 } from '@events/contract/localities';
 import { TopProgress } from '@/components/TopProgress';
 import { filtersQuery, parseFilters, placeOf, withPlace } from '@/features/schools/schoolFilters';
-import { guessedLabel, hintsTotalLabel, kindLabel, LOCALITY_LABELS, radiusLabel, whereLabel } from '../labels';
+import { guessedLabel, hintsTotalLabel, kindLabel, LOCALITY_LABELS, radiusLabel, radiusOptionLabel, whereLabel } from '../labels';
 import { useLocality } from '../LocalityContext';
-import { DEFAULT_RADIUS_KM, type Place } from '../place';
+import { DEFAULT_RADIUS_KM, RADII_KM, type Place } from '../place';
 import { guessedLocality, rememberPlace } from '../placeCookies';
 import styles from './LocalityPicker.module.css';
 
@@ -132,11 +132,13 @@ export function LocalityPicker() {
     dialogRef.current?.close();
   }
 
-  function go(next: Place | null) {
+  function go(next: Place | null, { keepOpen = false } = {}) {
     // Before navigating: with no place in the URL the proxy reads it to keep all of Poland
     rememberPlace(next);
-    close();
-    setQuery('');
+    if (!keepOpen) {
+      close();
+      setQuery('');
+    }
     startTransition(() => router.replace(`${pathname}${filtersQuery(withPlace(selection, next))}`, { scroll: false }));
   }
 
@@ -263,7 +265,25 @@ export function LocalityPicker() {
             {hints.state === 'ready' && hints.total === 0 ? LOCALITY_LABELS.noHints : null}
             {hints.state === 'failed' ? LOCALITY_LABELS.searchFailed : null}
           </p>
-          {place ? <p className={styles.note}>{LOCALITY_LABELS.radiusHint}</p> : null}
+          {place ? (
+            // Stays open after a change, so the radius can be tried step by step
+            <fieldset className={styles.radii}>
+              <legend className={styles.label}>{LOCALITY_LABELS.radiusLegend(locality?.name ?? '…')}</legend>
+              <div className={styles.radiusOptions}>
+                {RADII_KM.map((radiusKm) => (
+                  <button
+                    key={radiusKm}
+                    type="button"
+                    className={styles.radiusOption}
+                    aria-pressed={place.radiusKm === radiusKm}
+                    onClick={() => place.radiusKm !== radiusKm && go({ ...place, radiusKm }, { keepOpen: true })}
+                  >
+                    {radiusOptionLabel(radiusKm, locality?.name ?? '…')}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          ) : null}
           <p className={styles.status} role="status">
             {myLocation.state === 'busy' ? LOCALITY_LABELS.locating : null}
             {myLocation.state === 'denied' ? LOCALITY_LABELS.locationDenied : null}
