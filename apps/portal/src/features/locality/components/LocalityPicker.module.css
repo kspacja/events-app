@@ -84,6 +84,23 @@
   border-radius: var(--radius-md);
   font: inherit;
   cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+/* Filled buttons darken on hover, outlined ones get a green border, as elsewhere in the portal */
+.guessChange:hover {
+  background: color-mix(in srgb, var(--color-accent-strong) 88%, black);
+}
+
+.guessConfirm:hover,
+.wholeCountry:hover:not(:disabled) {
+  border-color: var(--color-accent);
+}
+
+.locate:hover:not(:disabled) {
+  background: var(--color-ground);
 }
 
 .guessChange {
@@ -285,6 +302,7 @@
   color: var(--color-text);
   font: inherit;
   cursor: pointer;
+  transition: border-color 150ms ease;
 }
 
 .wholeCountry:disabled {

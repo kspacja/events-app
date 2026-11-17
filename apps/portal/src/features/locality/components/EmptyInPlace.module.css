@@ -32,20 +32,43 @@
   border-radius: var(--radius-lg);
   font-weight: 500;
   text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
 }
 
-.widen {
-  background: var(--color-accent-strong);
+/* Like the other filled buttons: the background darkens, the text stays white (links turn black on hover by default) */
+.widen,
+.widen:hover {
   color: var(--color-on-accent);
 }
 
-.whole {
-  color: var(--color-accent-strong);
+.widen {
+  border: 1px solid var(--color-accent-strong);
+  background: var(--color-accent-strong);
 }
 
-/* Green ring, not black: it stays on the link after a click that leaves the month still empty */
+.widen:hover {
+  background: color-mix(in srgb, var(--color-accent-strong) 88%, black);
+}
+
+/* Like the other outlined buttons, e.g. "Cała Polska" in the picker */
+.whole,
+.whole:hover {
+  color: var(--color-text);
+}
+
+.whole {
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface);
+}
+
+.whole:hover {
+  border-color: var(--color-accent);
+}
+
 .widen:focus-visible,
 .whole:focus-visible {
-  outline: 2px solid var(--color-accent-strong);
+  outline: 2px solid var(--color-text);
   outline-offset: 2px;
 }
