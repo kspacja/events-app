@@ -189,6 +189,57 @@ function MonthDay({ scheduleDay, today, capacity, narrow, row, upward, selected,
   );
 }
 
+/** The grid's row count and bar size, as its CSS reads them. */
+export function monthGridStyle(rows: number): CSSProperties {
+  return { '--rows': rows, '--bar-height': `${BAR_HEIGHT}px`, '--bar-gap': `${BAR_GAP}px` } as CSSProperties;
+}
+
+interface MonthCaptionProps {
+  readonly month: CalendarMonth;
+  readonly today: CalendarDay;
+  readonly passed?: PassedWeeks | null;
+}
+
+/** The month's name between its arrows, and the note on the weeks that have passed. */
+export function MonthCaption({ month, today, passed = null }: MonthCaptionProps) {
+  const filtersQuery = useFiltersQuery();
+  return (
+    <div className={styles.caption}>
+      <div className={styles.monthNav}>
+        <PeriodArrow
+          direction={-1}
+          href={schoolsMonthHref(addMonths(month, -1), filtersQuery)}
+          label={CALENDAR_LABELS.previousMonth}
+          disabled={month <= monthOf(today)}
+          subtle
+        />
+        {/* The dock's h2 already names the month for screen readers */}
+        <span className={styles.monthName} aria-hidden="true">
+          {formatDay(firstDayOf(month), 'LLLL yyyy')}
+        </span>
+        <PeriodArrow
+          direction={1}
+          href={schoolsMonthHref(addMonths(month, 1), filtersQuery)}
+          label={CALENDAR_LABELS.nextMonth}
+          subtle
+        />
+      </div>
+      {passed ? <p className={styles.passed}>{formatPassedWeeks(passed)}</p> : null}
+    </div>
+  );
+}
+
+export function MonthWeekdays() {
+  return (
+    <div className={styles.weekdays} aria-hidden="true">
+      {WEEKDAY_SHORT_NAMES.slice(0, WEEKEND_FROM).map((name) => (
+        <span key={name}>{name}</span>
+      ))}
+      <span>{WEEKDAY_SHORT_NAMES.slice(WEEKEND_FROM).join(' / ')}</span>
+    </div>
+  );
+}
+
 interface MonthGridProps {
   readonly month: CalendarMonth;
   /** The weeks still ahead; those fully gone are left out. */
@@ -243,43 +294,11 @@ export function MonthGrid({ month, weeks, passed = null, today }: MonthGridProps
     document.addEventListener(REVEAL_EVENT, reveal);
     return () => document.removeEventListener(REVEAL_EVENT, reveal);
   }, [weeks, openDayDrawer]);
-  const filtersQuery = useFiltersQuery();
-  const style = {
-    '--rows': weeks.length,
-    '--bar-height': `${BAR_HEIGHT}px`,
-    '--bar-gap': `${BAR_GAP}px`,
-  } as CSSProperties;
   return (
-    <section aria-label={CALENDAR_LABELS.region} style={style}>
-      <div className={styles.caption}>
-        <div className={styles.monthNav}>
-          <PeriodArrow
-            direction={-1}
-            href={schoolsMonthHref(addMonths(month, -1), filtersQuery)}
-            label={CALENDAR_LABELS.previousMonth}
-            disabled={month <= monthOf(today)}
-            subtle
-          />
-          {/* The dock's h2 already names the month for screen readers */}
-          <span className={styles.monthName} aria-hidden="true">
-            {formatDay(firstDayOf(month), 'LLLL yyyy')}
-          </span>
-          <PeriodArrow
-            direction={1}
-            href={schoolsMonthHref(addMonths(month, 1), filtersQuery)}
-            label={CALENDAR_LABELS.nextMonth}
-            subtle
-          />
-        </div>
-        {passed ? <p className={styles.passed}>{formatPassedWeeks(passed)}</p> : null}
-      </div>
+    <section aria-label={CALENDAR_LABELS.region} style={monthGridStyle(weeks.length)}>
+      <MonthCaption month={month} today={today} passed={passed} />
       <div className={styles.grid}>
-        <div className={styles.weekdays} aria-hidden="true">
-          {WEEKDAY_SHORT_NAMES.slice(0, WEEKEND_FROM).map((name) => (
-            <span key={name}>{name}</span>
-          ))}
-          <span>{WEEKDAY_SHORT_NAMES.slice(WEEKEND_FROM).join(' / ')}</span>
-        </div>
+        <MonthWeekdays />
         <ol ref={ref} className={styles.days}>
           {weeks.flatMap((week, row) =>
             week.map((scheduleDay) => (

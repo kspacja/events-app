@@ -15,7 +15,8 @@ interface MonthDockProps {
   readonly month: CalendarMonth;
   readonly today: CalendarDay;
   readonly filtersQuery: string;
-  readonly total: number;
+  /** null while the month loads. */
+  readonly total: number | null;
   /** Phones: the month's weeks, as a second row of the dock. */
   readonly jumps: readonly WeekJump[];
 }
@@ -41,7 +42,11 @@ export function MonthDock({ month, today, filtersQuery, total, jumps }: MonthDoc
             compact
           />
         </div>
-        <span className={styles.count}>{formatCount(total)}</span>
+        {total === null ? (
+          <span className={styles.countPending} aria-hidden="true" />
+        ) : (
+          <span className={styles.count}>{formatCount(total)}</span>
+        )}
       </div>
       <div className={styles.filters}>
         <SchoolFilters placement="main" layout="rows" />

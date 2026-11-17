@@ -77,6 +77,15 @@
   color: var(--color-accent-strong);
 }
 
+/* The count's line while the month loads, so the dock keeps its height */
+.countPending {
+  width: 6em;
+  height: 1lh;
+  font-size: var(--text-xs);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--dock-ink) 20%, transparent);
+}
+
 /* Filters between two rules, so the three parts read apart */
 .filters {
   min-width: 0;
@@ -139,6 +148,7 @@
   }
 
   .count,
+  .countPending,
   .filters,
   .wide {
     display: none;

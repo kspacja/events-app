@@ -1,0 +1,41 @@
+/* A bar that does not fit wraps into a hidden second column, so no bar shows cut in half */
+.bars {
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.bar {
+  flex: none;
+  width: 100%;
+  height: var(--bar-height);
+  border-radius: var(--radius-sm);
+  background: var(--color-event-bar);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.day[data-past] .bar {
+  opacity: 0.4;
+  animation: none;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .day:not([data-phone]) {
+    display: none;
+  }
+
+  .bar {
+    height: 42px;
+  }
+}
