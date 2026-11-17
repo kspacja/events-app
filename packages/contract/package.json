@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./listing": "./src/listing.ts",
+    "./localities": "./src/localities.ts",
     "./occurrences-http": "./src/occurrencesHttp.ts",
     "./source": "./src/source.ts"
   },

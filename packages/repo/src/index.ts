@@ -17,3 +17,4 @@ export {
   type VenueId,
 } from './model';
 export { createSampleEvents } from './sampleEvents';
+export { SAMPLE_LOCALITIES } from './sampleLocalities';

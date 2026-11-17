@@ -1,9 +1,10 @@
 import { http, HttpResponse } from 'msw';
-import { createSampleEvents, toListings } from '@events/repo';
+import { createSampleEvents, SAMPLE_LOCALITIES, toListings } from '@events/repo';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
 import { eventDayOf, isDayInRange } from '@events/time';
 import { hasFilters, matchesFilters, parseFilters, priceBands, priceModeOf, TRAIT_PARAMS, type FilterSelection } from '@/features/schools/schoolFilters';
+import { localitiesHandlers } from './localities';
 import { SAMPLE_SCHOOL_TRAITS } from './schoolTraits';
 
 function badRequest(error: string) {
@@ -57,5 +58,8 @@ export function occurrencesHandler(
 }
 
 export function createHandlers(eventsApiUrl: string) {
-  return [occurrencesHandler(eventsApiUrl, () => toListings(createSampleEvents(new Date())), SAMPLE_SCHOOL_TRAITS)];
+  return [
+    occurrencesHandler(eventsApiUrl, () => toListings(createSampleEvents(new Date())), SAMPLE_SCHOOL_TRAITS),
+    ...localitiesHandlers(eventsApiUrl, SAMPLE_LOCALITIES),
+  ];
 }
