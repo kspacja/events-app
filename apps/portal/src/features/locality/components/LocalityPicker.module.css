@@ -217,6 +217,8 @@
 }
 
 .radii > .label {
+  /* A legend is no flex item, so the fieldset's gap skips it */
+  margin-bottom: var(--space-2);
   padding: 0;
 }
 
