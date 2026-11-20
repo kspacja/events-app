@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { mainCategory, type OccurrenceListing } from '@events/contract/listing';
-import { currentEventDay, eventDayOf, localDayOf, localMinutesOf, weekdayIndex, type CalendarDay } from '@events/time';
+import type { OccurrenceListing } from '@events/contract/listing';
+import { currentEventDay, eventDayOf, localDayOf, localMinutesOf, type CalendarDay } from '@events/time';
 import { EventGallery } from '@/features/eventPage/components/EventGallery';
 import {
   AccessibleIcon,
@@ -31,10 +31,8 @@ import styles from '@/features/eventPage/components/EventPage.module.css';
 import { eventChips, monogram } from '@/features/eventPage/eventChips';
 import { loadEventPage } from '@/features/eventPage/eventPageSource';
 import { durationLabel, EVENT_PAGE_LABELS as LABELS, participantsLabel } from '@/features/eventPage/labels';
-import { DAY_SHORT_NAMES } from '@/features/events/labels';
-import { eventPageHref, organizerHref, TERM_PARAM } from '@/features/schoolSearch/searchHref';
+import { keywordsHref, organizerHref, TERM_PARAM } from '@/features/schoolSearch/searchHref';
 import { formatPrice } from '@/features/schools/eventDetails/eventFacts';
-import { SCHOOLS_PATH } from '@/features/schools/schoolsHref';
 import { formatClock, formatDay, formatLocalTime } from '@/lib/format';
 import { firstValue } from '@/lib/searchParams';
 
@@ -90,9 +88,6 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
   const today = currentEventDay(new Date());
   const current = chosenOccurrence(page.occurrences, firstValue((await searchParams)[TERM_PARAM]), today);
   const past = eventDayOf(current.startsAt) < today;
-  const others = page.occurrences.filter(
-    ({ occurrenceId, startsAt }) => occurrenceId !== current.occurrenceId && eventDayOf(startsAt) >= today,
-  );
   const { event, venue, price, startsAt } = current;
   const details = page.details;
   const photos = [event.imageUrl, ...(details?.gallery ?? [])].filter((url): url is string => Boolean(url));
@@ -104,10 +99,14 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
         <nav aria-label={LABELS.breadcrumbs} className={styles.breadcrumbs}>
           <ol>
             <li>
-              <Link href={`${SCHOOLS_PATH}/miesiac`}>{LABELS.schools}</Link>
+              <Link href={keywordsHref(venue.city, null)}>{venue.city}</Link>
             </li>
-            <li>{venue.city}</li>
-            <li aria-current="page">{mainCategory(event).label}</li>
+            {event.organizer ? (
+              <li>
+                <Link href={organizerHref(event.organizer.slug)}>{event.organizer.name}</Link>
+              </li>
+            ) : null}
+            <li aria-current="page">{event.title}</li>
           </ol>
         </nav>
 
@@ -145,7 +144,7 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
             <section className={styles.card} aria-labelledby="term">
               <h2 id="term" className={styles.cardTitle} data-past={past || undefined}>
                 <span className={styles.dot} aria-hidden="true" />
-                {past ? LABELS.term : LABELS.terms}
+                {LABELS.term}
               </h2>
               <ul className={styles.facts}>
                 <Fact icon={<CalendarIcon />}>
@@ -156,23 +155,6 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
                 </Fact>
                 {details?.durationMinutes ? <Fact icon={<HourglassIcon />}>{durationLabel(details.durationMinutes)}</Fact> : null}
               </ul>
-              {others.length > 0 ? (
-                <div className={styles.otherTerms}>
-                  <p className={styles.smallLabel}>{LABELS.otherTerms}</p>
-                  <ul>
-                    {others.map((other) => {
-                      const day = eventDayOf(other.startsAt);
-                      return (
-                        <li key={other.occurrenceId}>
-                          <Link href={eventPageHref(event.id, other.occurrenceId)} className={styles.term} scroll={false}>
-                            {DAY_SHORT_NAMES[weekdayIndex(day)]} {formatDay(day, 'd.MM')} · {formatLocalTime(other.startsAt)}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ) : null}
               <ul className={styles.facts} data-divided>
                 {price ? <Fact icon={<TicketIcon />}>{formatPrice(price)}</Fact> : null}
                 {details?.maxParticipants ? <Fact icon={<PeopleIcon />}>{participantsLabel(details.maxParticipants)}</Fact> : null}

@@ -88,10 +88,11 @@
 .card[data-variant='popup'] {
   box-sizing: border-box;
   padding: var(--space-2) var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
+  /* Grey frame and neutral shadow: the gold border and warm shadow tokens belong to the old home page */
+  border: 1px solid var(--color-rule);
   border-radius: var(--radius-card);
   background: var(--color-surface);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 12%);
 }
 
 .organizer {
