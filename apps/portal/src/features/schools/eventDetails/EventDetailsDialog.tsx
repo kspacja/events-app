@@ -70,7 +70,7 @@ export function EventDetailsDialog({ listings, today }: { readonly listings: rea
         <div className={styles.body}>
           <header className={styles.header}>
             <h2 id={titleId} className={styles.title}>
-              <Link href={eventPageHref(event.id)} className={styles.titleLink}>
+              <Link href={eventPageHref(event.id, listing.occurrenceId)} className={styles.titleLink}>
                 {event.title}
               </Link>
             </h2>
@@ -115,7 +115,7 @@ export function EventDetailsDialog({ listings, today }: { readonly listings: rea
         </div>
 
         <footer className={styles.footer}>
-          <Link href={eventPageHref(event.id)} className={styles.more}>
+          <Link href={eventPageHref(event.id, listing.occurrenceId)} className={styles.more}>
             {LABELS.more}
           </Link>
           {past ? (

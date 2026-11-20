@@ -1,0 +1,12 @@
+.map {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-map-land);
+}
+
+.pin {
+  color: var(--color-accent-strong);
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 25%));
+}

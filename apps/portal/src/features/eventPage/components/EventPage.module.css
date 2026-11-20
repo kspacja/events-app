@@ -1,0 +1,573 @@
+.page {
+  box-sizing: border-box;
+  min-height: calc(100vh - 52px);
+  padding: var(--space-5) var(--space-4) var(--space-16);
+  background: var(--color-ground);
+}
+
+.inner {
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1-5);
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  list-style: none;
+}
+
+.breadcrumbs li + li::before {
+  content: '/';
+  margin-right: var(--space-1-5);
+  color: var(--color-text-tertiary);
+}
+
+.breadcrumbs a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  color: var(--color-accent-strong);
+  text-decoration: underline;
+}
+
+/* Header, gallery and text on the left; the term and the place on the right (not sticky: taller than a screen) */
+.layout {
+  display: grid;
+  grid-template-areas:
+    'header aside'
+    'gallery aside'
+    'body aside';
+  grid-template-rows: auto auto 1fr;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: var(--space-5) var(--space-6);
+}
+
+.header {
+  grid-area: header;
+}
+
+.galleryArea {
+  grid-area: gallery;
+}
+
+.body {
+  grid-area: body;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.aside {
+  grid-area: aside;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* A past occurrence fades like the details dialog; the note saying so stays clear */
+.layout[data-past] .header,
+.layout[data-past] .body {
+  opacity: 0.55;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.organizer {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2-5);
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.organizer:hover {
+  color: var(--color-accent-strong);
+}
+
+.organizer:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1-5);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip,
+.specialNeeds {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  min-height: 28px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+}
+
+.chip {
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
+  color: var(--color-accent-strong);
+}
+
+/* Stands out from the chips: groups with special needs look for it first */
+.specialNeeds {
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+  font-weight: 600;
+}
+
+.specialNeeds svg {
+  width: 16px;
+  height: 16px;
+}
+
+.about p {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-lg);
+  line-height: 1.6;
+}
+
+.about p:last-child {
+  margin-bottom: 0;
+}
+
+.arrival {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-4);
+  border-left: 3px solid var(--color-accent-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  line-height: 1.5;
+}
+
+.arrival svg {
+  flex: none;
+  color: var(--color-accent-strong);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.sectionIcon {
+  display: inline-flex;
+  color: var(--color-accent-strong);
+}
+
+.goals {
+  margin: 0;
+  padding-left: var(--space-10);
+  line-height: 1.7;
+}
+
+.goals li::marker {
+  color: var(--color-accent-strong);
+}
+
+.curriculum {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border-radius: var(--radius-2xl);
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+}
+
+.curriculumTitle {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.curriculumArea {
+  margin: 0;
+  font-weight: 500;
+}
+
+.curriculumText {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.materials {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  margin: 0;
+  padding-left: var(--space-10);
+  list-style: none;
+}
+
+.materials a {
+  color: var(--color-accent-strong);
+  font-weight: 500;
+}
+
+.folds {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.fold {
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.foldSummary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 52px;
+  padding: 0 var(--space-4);
+  cursor: pointer;
+  list-style: none;
+}
+
+.foldSummary::-webkit-details-marker {
+  display: none;
+}
+
+.foldSummary:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+  border-radius: var(--radius-xl);
+}
+
+.foldIcon {
+  display: inline-flex;
+  color: var(--color-text-secondary);
+}
+
+.foldTitle {
+  flex: 1;
+  font-weight: 600;
+}
+
+.foldChevron {
+  display: inline-flex;
+  color: var(--color-text-secondary);
+  transition: transform 150ms ease;
+}
+
+.fold[open] .foldChevron {
+  transform: rotate(180deg);
+}
+
+.foldBody {
+  padding: 0 var(--space-4) var(--space-4) calc(var(--space-4) + 20px + var(--space-3));
+  line-height: 1.6;
+}
+
+.foldBody ul {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+
+.faq {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.faq dt {
+  font-weight: 600;
+}
+
+.faq dd {
+  margin: var(--space-0-5) 0 0;
+  color: var(--color-text-secondary);
+}
+
+/* The aside's cards */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface);
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-accent-strong);
+  font-size: var(--text-md);
+  font-weight: 600;
+}
+
+.cardTitle[data-past] {
+  color: var(--color-text-muted);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.facts[data-divided] {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-rule);
+}
+
+.facts[data-divided]:empty {
+  display: none;
+}
+
+.fact {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  line-height: 1.4;
+}
+
+.fact a {
+  color: var(--color-accent-strong);
+  overflow-wrap: anywhere;
+}
+
+.factIcon {
+  display: inline-flex;
+  flex: none;
+  color: var(--color-text-secondary);
+}
+
+.date {
+  display: inline-block;
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.date::first-letter {
+  text-transform: uppercase;
+}
+
+/* The hours look as they do on the month's bars */
+.time {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 700;
+}
+
+.smallLabel {
+  margin: 0 0 var(--space-1-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.otherTerms ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.term {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+
+.term:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.term:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.contact,
+.save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  border-radius: var(--radius-lg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.contact {
+  border: 0;
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+}
+
+.contact:hover {
+  background: color-mix(in srgb, var(--color-accent-strong) 88%, black);
+}
+
+.save {
+  border: 1px solid var(--color-rule);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.save:hover {
+  border-color: var(--color-accent);
+}
+
+.save[aria-pressed='true'] {
+  border-color: var(--color-accent-strong);
+  color: var(--color-accent-strong);
+}
+
+.contact:focus-visible,
+.save:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.pastNote {
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-rule);
+  font-weight: 600;
+}
+
+.person {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-rule);
+}
+
+.personName {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 var(--space-2-5);
+  font-weight: 600;
+}
+
+.personName span {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+.tbd {
+  color: var(--color-text-tertiary);
+  font-style: italic;
+}
+
+.similar {
+  margin-top: var(--space-10);
+}
+
+/* Our month tiles in one row that scrolls sideways */
+.similarRow {
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+  padding: var(--space-1) var(--space-1) var(--space-4);
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x proximity;
+}
+
+.similarItem {
+  flex: none;
+  width: 260px;
+  scroll-snap-align: start;
+}
+
+/* Narrow: one column, the term card right under the photos */
+@media (max-width: 960px) {
+  .layout {
+    grid-template-areas:
+      'header'
+      'gallery'
+      'aside'
+      'body';
+    grid-template-rows: auto;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: var(--text-3xl);
+  }
+
+  .similarItem {
+    width: 220px;
+  }
+}

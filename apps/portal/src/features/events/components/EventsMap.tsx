@@ -20,13 +20,13 @@ import { MAP_CONTROL_LOCALE, MAP_LABELS } from '../labels';
 import type { OccurrenceId } from '@events/contract/listing';
 import { onThemeChange } from '@/features/theme-lab/themeChange';
 import { areaRing, viewFor, type MapArea, type MapPoint } from '../mapView';
-import { localizeBasemap, type BasemapPalette } from '../mapStyle';
+import { loadBasemap, MAP_STYLE_URL, readBasemapPalette } from '../basemap';
+import { localizeBasemap } from '../mapStyle';
 import styles from './EventsMap.module.css';
 
 // Bundlers break maplibre's default worker URL (derived from import.meta.url)
 maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
 
-const MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/bright';
 const SOURCE_ID = 'events';
 const AREA_SOURCE_ID = 'area';
 const CLUSTER_LAYER_ID = 'event-clusters';
@@ -37,13 +37,6 @@ const SELECTED_MIN_ZOOM = 15;
 const FALLBACK_ACCENT = '#4da167';
 const FALLBACK_MUTED = '#cdd7d6';
 const FALLBACK_HALO = '#ffffff';
-const FALLBACK_BASEMAP: BasemapPalette = {
-  water: '#bfd7ea',
-  land: '#f5f4f1',
-  green: '#e3ecd9',
-  road: '#ffffff',
-  roadCasing: '#e2ddd3',
-};
 
 const hasActive: maplibregl.ExpressionSpecification = ['>', ['get', 'activeCount'], 0];
 
@@ -63,28 +56,6 @@ function readPalette(container: HTMLElement): Palette {
     muted: token('--color-text-disabled', FALLBACK_MUTED),
     halo: token('--color-bg', FALLBACK_HALO),
   };
-}
-
-function readBasemapPalette(): BasemapPalette {
-  const styles = getComputedStyle(document.documentElement);
-  const token = (name: string, fallback: string) => styles.getPropertyValue(name).trim() || fallback;
-  return {
-    water: token('--color-map-water', FALLBACK_BASEMAP.water),
-    land: token('--color-map-land', FALLBACK_BASEMAP.land),
-    green: token('--color-map-green', FALLBACK_BASEMAP.green),
-    road: token('--color-map-road', FALLBACK_BASEMAP.road),
-    roadCasing: token('--color-map-road-casing', FALLBACK_BASEMAP.roadCasing),
-  };
-}
-
-let basemapRequest: Promise<maplibregl.StyleSpecification | null> | null = null;
-
-// Fetched once and reworked before the first frame, so the map never shows the English, off-brand original
-function loadBasemap(): Promise<maplibregl.StyleSpecification | null> {
-  basemapRequest ??= fetch(MAP_STYLE_URL)
-    .then((response) => (response.ok ? (response.json() as Promise<maplibregl.StyleSpecification>) : null))
-    .catch(() => null);
-  return basemapRequest;
 }
 
 function layersFor({ accent, muted, halo }: Palette) {

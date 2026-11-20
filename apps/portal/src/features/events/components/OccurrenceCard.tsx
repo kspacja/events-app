@@ -15,9 +15,11 @@ interface OccurrenceCardProps {
   readonly variant?: 'strip' | 'popup';
   /** Makes the whole card a button that opens the event's details. */
   readonly onSelect?: () => void;
+  /** Off where no map listens, e.g. the event page's similar events. */
+  readonly showOnMap?: boolean;
 }
 
-export function OccurrenceCard({ listing, muted = false, variant = 'strip', onSelect }: OccurrenceCardProps) {
+export function OccurrenceCard({ listing, muted = false, variant = 'strip', onSelect, showOnMap = true }: OccurrenceCardProps) {
   const { occurrenceId, startsAt, event, venue, price } = listing;
   // Schools filter by price, so their cards say when an event costs nothing
   const free = event.forSchools && price?.kind === 'free';
@@ -44,7 +46,7 @@ export function OccurrenceCard({ listing, muted = false, variant = 'strip', onSe
             className={styles.photo}
           />
         ) : null}
-        <ShowOnMapButton occurrenceId={occurrenceId} title={title} />
+        {showOnMap ? <ShowOnMapButton occurrenceId={occurrenceId} title={title} /> : null}
       </div>
       <p className={styles.meta}>
         {formatLocalTime(startsAt)} · {main.label}

@@ -46,6 +46,9 @@ export function organizerHref(slug: string): string {
   return `${ORGANIZER_PATH}/${slug}`;
 }
 
-export function eventPageHref(eventId: string): string {
-  return `${EVENT_PAGE_PATH}/${eventId}`;
+/** `?termin=` on the event page: the occurrence it opens on (stage 3.11). */
+export const TERM_PARAM = 'termin';
+
+export function eventPageHref(eventId: string, occurrenceId?: string): string {
+  return `${EVENT_PAGE_PATH}/${eventId}${occurrenceId ? `?${new URLSearchParams({ [TERM_PARAM]: occurrenceId })}` : ''}`;
 }

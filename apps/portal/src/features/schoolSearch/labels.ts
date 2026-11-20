@@ -19,8 +19,6 @@ export const SEARCH_LABELS = {
   upcoming: 'Najbliższe wydarzenia',
   aboutOrganizer: 'O organizatorze',
   organizerSoon: 'Opis organizatora, kontakt i zdjęcia pojawią się tutaj wkrótce.',
-  eventPage: 'Strona wydarzenia',
-  eventPageSoon: 'Pełna strona wydarzenia jest w przygotowaniu.',
   backToCalendar: 'Wróć do kalendarza',
 } as const;
 
