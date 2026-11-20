@@ -1,7 +1,6 @@
 'use client';
 
 import type { OccurrenceListing } from '@events/contract/listing';
-import type { CalendarDay } from '@events/time';
 import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
 import { EventDetailsDialog } from '@/features/schools/eventDetails/EventDetailsDialog';
 import { openEventDetails } from '@/features/schools/eventDetails/eventParam';
@@ -10,11 +9,12 @@ import styles from './EventPage.module.css';
 
 interface SimilarEventsProps {
   readonly listings: readonly OccurrenceListing[];
-  readonly today: CalendarDay;
+  /** The server's moment, in ms, for the details dialog. */
+  readonly now: number;
 }
 
 /** The month's hover tiles in a row that scrolls sideways; a tile opens the details dialog first, as in the month. */
-export function SimilarEvents({ listings, today }: SimilarEventsProps) {
+export function SimilarEvents({ listings, now }: SimilarEventsProps) {
   return (
     <section className={styles.similar} aria-labelledby="similar">
       <h2 id="similar" className={styles.sectionTitle}>
@@ -32,7 +32,7 @@ export function SimilarEvents({ listings, today }: SimilarEventsProps) {
           </li>
         ))}
       </ul>
-      <EventDetailsDialog listings={listings} today={today} />
+      <EventDetailsDialog listings={listings} now={now} />
     </section>
   );
 }

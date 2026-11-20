@@ -6,12 +6,15 @@ import { DAY_SHORT_NAMES } from '@/features/events/labels';
 import { EventDetailsDialog } from '@/features/schools/eventDetails/EventDetailsDialog';
 import { formatPrice } from '@/features/schools/eventDetails/eventFacts';
 import { openEventDetails } from '@/features/schools/eventDetails/eventParam';
+import { hasStarted } from '@/features/schools/hasStarted';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import styles from './ResultsList.module.css';
 
 interface ResultsListProps {
   readonly listings: readonly OccurrenceListing[];
   readonly today: CalendarDay;
+  /** The server's moment, in ms: events that have started fade. */
+  readonly now: number;
   /** Left out on the organizer's own page, where every row would repeat it. */
   readonly showOrganizer?: boolean;
 }
@@ -50,7 +53,7 @@ function PinIcon() {
 }
 
 /** Search results as one card per occurrence, under a heading per month; a row opens the event's details. */
-export function ResultsList({ listings, today, showOrganizer = true }: ResultsListProps) {
+export function ResultsList({ listings, today, now, showOrganizer = true }: ResultsListProps) {
   return (
     <>
       {byMonth(listings).map((group) => (
@@ -65,7 +68,12 @@ export function ResultsList({ listings, today, showOrganizer = true }: ResultsLi
               const sub = [showOrganizer ? event.organizer?.name : null, price ? formatPrice(price) : null].filter(Boolean);
               return (
                 <li key={occurrenceId}>
-                  <button type="button" className={styles.row} onClick={() => openEventDetails(occurrenceId)}>
+                  <button
+                    type="button"
+                    className={styles.row}
+                    data-past={hasStarted(startsAt, now) || undefined}
+                    onClick={() => openEventDetails(occurrenceId)}
+                  >
                     <span className={styles.date} data-today={day === today || undefined}>
                       <span className={styles.weekday} aria-hidden="true">
                         {DAY_SHORT_NAMES[weekdayIndex(day)]}
@@ -101,7 +109,7 @@ export function ResultsList({ listings, today, showOrganizer = true }: ResultsLi
           </ul>
         </section>
       ))}
-      <EventDetailsDialog listings={listings} today={today} />
+      <EventDetailsDialog listings={listings} now={now} />
     </>
   );
 }

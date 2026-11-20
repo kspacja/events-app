@@ -112,9 +112,9 @@
   color: var(--color-text-disabled);
 }
 
-/* A day that has passed: still there, but faded; its tiles stay readable */
+/* A day that has passed, or an event that has started: still there, but faded */
 .day[data-past] .dayHeading,
-.day[data-past] .bar {
+.entry[data-past] .bar {
   opacity: 0.4;
 }
 

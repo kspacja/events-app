@@ -5,6 +5,7 @@ import type { CalendarDay } from '@events/time';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
 import { openEventDetails } from '../eventDetails/eventParam';
+import { hasStarted } from '../hasStarted';
 import { formatDay } from '@/lib/format';
 import { MONTH_LABELS } from '../labels';
 import styles from './MonthDayDrawer.module.css';
@@ -20,6 +21,8 @@ interface MonthDayDrawerProps {
   readonly scrollToIndex?: number | null;
   readonly onClose: () => void;
   readonly onClosed?: () => void;
+  /** The server's moment, in ms: events that have started fade. */
+  readonly now: number;
 }
 
 /** Not modal: the month stays usable beside it, and another day's "+N" swaps its content. */
@@ -31,6 +34,7 @@ export function MonthDayDrawer({
   scrollToIndex = null,
   onClose,
   onClosed,
+  now,
 }: MonthDayDrawerProps) {
   const headingId = useId();
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -90,7 +94,7 @@ export function MonthDayDrawer({
       </div>
       <ul ref={listRef} className={styles.list}>
         {listings.map((listing) => (
-          <li key={listing.occurrenceId}>
+          <li key={listing.occurrenceId} className={styles.item} data-past={hasStarted(listing.startsAt, now) || undefined}>
             <OccurrenceCard listing={listing} variant="popup" onSelect={() => openEventDetails(listing.occurrenceId)} />
           </li>
         ))}

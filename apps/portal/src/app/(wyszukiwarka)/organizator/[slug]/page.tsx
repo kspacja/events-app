@@ -17,6 +17,7 @@ export default async function OrganizerPage({ params }: PageProps<'/organizator/
   const { slug } = await params;
   const [organizer, listings] = await Promise.all([findOrganizer(slug), loadSearchResults({ by: 'organizer', organizer: slug })]);
   if (!organizer) notFound();
+  const moment = new Date();
 
   return (
     <main className={styles.page}>
@@ -34,7 +35,7 @@ export default async function OrganizerPage({ params }: PageProps<'/organizator/
               {SEARCH_LABELS.upcoming}
             </h2>
             {listings.length > 0 ? (
-              <ResultsList listings={listings} today={currentEventDay(new Date())} showOrganizer={false} />
+              <ResultsList listings={listings} today={currentEventDay(moment)} now={moment.getTime()} showOrganizer={false} />
             ) : (
               <p className={styles.empty}>{SEARCH_LABELS.empty}</p>
             )}

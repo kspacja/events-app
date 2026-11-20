@@ -13,6 +13,7 @@ import { CALENDAR_LABELS, MONTH_LABELS, WEEKDAY_SHORT_NAMES } from '../labels';
 import { MonthDayDrawer } from './MonthDayDrawer';
 import { EventDetailsDialog } from '../eventDetails/EventDetailsDialog';
 import { openEventDetails } from '../eventDetails/eventParam';
+import { hasStarted } from '../hasStarted';
 import { useFiltersQuery } from '../filtersQueryContext';
 import { addMonths, firstDayOf, monthOf, type CalendarMonth } from '../monthCalendar';
 import { schoolsMonthHref } from '../schoolsHref';
@@ -87,7 +88,7 @@ interface MonthBarProps {
   readonly listing: OccurrenceListing;
   readonly alignEnd: boolean;
   readonly upward: boolean;
-  /** A day already gone: no tile on hover, the details still open on click. */
+  /** Already started (also earlier today): faded, no tile on hover; the details still open on click. */
   readonly past: boolean;
 }
 
@@ -96,7 +97,7 @@ function MonthBar({ listing, alignEnd, upward, past }: MonthBarProps) {
   const tileId = useId();
 
   return (
-    <li className={styles.entry} data-align={alignEnd ? 'end' : 'start'} data-upward={upward || undefined}>
+    <li className={styles.entry} data-align={alignEnd ? 'end' : 'start'} data-upward={upward || undefined} data-past={past || undefined}>
       <button
         type="button"
         id={occurrenceDomId(listing.occurrenceId)}
@@ -123,6 +124,8 @@ function activeListings({ entries }: ScheduleDay): OccurrenceListing[] {
 interface MonthDayProps {
   readonly scheduleDay: ScheduleDay;
   readonly today: CalendarDay;
+  /** The server's moment, in ms: events that have started fade and lose their hover tile. */
+  readonly now: number;
   readonly capacity: number;
   /** A weekend day in the narrow column, half a week's height, with its name beside the number. */
   readonly narrow: boolean;
@@ -134,7 +137,7 @@ interface MonthDayProps {
   readonly onOpen: (opener: HTMLButtonElement, scrollToIndex: number | null) => void;
 }
 
-function MonthDay({ scheduleDay, today, capacity, narrow, row, upward, selected, onOpen }: MonthDayProps) {
+function MonthDay({ scheduleDay, today, now, capacity, narrow, row, upward, selected, onOpen }: MonthDayProps) {
   const { day, weekdayIndex, inRange, isWeekend } = scheduleDay;
   const listings = activeListings(scheduleDay);
   // The footer below the list always holds its row, so the list has room for exactly `capacity` bars
@@ -173,7 +176,7 @@ function MonthDay({ scheduleDay, today, capacity, narrow, row, upward, selected,
             listing={listing}
             alignEnd={weekdayIndex >= END_ALIGNED_FROM}
             upward={upward}
-            past={day < today}
+            past={hasStarted(listing.startsAt, now)}
           />
         ))}
       </ul>
@@ -256,12 +259,14 @@ interface MonthGridProps {
   /** What the left-out weeks held, for a note above the grid. */
   readonly passed?: PassedWeeks | null;
   readonly today: CalendarDay;
+  /** The server's moment, in ms: events that have started fade and lose their hover tile. */
+  readonly now: number;
   /** Shown between the caption and the grid, e.g. when nothing lies within the chosen radius. */
   readonly notice?: ReactNode;
 }
 
 /** The whole month on one and a half screens: equal week rows, events as bars. */
-export function MonthGrid({ month, weeks, passed = null, today, notice = null }: MonthGridProps) {
+export function MonthGrid({ month, weeks, passed = null, today, now, notice = null }: MonthGridProps) {
   const { ref, capacity, weekendCapacity, isPhone } = useCapacity();
   const [openDay, setOpenDay] = useState<CalendarDay | null>(null);
   // The drawer slides out before it goes
@@ -318,6 +323,7 @@ export function MonthGrid({ month, weeks, passed = null, today, notice = null }:
                 key={scheduleDay.day}
                 scheduleDay={scheduleDay}
                 today={today}
+                now={now}
                 capacity={scheduleDay.weekdayIndex >= WEEKEND_FROM ? weekendCapacity : capacity}
                 narrow={!isPhone && scheduleDay.weekdayIndex >= WEEKEND_FROM}
                 row={row}
@@ -342,6 +348,7 @@ export function MonthGrid({ month, weeks, passed = null, today, notice = null }:
           key={open.weekdayIndex >= END_ALIGNED_FROM ? 'start' : 'end'}
           day={open.day}
           listings={activeListings(open)}
+          now={now}
           side={open.weekdayIndex >= END_ALIGNED_FROM ? 'start' : 'end'}
           closing={closing}
           scrollToIndex={scrollToIndex}
@@ -349,7 +356,7 @@ export function MonthGrid({ month, weeks, passed = null, today, notice = null }:
           onClosed={closed}
         />
       ) : null}
-      <EventDetailsDialog listings={weeks.flat().flatMap(activeListings)} today={today} />
+      <EventDetailsDialog listings={weeks.flat().flatMap(activeListings)} now={now} />
     </section>
   );
 }

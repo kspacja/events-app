@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { OccurrenceListing } from '@events/contract/listing';
-import { currentEventDay, eventDayOf, localDayOf, localMinutesOf, type CalendarDay } from '@events/time';
+import { localDayOf, localMinutesOf } from '@events/time';
 import { EventGallery } from '@/features/eventPage/components/EventGallery';
 import {
   AccessibleIcon,
@@ -33,6 +33,7 @@ import { loadEventPage } from '@/features/eventPage/eventPageSource';
 import { durationLabel, EVENT_PAGE_LABELS as LABELS, participantsLabel } from '@/features/eventPage/labels';
 import { keywordsHref, organizerHref, TERM_PARAM } from '@/features/schoolSearch/searchHref';
 import { formatPrice } from '@/features/schools/eventDetails/eventFacts';
+import { hasStarted } from '@/features/schools/hasStarted';
 import { formatClock, formatDay, formatLocalTime } from '@/lib/format';
 import { firstValue } from '@/lib/searchParams';
 
@@ -41,11 +42,11 @@ export async function generateMetadata({ params }: PageProps<'/wydarzenie/[id]'>
   return { title: page?.occurrences[0].event.title ?? LABELS.schools };
 }
 
-/** The asked occurrence; else the next one; else, for an event that is over, the last. */
-function chosenOccurrence(occurrences: readonly OccurrenceListing[], asked: string | undefined, today: CalendarDay) {
+/** The asked occurrence; else the next one not yet started; else, for an event that is over, the last. */
+function chosenOccurrence(occurrences: readonly OccurrenceListing[], asked: string | undefined, now: number) {
   return (
     occurrences.find(({ occurrenceId }) => occurrenceId === asked) ??
-    occurrences.find(({ startsAt }) => eventDayOf(startsAt) >= today) ??
+    occurrences.find(({ startsAt }) => !hasStarted(startsAt, now)) ??
     occurrences[occurrences.length - 1]
   );
 }
@@ -85,9 +86,9 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
   const page = await loadEventPage(id);
   if (!page) notFound();
 
-  const today = currentEventDay(new Date());
-  const current = chosenOccurrence(page.occurrences, firstValue((await searchParams)[TERM_PARAM]), today);
-  const past = eventDayOf(current.startsAt) < today;
+  const now = new Date().getTime();
+  const current = chosenOccurrence(page.occurrences, firstValue((await searchParams)[TERM_PARAM]), now);
+  const past = hasStarted(current.startsAt, now);
   const { event, venue, price, startsAt } = current;
   const details = page.details;
   // Each photo once: thumbnails are keyed by their address
@@ -313,7 +314,7 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
           </div>
         </div>
 
-        {page.similar.length > 0 ? <SimilarEvents listings={page.similar} today={today} /> : null}
+        {page.similar.length > 0 ? <SimilarEvents listings={page.similar} now={now} /> : null}
       </div>
     </main>
   );

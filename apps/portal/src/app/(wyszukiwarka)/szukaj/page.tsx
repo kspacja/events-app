@@ -21,7 +21,9 @@ export const metadata: Metadata = { title: SEARCH_LABELS.resultsTitle };
 /** `?miejsce=<id>`: upcoming events in one venue; `?q=…` with an optional place: upcoming events matching the keywords. */
 export default async function SearchPage({ searchParams }: PageProps<'/szukaj'>) {
   const params = toSearchParams(await searchParams);
-  const today = currentEventDay(new Date());
+  const moment = new Date();
+  const today = currentEventDay(moment);
+  const now = moment.getTime();
   const venue = params.get(VENUE_PARAM);
 
   if (venue) {
@@ -37,7 +39,7 @@ export default async function SearchPage({ searchParams }: PageProps<'/szukaj'>)
               <p className={styles.lead}>{[first ? `${first.address}, ${first.city}` : null, countLabel(listings.length)].filter(Boolean).join(' · ')}</p>
             </div>
           </header>
-          {listings.length > 0 ? <ResultsList listings={listings} today={today} /> : <p className={styles.empty}>{SEARCH_LABELS.empty}</p>}
+          {listings.length > 0 ? <ResultsList listings={listings} today={today} now={now} /> : <p className={styles.empty}>{SEARCH_LABELS.empty}</p>}
         </div>
       </main>
     );
@@ -65,7 +67,7 @@ export default async function SearchPage({ searchParams }: PageProps<'/szukaj'>)
             <KeywordsPlacePicker keywords={keywords} />
           </header>
           {listings.length > 0 ? (
-            <ResultsList listings={listings} today={today} />
+            <ResultsList listings={listings} today={today} now={now} />
           ) : place ? (
             <EmptyInPlace place={place} locality={locality} hrefFor={(next) => keywordsHref(keywords, next)} />
           ) : (

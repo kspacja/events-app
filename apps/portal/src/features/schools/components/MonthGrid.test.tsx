@@ -31,7 +31,7 @@ function day(date: CalendarDay, listings: OccurrenceListing[], inRange = true): 
 function renderGrid(days: ScheduleDay[]) {
   return render(
     <OccurrenceSelectionProvider>
-      <MonthGrid month="2026-11" weeks={[days]} today="2026-11-02" />
+      <MonthGrid month="2026-11" weeks={[days]} today="2026-11-02" now={Date.parse('2026-11-02T05:00:00+01:00')} />
     </OccurrenceSelectionProvider>,
   );
 }
@@ -141,11 +141,29 @@ describe('MonthGrid', () => {
     expect(details.getByRole('button', { name: 'Skontaktuj się', hidden: true })).toBeInTheDocument();
   });
 
+  it('fades an event that started earlier today and says it has happened', () => {
+    window.history.replaceState(null, '', '/dla-szkol/miesiac/2026-11?wydarzenie=a');
+    render(
+      <OccurrenceSelectionProvider>
+        <MonthGrid
+          month="2026-11"
+          weeks={[[day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum'), listing('b', '2026-11-02T15:00:00Z', 'Koncert')])]]}
+          today="2026-11-02"
+          now={Date.parse('2026-11-02T12:00:00+01:00')}
+        />
+      </OccurrenceSelectionProvider>,
+    );
+
+    expect(screen.getByRole('button', { name: '10:00 Lekcja w muzeum' }).closest('li')).toHaveAttribute('data-past');
+    expect(screen.getByRole('button', { name: '16:00 Koncert' }).closest('li')).not.toHaveAttribute('data-past');
+    expect(within(screen.getByRole('dialog', { hidden: true })).getByText('To wydarzenie już się odbyło.')).toBeInTheDocument();
+  });
+
   it('says a past event has happened instead of offering contact', () => {
     window.history.replaceState(null, '', '/dla-szkol/miesiac/2026-11?wydarzenie=a');
     render(
       <OccurrenceSelectionProvider>
-        <MonthGrid month="2026-11" weeks={[[day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]]} today="2026-11-03" />
+        <MonthGrid month="2026-11" weeks={[[day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]]} today="2026-11-03" now={Date.parse('2026-11-03T05:00:00+01:00')} />
       </OccurrenceSelectionProvider>,
     );
 

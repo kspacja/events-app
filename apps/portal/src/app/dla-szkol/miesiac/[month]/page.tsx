@@ -16,7 +16,9 @@ export default async function MonthPage({ params, searchParams }: PageProps<'/dl
   const { month: raw } = await params;
   const filters = parseFilters(await searchParams);
   const query = filtersQuery(filters);
-  const today = currentEventDay(new Date());
+  const moment = new Date();
+  const today = currentEventDay(moment);
+  const now = moment.getTime();
   const month = monthFromPath(raw, today);
   if (raw !== month) redirect(schoolsMonthHref(month, query));
 
@@ -40,6 +42,7 @@ export default async function MonthPage({ params, searchParams }: PageProps<'/dl
         weeks={shown}
         passed={passed}
         today={today}
+        now={now}
         notice={
           place && schedule.activeCount === 0 ? (
             <EmptyInPlace
