@@ -255,6 +255,42 @@
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-xl);
   background: var(--color-surface);
+  /* Lets the content's height animate to and from auto */
+  interpolate-size: allow-keywords;
+}
+
+/* Opens and closes smoothly where the browser supports it; elsewhere it just snaps */
+.fold::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 220ms ease,
+    content-visibility 220ms allow-discrete;
+}
+
+.fold[open]::details-content {
+  block-size: auto;
+}
+
+.fold[open] .foldBody {
+  animation: foldIn 220ms ease;
+}
+
+@keyframes foldIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fold::details-content {
+    transition: none;
+  }
+
+  .fold[open] .foldBody {
+    animation: none;
+  }
 }
 
 .foldSummary {
@@ -505,8 +541,7 @@
   display: flex;
   gap: var(--space-4);
   margin: 0;
-  /* Room for the tiles' shadow, which the sideways scroll would clip */
-  padding: var(--space-1) var(--space-1) var(--space-10);
+  padding: var(--space-1) var(--space-1) var(--space-4);
   overflow-x: auto;
   list-style: none;
   scroll-snap-type: x proximity;
@@ -516,6 +551,11 @@
   flex: none;
   width: 260px;
   scroll-snap-align: start;
+}
+
+/* Lying in the page, not floating over it as in the month: frame only, no shadow */
+.similarItem > article[data-variant] {
+  box-shadow: none;
 }
 
 /* Narrow: one column, the term card right under the photos */
