@@ -91,6 +91,7 @@
 /* The hours look as they do on the month's bars */
 .time {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 700;
   color: var(--color-accent-strong);
 }
 

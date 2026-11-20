@@ -199,6 +199,7 @@
   /* Albert Sans has no tabular figures, so the hours take a system mono */
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
+  font-weight: 700;
   text-align: right;
 }
 
