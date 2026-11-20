@@ -1,5 +1,7 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { formatLocalTime } from '@/lib/format';
+import { organizerHref } from '@/features/schoolSearch/searchHref';
 import { CARD_LABELS } from '../labels';
 import { occurrenceDomId } from '../scheduleDom';
 import { mainCategory, type OccurrenceListing } from '@events/contract/listing';
@@ -71,6 +73,13 @@ export function OccurrenceCard({ listing, muted = false, variant = 'strip', onSe
       <p className={styles.place}>
         {venue.name}, {venue.city}
       </p>
+      {variant === 'popup' && event.organizer ? (
+        <p className={styles.organizer}>
+          <Link href={organizerHref(event.organizer.slug)} className={styles.organizerLink}>
+            {event.organizer.name}
+          </Link>
+        </p>
+      ) : null}
     </article>
   );
 }

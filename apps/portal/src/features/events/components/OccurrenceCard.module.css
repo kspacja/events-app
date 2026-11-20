@@ -94,9 +94,34 @@
   box-shadow: var(--shadow-lg);
 }
 
+.organizer {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+}
+
+/* Above the stretched select button, so it opens the organizer, not the event */
+.organizerLink {
+  position: relative;
+  z-index: 2;
+  color: var(--color-accent-strong);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.organizerLink:hover {
+  color: var(--color-accent-strong);
+  text-decoration: underline;
+}
+
+.organizerLink:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: 2px;
+}
+
 .card[data-variant='popup'] .meta,
 .card[data-variant='popup'] .title,
-.card[data-variant='popup'] .place {
+.card[data-variant='popup'] .place,
+.card[data-variant='popup'] .organizer {
   padding: 0 var(--space-1-5);
 }
 

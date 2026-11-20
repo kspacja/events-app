@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { localDayOf } from '@events/time';
 import { formatDay, formatLocalTime } from '@/lib/format';
-import { eventPageHref } from '@/features/schoolSearch/searchHref';
+import { eventPageHref, organizerHref } from '@/features/schoolSearch/searchHref';
 import { eventFacts, formatPrice } from './eventFacts';
 import { closeEventDetails, dropEventParam, EVENT_PARAM } from './eventParam';
 import { EVENT_DETAILS_LABELS as LABELS } from './labels';
@@ -82,6 +82,14 @@ export function EventDetailsDialog({ listings }: { readonly listings: readonly O
             <p className={styles.where}>
               {venue.name}, {venue.address}, {venue.city}
             </p>
+            {event.organizer ? (
+              <p className={styles.organizer}>
+                {LABELS.organizer}{' '}
+                <Link href={organizerHref(event.organizer.slug)} className={styles.organizerLink}>
+                  {event.organizer.name}
+                </Link>
+              </p>
+            ) : null}
           </header>
 
           {paragraphs.length > 0 ? (
