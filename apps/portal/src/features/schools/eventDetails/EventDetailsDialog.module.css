@@ -145,6 +145,16 @@
   outline-offset: 2px;
 }
 
+/* Without a description nothing sits between the header and the facts, so no rule either */
+.header:not(:has(+ .about)) {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.header + .facts {
+  border-top: 0;
+}
+
 .facts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
