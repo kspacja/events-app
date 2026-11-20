@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./event-page": "./src/eventPage.ts",
     "./listing": "./src/listing.ts",
     "./localities": "./src/localities.ts",
     "./occurrences-http": "./src/occurrencesHttp.ts",

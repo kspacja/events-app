@@ -18,3 +18,4 @@ export {
 } from './model';
 export { createSampleEvents } from './sampleEvents';
 export { SAMPLE_LOCALITIES } from './sampleLocalities';
+export { sampleImageUrl } from './sampleImages';

@@ -6,6 +6,8 @@ import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
 import { eventDayOf, isDayInRange } from '@events/time';
 import { hasFilters, matchesFilters, parseFilters, priceBands, priceModeOf, TRAIT_PARAMS, type FilterSelection } from '@/features/schools/schoolFilters';
 import { LOCALITY_PARAM, parsePlace, RADIUS_PARAM, type Place } from '@/features/locality/place';
+import { eventPageHandler } from './eventPages';
+import { sampleEventPageDetails } from './eventPageDetails';
 import { kmBetween, localitiesHandlers } from './localities';
 import { SAMPLE_EVENT_ORGANIZERS, SAMPLE_ORGANIZERS } from './organizers';
 import { searchHandlers, searchMatcher } from './schoolSearch';
@@ -19,7 +21,7 @@ function badRequest(error: string) {
 const NO_TRAITS: FilterSelection = {};
 
 /** Cechy szkolne in the listing's own shape (stage 3.9); the real API does not send them yet. */
-function withSchoolTraits(listing: OccurrenceListing, traits: FilterSelection | undefined): OccurrenceListing {
+export function withSchoolTraits(listing: OccurrenceListing, traits: FilterSelection | undefined): OccurrenceListing {
   if (!traits) return listing;
   const school = Object.fromEntries(
     Object.entries(TRAIT_PARAMS).map(([trait, param]) => [trait, traits[param] ?? []]),
@@ -28,7 +30,7 @@ function withSchoolTraits(listing: OccurrenceListing, traits: FilterSelection | 
 }
 
 /** Organizator in the listing's own shape (stage 3.10); the real API does not send it yet. */
-function withOrganizer(listing: OccurrenceListing, organizer: Organizer | undefined): OccurrenceListing {
+export function withOrganizer(listing: OccurrenceListing, organizer: Organizer | undefined): OccurrenceListing {
   return organizer ? { ...listing, event: { ...listing.event, organizer } } : listing;
 }
 
@@ -101,5 +103,13 @@ export function createHandlers(eventsApiUrl: string) {
     ),
     ...localitiesHandlers(eventsApiUrl, SAMPLE_LOCALITIES),
     ...searchHandlers(eventsApiUrl, SAMPLE_ORGANIZERS, sampleListings),
+    eventPageHandler(
+      eventsApiUrl,
+      () =>
+        sampleListings().map((listing) =>
+          withOrganizer(withSchoolTraits(listing, SAMPLE_SCHOOL_TRAITS[listing.event.id]), SAMPLE_EVENT_ORGANIZERS[listing.event.id]),
+        ),
+      sampleEventPageDetails,
+    ),
   ];
 }
