@@ -6,10 +6,15 @@ import { sampleImageUrl } from '@events/repo';
 
 const GALLERY_SIZE = 3;
 
-/** Other sample photos, so every page has a few thumbnails. */
-function galleryFor(eventId: string): string[] {
-  const seed = [...eventId].reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  return Array.from({ length: GALLERY_SIZE }, (_, i) => sampleImageUrl(eventId, seed + i + 1));
+/** Other sample photos than the event's own, so every page has a few thumbnails. */
+function galleryFor({ id, imageUrl }: OccurrenceListing['event']): string[] {
+  const seed = [...id].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  const photos = new Set<string>();
+  for (let i = 1; photos.size < GALLERY_SIZE && i <= GALLERY_SIZE * 4; i++) {
+    const photo = sampleImageUrl(id, seed + i);
+    if (photo !== imageUrl) photos.add(photo);
+  }
+  return [...photos];
 }
 
 const GENERAL_FAQ = [
@@ -50,7 +55,7 @@ function contactFor(listing: OccurrenceListing): EventPageDetails['contact'] {
 /** The same for every school event without its own page: enough to show the layout. */
 function generalDetails(listing: OccurrenceListing): EventPageDetails {
   return {
-    gallery: galleryFor(listing.event.id),
+    gallery: galleryFor(listing.event),
     learningGoals: [],
     specialNeeds: false,
     durationMinutes: 60,

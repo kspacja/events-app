@@ -90,7 +90,8 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
   const past = eventDayOf(current.startsAt) < today;
   const { event, venue, price, startsAt } = current;
   const details = page.details;
-  const photos = [event.imageUrl, ...(details?.gallery ?? [])].filter((url): url is string => Boolean(url));
+  // Each photo once: thumbnails are keyed by their address
+  const photos = [...new Set([event.imageUrl, ...(details?.gallery ?? [])])].filter((url): url is string => Boolean(url));
   const paragraphs = event.description?.split(/\n\s*\n/) ?? [];
 
   return (
@@ -144,7 +145,7 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
             <section className={styles.card} aria-labelledby="term">
               <h2 id="term" className={styles.cardTitle} data-past={past || undefined}>
                 <span className={styles.dot} aria-hidden="true" />
-                {LABELS.term}
+                {past ? LABELS.unavailable : LABELS.available}
               </h2>
               <ul className={styles.facts}>
                 <Fact icon={<CalendarIcon />}>

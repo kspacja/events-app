@@ -31,7 +31,7 @@ export function EventGallery({ photos, video, past }: EventGalleryProps) {
   return (
     <section className={styles.gallery} aria-label={LABELS.gallery} data-past={past || undefined}>
       <div className={styles.main}>
-        {main ? <Image src={main} alt="" fill unoptimized sizes="(max-width: 960px) 100vw, 640px" className={styles.image} priority /> : null}
+        {main ? <Image src={main} alt="" fill unoptimized sizes="(max-width: 960px) 100vw, 640px" className={styles.image} loading="eager" /> : null}
       </div>
       {photos.length > 1 || video ? (
         <ul className={styles.thumbs}>
@@ -44,7 +44,8 @@ export function EventGallery({ photos, video, past }: EventGalleryProps) {
                 aria-label={LABELS.showPhoto(index + 1)}
                 onClick={() => setCurrent(index)}
               >
-                <Image src={photo} alt="" fill unoptimized sizes="120px" className={styles.image} />
+                {/* Eager: the first shares the main photo's address, which Next would flag as a lazy LCP */}
+                <Image src={photo} alt="" fill unoptimized sizes="120px" className={styles.image} loading="eager" />
               </button>
             </li>
           ))}
