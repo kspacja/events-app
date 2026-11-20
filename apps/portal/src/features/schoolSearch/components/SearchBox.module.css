@@ -1,0 +1,295 @@
+.root {
+  display: flex;
+  align-self: center;
+  min-width: 0;
+  margin-left: auto;
+}
+
+/* Looks like a field on the green bar; the real field is in the window it opens */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: clamp(240px, 34vw, 440px);
+  min-height: 36px;
+  padding: 0 var(--space-2) 0 var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-on-accent) 35%, transparent);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-on-accent) 14%, transparent);
+  color: var(--color-on-accent);
+  font: inherit;
+  font-size: var(--text-md);
+  text-align: left;
+  cursor: text;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.trigger:hover {
+  border-color: color-mix(in srgb, var(--color-on-accent) 60%, transparent);
+  background: color-mix(in srgb, var(--color-on-accent) 22%, transparent);
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--color-on-accent);
+  outline-offset: 2px;
+}
+
+.triggerIcon {
+  flex: none;
+}
+
+.triggerText {
+  flex: 1;
+  overflow: hidden;
+  color: color-mix(in srgb, var(--color-on-accent) 85%, transparent);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shortcut {
+  flex: none;
+  min-width: 20px;
+  padding: 0 var(--space-1);
+  border: 1px solid color-mix(in srgb, var(--color-on-accent) 45%, transparent);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: 18px;
+  text-align: center;
+}
+
+/* Wider screens: a large window near the top, under the bar */
+.dialog {
+  position: fixed;
+  inset: 56px 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: min(680px, calc(100vw - 2 * var(--space-4)));
+  max-width: none;
+  max-height: calc(100dvh - 112px);
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-2xl);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg);
+}
+
+.dialog::backdrop {
+  background: var(--color-backdrop);
+}
+
+.searchRow {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.inputIcon {
+  flex: none;
+  color: var(--color-accent-strong);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  /* 16px or more, so phones do not zoom in on focus */
+  font-size: max(16px, var(--text-xl));
+}
+
+.input:focus-visible {
+  outline: none;
+}
+
+.input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--color-ground);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 120px;
+  padding: var(--space-3);
+  overflow-y: auto;
+}
+
+.intro {
+  margin: 0;
+  padding: var(--space-2) var(--space-2) 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-md);
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.groupLabel {
+  margin: 0;
+  padding: 0 var(--space-2) var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.options {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-2-5);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+
+.option[aria-selected='true'] {
+  background: var(--color-ground);
+}
+
+.optionIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  color: var(--color-accent-strong);
+}
+
+.option[aria-selected='true'] .optionIcon {
+  background: var(--color-surface);
+}
+
+.optionText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.optionMain {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.option[data-kind='recent'] .optionMain {
+  font-weight: 400;
+}
+
+.optionDetail {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.status {
+  margin: 0;
+  padding: 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.status:empty {
+  display: none;
+}
+
+.keys {
+  flex: none;
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px solid var(--color-rule);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.keys kbd {
+  display: inline-block;
+  min-width: 18px;
+  margin-right: var(--space-0-5);
+  padding: 0 var(--space-1);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-family: inherit;
+  text-align: center;
+}
+
+/* Phones: a magnifier on the bar, the window takes the whole screen */
+@media (max-width: 768px) {
+  .root {
+    margin-right: var(--space-1);
+  }
+
+  .trigger {
+    justify-content: center;
+    width: 40px;
+    min-height: 40px;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .triggerText,
+  .shortcut {
+    display: none;
+  }
+
+  .dialog {
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+  }
+
+  .keys {
+    display: none;
+  }
+}

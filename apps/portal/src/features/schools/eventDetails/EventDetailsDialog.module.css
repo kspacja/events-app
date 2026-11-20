@@ -146,6 +146,7 @@
   flex: none;
   display: flex;
   justify-content: flex-end;
+  gap: var(--space-2);
   padding: var(--space-3) var(--space-6);
   border-top: 1px solid var(--color-rule);
 }
@@ -168,7 +169,29 @@
   background: color-mix(in srgb, var(--color-accent-strong) 88%, black);
 }
 
+/* Outlined beside the filled contact button, as elsewhere in the portal */
+.more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-md);
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+
+.more:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
 .close:focus-visible,
+.more:focus-visible,
 .contact:focus-visible {
   outline: 2px solid var(--color-text);
   outline-offset: 2px;
@@ -208,8 +231,10 @@
     padding: var(--space-2) var(--space-4) calc(var(--space-2) + env(safe-area-inset-bottom));
   }
 
+  .more,
   .contact {
-    width: 100%;
+    flex: 1;
+    justify-content: center;
     min-height: 40px;
   }
 }

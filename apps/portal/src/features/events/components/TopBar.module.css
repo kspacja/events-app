@@ -23,6 +23,7 @@
 /* Lines up with the full-width page's side padding */
 .inner[data-wide] {
   max-width: none;
+  padding-right: var(--space-4);
   padding-left: var(--space-4);
 }
 

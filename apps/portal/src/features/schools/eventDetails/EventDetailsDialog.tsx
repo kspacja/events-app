@@ -2,10 +2,12 @@
 
 import { useId, useLayoutEffect, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { localDayOf } from '@events/time';
 import { formatDay, formatLocalTime } from '@/lib/format';
+import { eventPageHref } from '@/features/schoolSearch/searchHref';
 import { eventFacts, formatPrice } from './eventFacts';
 import { closeEventDetails, dropEventParam, EVENT_PARAM } from './eventParam';
 import { EVENT_DETAILS_LABELS as LABELS } from './labels';
@@ -101,6 +103,9 @@ export function EventDetailsDialog({ listings }: { readonly listings: readonly O
         </div>
 
         <footer className={styles.footer}>
+          <Link href={eventPageHref(event.id)} className={styles.more}>
+            {LABELS.more}
+          </Link>
           {/* No action yet: chat or another way of contact comes later (stage 3.9); Clarity shows who clicks */}
           <button type="button" className={styles.contact}>
             {LABELS.contact}

@@ -3,5 +3,6 @@ export const EVENT_DETAILS_LABELS = {
   free: 'bezpłatne',
   categories: 'Kategorie',
   contact: 'Skontaktuj się',
+  more: 'Dowiedz się więcej',
   about: 'O wydarzeniu',
 } as const;

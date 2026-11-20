@@ -17,6 +17,9 @@ import { guessedLocality, rememberPlace } from '../placeCookies';
 import styles from './LocalityPicker.module.css';
 
 const SEARCH_DELAY_MS = 150;
+// The dropdown's width in CSS and the screen edge it keeps clear of
+const DROPDOWN_WIDTH_PX = 440;
+const DROPDOWN_GAP_PX = 16;
 
 type Hints =
   | { readonly state: 'idle' }
@@ -94,8 +97,15 @@ function PinIcon() {
   );
 }
 
+interface LocalityPickerProps {
+  /** Where a choice leads; by default the same page with the filters in the new place. */
+  readonly hrefFor?: (place: Place | null) => string;
+  /** `end`: the picker sits at the right edge, so its note opens leftwards. */
+  readonly align?: 'start' | 'end';
+}
+
 /** The chosen Miejscowość as a button over the month; it opens a search under it (a sheet from the bottom on phones). */
-export function LocalityPicker() {
+export function LocalityPicker({ hrefFor, align = 'start' }: LocalityPickerProps = {}) {
   const router = useRouter();
   const pathname = usePathname();
   const selection = parseFilters(new URLSearchParams(useSearchParams()));
@@ -121,7 +131,9 @@ export function LocalityPicker() {
     if (!dialog.open) {
       // Wider screens: just under the button; phones: CSS turns it into a sheet and ignores these
       const { left, bottom } = button.getBoundingClientRect();
-      dialog.style.setProperty('--picker-left', `${left}px`);
+      // Kept on screen when the button sits near the right edge
+      const fitted = Math.max(DROPDOWN_GAP_PX, Math.min(left, window.innerWidth - DROPDOWN_WIDTH_PX - DROPDOWN_GAP_PX));
+      dialog.style.setProperty('--picker-left', `${fitted}px`);
       dialog.style.setProperty('--picker-top', `${bottom + 8}px`);
       dialog.showModal();
     }
@@ -139,7 +151,8 @@ export function LocalityPicker() {
       close();
       setQuery('');
     }
-    startTransition(() => router.replace(`${pathname}${filtersQuery(withPlace(selection, next))}`, { scroll: false }));
+    const href = hrefFor ? hrefFor(next) : `${pathname}${filtersQuery(withPlace(selection, next))}`;
+    startTransition(() => router.replace(href, { scroll: false }));
   }
 
   function choose(chosen: Locality) {
@@ -168,7 +181,7 @@ export function LocalityPicker() {
   const optionId = (index: number) => `${listId}-${index}`;
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-align={align}>
       <TopProgress active={pending} />
       <button
         ref={buttonRef}

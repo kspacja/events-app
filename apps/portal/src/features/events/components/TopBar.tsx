@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { SCHOOLS_PATH } from '@/features/schools/schoolsHref';
 import { SCHOOLS_LABELS } from '@/features/schools/labels';
@@ -9,9 +10,11 @@ interface TopBarProps {
   readonly title?: string;
   /** Full width, for pages that span the whole screen (the schools month). */
   readonly wide?: boolean;
+  /** At the bar's end, e.g. the schools search (stage 3.10). */
+  readonly search?: ReactNode;
 }
 
-export function TopBar({ title, wide = false }: TopBarProps) {
+export function TopBar({ title, wide = false, search }: TopBarProps) {
   return (
     <div className={styles.bar}>
       <div className={styles.inner} data-wide={wide || undefined}>
@@ -25,6 +28,7 @@ export function TopBar({ title, wide = false }: TopBarProps) {
         {title ? (
           <h1 className={styles.title}>{title}</h1>
         ) : null}
+        {search}
       </div>
     </div>
   );

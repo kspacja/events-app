@@ -37,6 +37,13 @@ export function guessedLocality(): string | undefined {
   return readCookie(GUESSED_COOKIE);
 }
 
+/** Browser only: the last chosen place, else the guessed one; null for all of Poland or nothing known. */
+export function knownPlaceInBrowser(): Place | null {
+  const remembered = rememberedPlace(readCookie(PLACE_COOKIE), readCookie(RADIUS_COOKIE));
+  if (remembered === WHOLE_COUNTRY) return null;
+  return remembered ?? parsePlace(guessedLocality() ?? '', '');
+}
+
 /** Browser only: keeps a choice for the next visit and ends the guess. */
 export function rememberPlace(place: Place | null) {
   writeCookie(PLACE_COOKIE, place ? place.localityId : WHOLE_COUNTRY, PLACE_COOKIE_MAX_AGE_S);

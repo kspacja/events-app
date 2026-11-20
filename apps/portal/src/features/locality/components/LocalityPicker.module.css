@@ -66,6 +66,11 @@
   line-height: 1.4;
 }
 
+.root[data-align='end'] .guess {
+  right: 0;
+  left: auto;
+}
+
 .guessText {
   margin: 0;
 }
