@@ -2,7 +2,7 @@ import 'server-only';
 
 import { cache } from 'react';
 import type { OccurrenceListing, Organizer } from '@events/contract/listing';
-import { organizerResponseSchema, suggestionsResponseSchema, type Suggestions } from '@events/contract/search';
+import { organizerResponseSchema, suggestionsResponseSchema, type OrganizerProfile, type Suggestions } from '@events/contract/search';
 import { addDays, currentEventDay } from '@events/time';
 import { getRuntimeConfig } from '@/config/runtimeConfig';
 import { createHttpOccurrenceSource } from '@/features/events/source/httpOccurrenceSource';
@@ -29,10 +29,15 @@ export async function suggest(query: string): Promise<Suggestions> {
   return suggestionsResponseSchema.parse(await getJson(`/search/suggestions?${new URLSearchParams({ q: query })}`));
 }
 
+export interface OrganizerWithProfile {
+  readonly organizer: Organizer;
+  readonly profile?: OrganizerProfile;
+}
+
 /** Null when unknown; a failing API throws, so the page shows its error instead of "not found". */
-export const findOrganizer = cache(async (slug: string): Promise<Organizer | null> => {
+export const findOrganizer = cache(async (slug: string): Promise<OrganizerWithProfile | null> => {
   const body = await getJson(`/organizers/${encodeURIComponent(slug)}`);
-  return body === null ? null : organizerResponseSchema.parse(body).organizer;
+  return body === null ? null : organizerResponseSchema.parse(body);
 });
 
 export type SearchCriteria =

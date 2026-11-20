@@ -32,10 +32,16 @@ export function ResultsSkeleton({ organizer = false }: { readonly organizer?: bo
         {organizer ? (
           <div className={styles.columns}>
             <Rows count={ROWS} />
-            <div className={styles.aside}>
-              <Skeleton width="60%" height={22} />
-              <Skeleton className={styles.skeletonGap} />
-              <Skeleton width="80%" className={styles.skeletonGap} />
+            <div className={styles.asideStack}>
+              <div className={styles.aside}>
+                <Skeleton width={48} height={48} radius="var(--radius-full)" />
+                <Skeleton />
+                <Skeleton width="80%" />
+              </div>
+              <div className={styles.aside}>
+                <Skeleton width="40%" />
+                <Skeleton height={180} radius="var(--radius-lg)" />
+              </div>
             </div>
           </div>
         ) : (

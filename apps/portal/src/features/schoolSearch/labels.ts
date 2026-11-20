@@ -18,7 +18,11 @@ export const SEARCH_LABELS = {
   empty: 'Nic nie znaleźliśmy w najbliższych 60 dniach.',
   upcoming: 'Najbliższe wydarzenia',
   aboutOrganizer: 'O organizatorze',
-  organizerSoon: 'Opis organizatora, kontakt i zdjęcia pojawią się tutaj wkrótce.',
+  organizerSoon: 'Opis organizatora i kontakt pojawią się tutaj wkrótce.',
+  forSchools: 'Dla szkół',
+  location: 'Lokalizacja',
+  website: 'Strona internetowa',
+  map: (name: string) => `Mapa: ${name}`,
   backToCalendar: 'Wróć do kalendarza',
 } as const;
 

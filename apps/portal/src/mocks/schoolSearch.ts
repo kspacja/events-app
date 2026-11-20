@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import type { OccurrenceListing, Organizer } from '@events/contract/listing';
-import { SEARCH_HINTS_LIMIT, searchQuerySchema, type VenueHint } from '@events/contract/search';
+import { SEARCH_HINTS_LIMIT, searchQuerySchema, type OrganizerProfile, type VenueHint } from '@events/contract/search';
 import { foldText, KEYWORDS_PARAM, ORGANIZER_PARAM, VENUE_PARAM, venueKey } from '@/features/schoolSearch/searchHref';
 
 /** Every word of the query appears in the title, description, categories, venue or organizer. */
@@ -49,7 +49,12 @@ function schoolVenues(listings: readonly OccurrenceListing[]): VenueHint[] {
   return [...venues.values()];
 }
 
-export function searchHandlers(eventsApiUrl: string, organizers: readonly Organizer[], getListings: () => readonly OccurrenceListing[]) {
+export function searchHandlers(
+  eventsApiUrl: string,
+  organizers: readonly Organizer[],
+  getListings: () => readonly OccurrenceListing[],
+  profiles: Readonly<Record<string, OrganizerProfile>> = {},
+) {
   return [
     http.get(`${eventsApiUrl}/search/suggestions`, ({ request }) => {
       const parsed = searchQuerySchema.safeParse({ q: new URL(request.url).searchParams.get('q') ?? undefined });
@@ -61,7 +66,9 @@ export function searchHandlers(eventsApiUrl: string, organizers: readonly Organi
     }),
     http.get(`${eventsApiUrl}/organizers/:slug`, ({ params }) => {
       const organizer = organizers.find(({ slug }) => slug === params.slug);
-      return organizer ? HttpResponse.json({ organizer }) : HttpResponse.json({ error: 'Not found.' }, { status: 404 });
+      if (!organizer) return HttpResponse.json({ error: 'Not found.' }, { status: 404 });
+      const profile = profiles[organizer.slug];
+      return HttpResponse.json({ organizer, ...(profile ? { profile } : {}) });
     }),
   ];
 }

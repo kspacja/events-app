@@ -9,7 +9,7 @@ import { LOCALITY_PARAM, parsePlace, RADIUS_PARAM, type Place } from '@/features
 import { eventPageHandler } from './eventPages';
 import { sampleEventPageDetails } from './eventPageDetails';
 import { kmBetween, localitiesHandlers } from './localities';
-import { SAMPLE_EVENT_ORGANIZERS, SAMPLE_ORGANIZERS } from './organizers';
+import { SAMPLE_EVENT_ORGANIZERS, SAMPLE_ORGANIZER_PROFILES, SAMPLE_ORGANIZERS } from './organizers';
 import { searchHandlers, searchMatcher } from './schoolSearch';
 import { SAMPLE_SCHOOL_TRAITS } from './schoolTraits';
 import { SAMPLE_VENUE_LOCALITIES } from './venueLocalities';
@@ -102,7 +102,7 @@ export function createHandlers(eventsApiUrl: string) {
       SAMPLE_EVENT_ORGANIZERS,
     ),
     ...localitiesHandlers(eventsApiUrl, SAMPLE_LOCALITIES),
-    ...searchHandlers(eventsApiUrl, SAMPLE_ORGANIZERS, sampleListings),
+    ...searchHandlers(eventsApiUrl, SAMPLE_ORGANIZERS, sampleListings, SAMPLE_ORGANIZER_PROFILES),
     eventPageHandler(
       eventsApiUrl,
       () =>

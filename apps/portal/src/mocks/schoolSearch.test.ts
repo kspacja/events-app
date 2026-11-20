@@ -67,4 +67,11 @@ describe('search suggestions', () => {
     expect(await (await fetch(`${TEST_EVENTS_API_URL}/organizers/${MUSEUM.slug}`)).json()).toEqual({ organizer: MUSEUM });
     expect((await fetch(`${TEST_EVENTS_API_URL}/organizers/nikt`)).status).toBe(404);
   });
+
+  it('adds the organizer profile when MSW knows one', async () => {
+    const profile = { kind: 'Muzeum', description: '', address: 'ul. Testowa 1', postalCode: '00-001', city: 'Wrocław', lat: 51, lng: 17 };
+    server.use(...searchHandlers(TEST_EVENTS_API_URL, [MUSEUM], () => [], { [MUSEUM.slug]: profile }));
+
+    expect(await (await fetch(`${TEST_EVENTS_API_URL}/organizers/${MUSEUM.slug}`)).json()).toEqual({ organizer: MUSEUM, profile });
+  });
 });

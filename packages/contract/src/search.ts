@@ -28,8 +28,27 @@ export const suggestionsResponseSchema = z.object({
   venues: z.array(venueHintSchema).max(SEARCH_HINTS_LIMIT),
 });
 
+/** What the organizer page shows beside its events (stage 3.10); only MSW sends it for now. */
+export const organizerProfileSchema = z
+  .object({
+    /** e.g. "Fundacja", "Muzeum", "Dom kultury". */
+    kind: z.string().min(1),
+    description: z.string(),
+    address: z.string().min(1),
+    postalCode: z.string(),
+    city: z.string().min(1),
+    lat: z.number(),
+    lng: z.number(),
+    website: z.string().optional(),
+    email: z.string().optional(),
+    phone: z.string().optional(),
+  })
+  .readonly();
+
 /** `GET /organizers/:slug`. */
-export const organizerResponseSchema = z.object({ organizer: organizerSchema });
+export const organizerResponseSchema = z.object({ organizer: organizerSchema, profile: organizerProfileSchema.optional() });
+
+export type OrganizerProfile = z.infer<typeof organizerProfileSchema>;
 
 export type VenueHint = z.infer<typeof venueHintSchema>;
 export type Suggestions = z.infer<typeof suggestionsResponseSchema>;

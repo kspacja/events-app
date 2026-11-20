@@ -1,4 +1,5 @@
 import type { Organizer } from '@events/contract/listing';
+import type { OrganizerProfile } from '@events/contract/search';
 
 /** Prototype (stage 3.10): Organizatorzy of the sample school events; only MSW knows them. */
 const ORGANIZERS = {
@@ -50,4 +51,91 @@ export const SAMPLE_EVENT_ORGANIZERS: Readonly<Record<string, Organizer>> = {
   'dlu-school-forest': ORGANIZERS.sciezki,
   'sob-school-sleza': ORGANIZERS.sciezki,
   'sie-school-energy': ORGANIZERS.odkrywcy,
+};
+
+/** Made-up details for the organizer page, keyed by slug; addresses are real streets, the institutions are not. */
+export const SAMPLE_ORGANIZER_PROFILES: Readonly<Record<string, OrganizerProfile>> = {
+  [ORGANIZERS.wcek.slug]: {
+    kind: 'Instytucja kultury',
+    description:
+      'Prowadzimy koncerty edukacyjne, warsztaty i spacery po mieście dla przedszkoli i szkół. Zajęcia układamy pod podstawę programową, a nauczycielom dajemy karty pracy do lekcji przed wizytą i po niej.',
+    address: 'ul. Wystawowa 1',
+    postalCode: '51-618',
+    city: 'Wrocław',
+    lat: 51.1067,
+    lng: 17.077,
+    website: 'https://wcek.example.pl',
+    email: 'szkoly@wcek.example.pl',
+    phone: '71 347 10 00',
+  },
+  [ORGANIZERS.muzeum.slug]: {
+    kind: 'Muzeum',
+    description: 'Lekcje muzealne o sztuce średniowiecza i baroku oraz koncerty organowe dla klas 4–8. Grupy oprowadzają edukatorzy muzeum.',
+    address: 'pl. Powstańców Warszawy 5',
+    postalCode: '50-153',
+    city: 'Wrocław',
+    lat: 51.11,
+    lng: 17.048,
+    website: 'https://muzeum-sztuki-dawnej.example.pl',
+    email: 'edukacja@muzeum-sztuki-dawnej.example.pl',
+    phone: '71 372 51 50',
+  },
+  [ORGANIZERS.odkrywcy.slug]: {
+    kind: 'Fundacja',
+    description: 'Pokazy naukowe, warsztaty z programowania i chemii dla dzieci i młodzieży. Przyjeżdżamy też do szkół z mobilnym laboratorium.',
+    address: 'ul. Świdnicka 20',
+    postalCode: '50-068',
+    city: 'Wrocław',
+    lat: 51.098,
+    lng: 17.033,
+    website: 'https://mlodzi-odkrywcy.example.pl',
+    email: 'kontakt@mlodzi-odkrywcy.example.pl',
+    phone: '600 120 340',
+  },
+  [ORGANIZERS.krakow.slug]: {
+    kind: 'Dom kultury',
+    description: 'Lekcje historii na Kazimierzu, teatr lalek z legendami krakowskimi i debaty dla licealistów.',
+    address: 'ul. Szeroka 6',
+    postalCode: '31-053',
+    city: 'Kraków',
+    lat: 50.0515,
+    lng: 19.9445,
+    website: 'https://krakowski-dom-kultury.example.pl',
+    email: 'szkoly@krakowski-dom-kultury.example.pl',
+    phone: '12 421 00 00',
+  },
+  [ORGANIZERS.pomorze.slug]: {
+    kind: 'Centrum nauki',
+    description: 'Lekcje w porcie, na plaży i w pracowni: fizyka fal, życie w Bałtyku, bursztyn i historia Gdańska.',
+    address: 'Długie Pobrzeże 14',
+    postalCode: '80-888',
+    city: 'Gdańsk',
+    lat: 54.3503,
+    lng: 18.658,
+    website: 'https://pomorskie-centrum-nauki.example.pl',
+    email: 'edukacja@pomorskie-centrum-nauki.example.pl',
+    phone: '58 301 00 00',
+  },
+  [ORGANIZERS.poznan.slug]: {
+    kind: 'Stowarzyszenie',
+    description: 'Warsztaty pisarskie, fotograficzne i komiksowe prowadzone przez twórców z Poznania.',
+    address: 'Stary Rynek 1',
+    postalCode: '61-772',
+    city: 'Poznań',
+    lat: 52.4082,
+    lng: 16.9335,
+    email: 'warsztaty@akademia-tworcza.example.pl',
+    phone: '61 852 00 00',
+  },
+  [ORGANIZERS.sciezki.slug]: {
+    kind: 'Stowarzyszenie',
+    description: 'Lekcje w terenie pod Wrocławiem: w gospodarstwie edukacyjnym, w lesie i na Ślęży.',
+    address: 'ul. św. Jakuba 18',
+    postalCode: '55-050',
+    city: 'Sobótka',
+    lat: 50.8985,
+    lng: 16.744,
+    website: 'https://dolnoslaskie-sciezki.example.pl',
+    phone: '601 200 300',
+  },
 };

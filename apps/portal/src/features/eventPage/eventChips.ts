@@ -1,7 +1,7 @@
 import type { OccurrenceListing } from '@events/contract/listing';
 import { SCHOOL_FILTERS, TRAIT_PARAMS } from '@/features/schools/schoolFilters';
 
-function traitLabels(trait: keyof typeof TRAIT_PARAMS, values: readonly string[] = []): string[] {
+export function traitLabels(trait: keyof typeof TRAIT_PARAMS, values: readonly string[] = []): string[] {
   const filter = SCHOOL_FILTERS.find(({ param }) => param === TRAIT_PARAMS[trait]);
   return filter ? filter.options.filter(({ value }) => values.includes(value)).map(({ label }) => label) : [];
 }
