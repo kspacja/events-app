@@ -1,12 +1,14 @@
 import { http, HttpResponse } from 'msw';
 import { createSampleEvents, SAMPLE_LOCALITIES, toListings } from '@events/repo';
-import type { OccurrenceListing } from '@events/contract/listing';
+import type { OccurrenceListing, Organizer } from '@events/contract/listing';
 import type { Locality, LocalityId } from '@events/contract/localities';
 import { occurrencesQuerySchema } from '@events/contract/occurrences-http';
 import { eventDayOf, isDayInRange } from '@events/time';
 import { hasFilters, matchesFilters, parseFilters, priceBands, priceModeOf, TRAIT_PARAMS, type FilterSelection } from '@/features/schools/schoolFilters';
 import { LOCALITY_PARAM, parsePlace, RADIUS_PARAM, type Place } from '@/features/locality/place';
 import { kmBetween, localitiesHandlers } from './localities';
+import { SAMPLE_EVENT_ORGANIZERS, SAMPLE_ORGANIZERS } from './organizers';
+import { searchHandlers, searchMatcher } from './schoolSearch';
 import { SAMPLE_SCHOOL_TRAITS } from './schoolTraits';
 import { SAMPLE_VENUE_LOCALITIES } from './venueLocalities';
 
@@ -23,6 +25,11 @@ function withSchoolTraits(listing: OccurrenceListing, traits: FilterSelection | 
     Object.entries(TRAIT_PARAMS).map(([trait, param]) => [trait, traits[param] ?? []]),
   ) as Record<keyof typeof TRAIT_PARAMS, readonly string[]>;
   return { ...listing, event: { ...listing.event, school } };
+}
+
+/** Organizator in the listing's own shape (stage 3.10); the real API does not send it yet. */
+function withOrganizer(listing: OccurrenceListing, organizer: Organizer | undefined): OccurrenceListing {
+  return organizer ? { ...listing, event: { ...listing.event, organizer } } : listing;
 }
 
 /** What MSW needs to match a place: the dictionary and each venue's Miejscowość, keyed by `venue.city`. */
@@ -42,13 +49,15 @@ function placeMatcher(place: Place | null, { localities, venueLocalities }: Plac
 
 /**
  * Serves the listings whose event day is in the validated range, for schools or the general programme; ordering is left to the adapter.
- * Prototype: school filter params narrow school listings by traits only MSW knows, `miejscowosc` and `zasieg` by distance; the real API ignores them.
+ * Prototype: school filter params narrow school listings by traits only MSW knows, `miejscowosc` and `zasieg` by distance,
+ * `q`, `miejsce` and `organizator` by search (stage 3.10); the real API ignores them.
  */
 export function occurrencesHandler(
   eventsApiUrl: string,
   getListings: () => readonly OccurrenceListing[],
   schoolTraits: Readonly<Record<string, FilterSelection>> = {},
   placeData: PlaceData = { localities: [], venueLocalities: {} },
+  organizers: Readonly<Record<string, Organizer>> = {},
 ) {
   return http.get(`${eventsApiUrl}/occurrences`, ({ request }) => {
     const params = new URL(request.url).searchParams;
@@ -62,9 +71,11 @@ export function occurrencesHandler(
     const { forSchools, ...range } = parsed.data;
     const filters = forSchools ? parseFilters(params) : NO_TRAITS;
     const inPlace = placeMatcher(parsePlace(params.get(LOCALITY_PARAM) ?? '', params.get(RADIUS_PARAM) ?? ''), placeData);
+    const found = searchMatcher(params);
     return HttpResponse.json({
       occurrences: getListings()
-        .map((listing) => withSchoolTraits(listing, schoolTraits[listing.event.id]))
+        .map((listing) => withOrganizer(withSchoolTraits(listing, schoolTraits[listing.event.id]), organizers[listing.event.id]))
+        .filter(found)
         .filter(
           ({ startsAt, event, price, venue }) =>
             event.forSchools === forSchools &&
@@ -79,11 +90,16 @@ export function occurrencesHandler(
 }
 
 export function createHandlers(eventsApiUrl: string) {
+  const sampleListings = () => toListings(createSampleEvents(new Date()));
   return [
-    occurrencesHandler(eventsApiUrl, () => toListings(createSampleEvents(new Date())), SAMPLE_SCHOOL_TRAITS, {
-      localities: SAMPLE_LOCALITIES,
-      venueLocalities: SAMPLE_VENUE_LOCALITIES,
-    }),
+    occurrencesHandler(
+      eventsApiUrl,
+      sampleListings,
+      SAMPLE_SCHOOL_TRAITS,
+      { localities: SAMPLE_LOCALITIES, venueLocalities: SAMPLE_VENUE_LOCALITIES },
+      SAMPLE_EVENT_ORGANIZERS,
+    ),
     ...localitiesHandlers(eventsApiUrl, SAMPLE_LOCALITIES),
+    ...searchHandlers(eventsApiUrl, SAMPLE_ORGANIZERS, sampleListings),
   ];
 }

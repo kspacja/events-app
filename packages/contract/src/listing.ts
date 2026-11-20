@@ -68,6 +68,14 @@ export const schoolTraitsSchema = z
   })
   .readonly();
 
+/** Organizator (instytucja) of a school event; only MSW sends it for now (stage 3.10). */
+export const organizerSchema = z
+  .object({
+    slug: z.string().regex(CATEGORY_SLUG_FORMAT),
+    name: z.string().min(1),
+  })
+  .readonly();
+
 export const listedEventSchema = z
   .object({
     id: eventIdSchema,
@@ -81,6 +89,7 @@ export const listedEventSchema = z
     forSchools: z.boolean(),
     /** Cechy szkolne, as the schools filters' option values; only MSW sends them for now (stage 3.9). */
     school: schoolTraitsSchema.optional(),
+    organizer: organizerSchema.optional(),
   })
   .readonly();
 
@@ -97,6 +106,7 @@ export const occurrenceListingSchema = z
 export type Venue = z.infer<typeof venueSchema>;
 export type Price = z.infer<typeof priceSchema>;
 export type Category = z.infer<typeof categorySchema>;
+export type Organizer = z.infer<typeof organizerSchema>;
 export type OccurrenceListing = z.infer<typeof occurrenceListingSchema>;
 
 /** The Kategoria główna: the first category, which sets the card's colour and label. */
