@@ -140,4 +140,17 @@ describe('MonthGrid', () => {
     expect(details.getByText('Drugi akapit.')).toBeInTheDocument();
     expect(details.getByRole('button', { name: 'Skontaktuj się', hidden: true })).toBeInTheDocument();
   });
+
+  it('says a past event has happened instead of offering contact', () => {
+    window.history.replaceState(null, '', '/dla-szkol/miesiac/2026-11?wydarzenie=a');
+    render(
+      <OccurrenceSelectionProvider>
+        <MonthGrid month="2026-11" weeks={[[day('2026-11-02', [listing('a', '2026-11-02T09:00:00Z', 'Lekcja w muzeum')])]]} today="2026-11-03" />
+      </OccurrenceSelectionProvider>,
+    );
+
+    const details = within(screen.getByRole('dialog', { hidden: true }));
+    expect(details.getByText('To wydarzenie już się odbyło.')).toBeInTheDocument();
+    expect(details.queryByRole('button', { name: 'Skontaktuj się', hidden: true })).not.toBeInTheDocument();
+  });
 });

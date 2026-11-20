@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import type { OccurrenceListing } from '@events/contract/listing';
-import { currentEventDay, eventDayOf, localDayOf } from '@events/time';
+import { eventDayOf, localDayOf, type CalendarDay } from '@events/time';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { eventPageHref, organizerHref } from '@/features/schoolSearch/searchHref';
 import { eventFacts, formatPrice } from './eventFacts';
@@ -14,7 +14,7 @@ import { EVENT_DETAILS_LABELS as LABELS } from './labels';
 import styles from './EventDetailsDialog.module.css';
 
 /** Opens for `?wydarzenie=` when the month has that occurrence; Esc, the close button and the backdrop close it. */
-export function EventDetailsDialog({ listings }: { readonly listings: readonly OccurrenceListing[] }) {
+export function EventDetailsDialog({ listings, today }: { readonly listings: readonly OccurrenceListing[]; readonly today: CalendarDay }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const id = useSearchParams().get(EVENT_PARAM);
@@ -36,7 +36,7 @@ export function EventDetailsDialog({ listings }: { readonly listings: readonly O
   const day = formatDay(localDayOf(startsAt), 'EEEE, d MMMM');
   const paragraphs = event.description?.split(/\n\s*\n/) ?? [];
   // A day already gone, as in the month's faded days
-  const past = eventDayOf(startsAt) < currentEventDay(new Date());
+  const past = eventDayOf(startsAt) < today;
 
   return (
     <dialog

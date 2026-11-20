@@ -193,15 +193,12 @@
   filter: grayscale(0.7);
 }
 
+/* Plain text at the footer's start, not a button */
 .past {
-  display: inline-flex;
-  align-items: center;
-  min-height: 36px;
-  margin: 0;
-  padding: 0 var(--space-4);
-  border-radius: var(--radius-lg);
-  background: var(--color-ground);
-  color: var(--color-text-secondary);
+  order: -1;
+  align-self: center;
+  margin: 0 auto 0 0;
+  color: var(--color-text-muted);
   font-size: var(--text-md);
 }
 
@@ -272,7 +269,6 @@
   }
 
   .more,
-  .past,
   .contact {
     flex: 1;
     justify-content: center;

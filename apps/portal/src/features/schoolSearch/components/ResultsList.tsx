@@ -101,7 +101,7 @@ export function ResultsList({ listings, today, showOrganizer = true }: ResultsLi
           </ul>
         </section>
       ))}
-      <EventDetailsDialog listings={listings} />
+      <EventDetailsDialog listings={listings} today={today} />
     </>
   );
 }

@@ -349,7 +349,7 @@ export function MonthGrid({ month, weeks, passed = null, today, notice = null }:
           onClosed={closed}
         />
       ) : null}
-      <EventDetailsDialog listings={weeks.flat().flatMap(activeListings)} />
+      <EventDetailsDialog listings={weeks.flat().flatMap(activeListings)} today={today} />
     </section>
   );
 }
