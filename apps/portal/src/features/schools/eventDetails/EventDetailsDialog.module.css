@@ -187,6 +187,24 @@
   transition: background-color 150ms ease;
 }
 
+/* Gone: the photo fades, as the month fades its past days */
+.photo[data-past] .image {
+  opacity: 0.45;
+  filter: grayscale(0.7);
+}
+
+.past {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  margin: 0;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-ground);
+  color: var(--color-text-secondary);
+  font-size: var(--text-md);
+}
+
 .contact:hover {
   background: color-mix(in srgb, var(--color-accent-strong) 88%, black);
 }
@@ -254,6 +272,7 @@
   }
 
   .more,
+  .past,
   .contact {
     flex: 1;
     justify-content: center;

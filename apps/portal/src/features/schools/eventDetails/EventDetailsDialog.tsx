@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import type { OccurrenceListing } from '@events/contract/listing';
-import { localDayOf } from '@events/time';
+import { currentEventDay, eventDayOf, localDayOf } from '@events/time';
 import { formatDay, formatLocalTime } from '@/lib/format';
 import { eventPageHref, organizerHref } from '@/features/schoolSearch/searchHref';
 import { eventFacts, formatPrice } from './eventFacts';
@@ -35,6 +35,8 @@ export function EventDetailsDialog({ listings }: { readonly listings: readonly O
   const { event, venue, startsAt, price } = listing;
   const day = formatDay(localDayOf(startsAt), 'EEEE, d MMMM');
   const paragraphs = event.description?.split(/\n\s*\n/) ?? [];
+  // A day already gone, as in the month's faded days
+  const past = eventDayOf(startsAt) < currentEventDay(new Date());
 
   return (
     <dialog
@@ -56,7 +58,7 @@ export function EventDetailsDialog({ listings }: { readonly listings: readonly O
       }}
     >
       <article className={styles.content}>
-        <div className={styles.photo}>
+        <div className={styles.photo} data-past={past || undefined}>
           {event.imageUrl ? <Image src={event.imageUrl} alt="" fill unoptimized sizes="720px" className={styles.image} /> : null}
           <button type="button" className={styles.close} onClick={closeEventDetails} aria-label={LABELS.close}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
@@ -114,10 +116,14 @@ export function EventDetailsDialog({ listings }: { readonly listings: readonly O
           <Link href={eventPageHref(event.id)} className={styles.more}>
             {LABELS.more}
           </Link>
-          {/* No action yet: chat or another way of contact comes later (stage 3.9); Clarity shows who clicks */}
-          <button type="button" className={styles.contact}>
-            {LABELS.contact}
-          </button>
+          {past ? (
+            <p className={styles.past}>{LABELS.past}</p>
+          ) : (
+            // No action yet: chat or another way of contact comes later (stage 3.9); Clarity shows who clicks
+            <button type="button" className={styles.contact}>
+              {LABELS.contact}
+            </button>
+          )}
         </footer>
       </article>
     </dialog>
