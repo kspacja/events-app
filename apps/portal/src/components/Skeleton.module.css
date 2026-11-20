@@ -1,0 +1,18 @@
+.block {
+  display: block;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-text) 8%, transparent);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block {
+    animation: none;
+  }
+}

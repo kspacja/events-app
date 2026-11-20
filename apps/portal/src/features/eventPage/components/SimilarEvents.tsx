@@ -1,15 +1,20 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import type { OccurrenceListing } from '@events/contract/listing';
+import type { CalendarDay } from '@events/time';
 import { OccurrenceCard } from '@/features/events/components/OccurrenceCard';
-import { eventPageHref } from '@/features/schoolSearch/searchHref';
+import { EventDetailsDialog } from '@/features/schools/eventDetails/EventDetailsDialog';
+import { openEventDetails } from '@/features/schools/eventDetails/eventParam';
 import { EVENT_PAGE_LABELS as LABELS } from '../labels';
 import styles from './EventPage.module.css';
 
-/** The month's hover tiles in a row that scrolls sideways; a tile opens that event's page. */
-export function SimilarEvents({ listings }: { readonly listings: readonly OccurrenceListing[] }) {
-  const router = useRouter();
+interface SimilarEventsProps {
+  readonly listings: readonly OccurrenceListing[];
+  readonly today: CalendarDay;
+}
+
+/** The month's hover tiles in a row that scrolls sideways; a tile opens the details dialog first, as in the month. */
+export function SimilarEvents({ listings, today }: SimilarEventsProps) {
   return (
     <section className={styles.similar} aria-labelledby="similar">
       <h2 id="similar" className={styles.sectionTitle}>
@@ -22,11 +27,12 @@ export function SimilarEvents({ listings }: { readonly listings: readonly Occurr
               listing={listing}
               variant="popup"
               showOnMap={false}
-              onSelect={() => router.push(eventPageHref(listing.event.id, listing.occurrenceId))}
+              onSelect={() => openEventDetails(listing.occurrenceId)}
             />
           </li>
         ))}
       </ul>
+      <EventDetailsDialog listings={listings} today={today} />
     </section>
   );
 }

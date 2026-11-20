@@ -313,7 +313,7 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
           </div>
         </div>
 
-        {page.similar.length > 0 ? <SimilarEvents listings={page.similar} /> : null}
+        {page.similar.length > 0 ? <SimilarEvents listings={page.similar} today={today} /> : null}
       </div>
     </main>
   );

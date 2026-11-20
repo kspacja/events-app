@@ -580,3 +580,7 @@
     width: 220px;
   }
 }
+
+.skeletonGap {
+  margin-top: var(--space-3);
+}

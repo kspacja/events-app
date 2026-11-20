@@ -22,3 +22,7 @@ This block is written and re-added by `turbo` before repository-scoped commands 
 # Plan i decyzje projektu
 
 Przed pracą nad etapem przeczytaj `docs/plans/architecture-roadmap.md` (proces kroku, etapy, odłożone). Pojęcia domeny: `CONTEXT-MAP.md`. Decyzje: `docs/adr/`.
+
+# Zasady portalu
+
+- Każda strona (trasa z `page.tsx`) ma szkielet w `loading.tsx`: ten sam układ co strona, bloki `Skeleton` (`apps/portal/src/components/Skeleton.tsx`) zamiast treści i `role="status"` z informacją o wczytywaniu. Nowa strona bez szkieletu nie jest skończona.
