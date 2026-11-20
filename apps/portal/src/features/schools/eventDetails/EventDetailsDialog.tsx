@@ -70,7 +70,9 @@ export function EventDetailsDialog({ listings, today }: { readonly listings: rea
         <div className={styles.body}>
           <header className={styles.header}>
             <h2 id={titleId} className={styles.title}>
-              {event.title}
+              <Link href={eventPageHref(event.id)} className={styles.titleLink}>
+                {event.title}
+              </Link>
             </h2>
             <p className={styles.when}>
               {day} · <span className={styles.time}>{formatLocalTime(startsAt)}</span>
