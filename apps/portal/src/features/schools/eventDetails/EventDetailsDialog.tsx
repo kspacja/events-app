@@ -57,8 +57,8 @@ export function EventDetailsDialog({ listings, today }: { readonly listings: rea
         if (click.target === click.currentTarget) closeEventDetails();
       }}
     >
-      <article className={styles.content}>
-        <div className={styles.photo} data-past={past || undefined}>
+      <article className={styles.content} data-past={past || undefined}>
+        <div className={styles.photo}>
           {event.imageUrl ? <Image src={event.imageUrl} alt="" fill unoptimized sizes="720px" className={styles.image} /> : null}
           <button type="button" className={styles.close} onClick={closeEventDetails} aria-label={LABELS.close}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">

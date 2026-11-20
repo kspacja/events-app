@@ -187,10 +187,16 @@
   transition: background-color 150ms ease;
 }
 
-/* Gone: the photo fades, as the month fades its past days */
-.photo[data-past] .image {
+/* Gone: the photo and the texts fade, as the month fades its past days; the note itself stays clear */
+.content[data-past] .image {
   opacity: 0.45;
   filter: grayscale(0.7);
+}
+
+.content[data-past] .header,
+.content[data-past] .about,
+.content[data-past] .facts {
+  opacity: 0.5;
 }
 
 /* Plain text at the footer's start, not a button */
@@ -198,8 +204,9 @@
   order: -1;
   align-self: center;
   margin: 0 auto 0 0;
-  color: var(--color-text-muted);
+  color: var(--color-text);
   font-size: var(--text-md);
+  font-weight: 600;
 }
 
 .contact:hover {
