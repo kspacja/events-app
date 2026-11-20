@@ -87,10 +87,12 @@ interface MonthBarProps {
   readonly listing: OccurrenceListing;
   readonly alignEnd: boolean;
   readonly upward: boolean;
+  /** A day already gone: no tile on hover, the details still open on click. */
+  readonly past: boolean;
 }
 
 /** "10:00 Title"; hovering or focusing it shows the event's tile, clicking it opens the details. */
-function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
+function MonthBar({ listing, alignEnd, upward, past }: MonthBarProps) {
   const tileId = useId();
 
   return (
@@ -99,15 +101,17 @@ function MonthBar({ listing, alignEnd, upward }: MonthBarProps) {
         type="button"
         id={occurrenceDomId(listing.occurrenceId)}
         className={styles.bar}
-        aria-describedby={tileId}
+        aria-describedby={past ? undefined : tileId}
         onClick={() => openEventDetails(listing.occurrenceId)}
       >
         <span className={styles.time}>{formatLocalTime(listing.startsAt)}</span>{' '}
         <span className={styles.title}>{listing.event.title}</span>
       </button>
-      <div id={tileId} className={styles.tile}>
-        <OccurrenceCard listing={listing} variant="popup" onSelect={() => openEventDetails(listing.occurrenceId)} />
-      </div>
+      {past ? null : (
+        <div id={tileId} className={styles.tile}>
+          <OccurrenceCard listing={listing} variant="popup" onSelect={() => openEventDetails(listing.occurrenceId)} />
+        </div>
+      )}
     </li>
   );
 }
@@ -169,6 +173,7 @@ function MonthDay({ scheduleDay, today, capacity, narrow, row, upward, selected,
             listing={listing}
             alignEnd={weekdayIndex >= END_ALIGNED_FROM}
             upward={upward}
+            past={day < today}
           />
         ))}
       </ul>
