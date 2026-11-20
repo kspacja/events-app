@@ -1,4 +1,4 @@
-import type { EventPageDetails } from '@events/contract/event-page';
+import type { EventPageDetails, VenueTransit } from '@events/contract/event-page';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { sampleImageUrl } from '@events/repo';
 
@@ -136,3 +136,14 @@ export function sampleEventPageDetails(listing: OccurrenceListing): EventPageDet
   if (own) return own(listing);
   return listing.event.forSchools ? generalDetails(listing) : undefined;
 }
+
+/** Public transport to some sample venues, keyed by `venueKey`: text only, lines only, or both. */
+export const SAMPLE_VENUE_TRANSIT: Readonly<Record<string, VenueTransit>> = {
+  'hala-stulecia-wroclaw': { note: 'Przystanek „Hala Stulecia” jest 200 m od wejścia.', lines: ['1', '4', '10', '16', '145', '146'] },
+  'rynek-wroclaw': { lines: ['3', '7', '10', '33', 'A', 'D', 'K'] },
+  'muzeum-narodowe-wroclaw': { note: 'Przystanek „Most Pokoju” tuż przy muzeum.', lines: ['2', '10', '17', 'N'] },
+  'olbin-wroclaw': { lines: ['1', '6', '7', '11', '0L', '0P'] },
+  'dlugie-pobrzeze-gdansk': { note: '10 minut pieszo od stacji Gdańsk Główny.', lines: ['3', '8', '106', '111'] },
+  'gospodarstwo-edukacyjne-kobierzyce': { note: 'Z Wrocławia można dojechać specjalnym autobusem — zapytaj przy zgłoszeniu grupy.', lines: [] },
+  'muzeum-slezanskie-sobotka': { note: '500 m od stacji PKP Sobótka.', lines: [] },
+};

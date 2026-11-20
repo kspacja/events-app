@@ -34,15 +34,28 @@ export const eventPageDetailsSchema = z
   })
   .readonly();
 
+/** How to get to the venue by public transport, as its organizer wrote it; either part may be missing. */
+export const venueTransitSchema = z
+  .object({
+    /** Free text, e.g. "500 m od stacji PKP". */
+    note: z.string().min(1).optional(),
+    /** Lines stopping nearby, e.g. "6", "112", "K"; the page builds the sentence around them. */
+    lines: z.array(z.string().min(1)).readonly(),
+  })
+  .readonly();
+
 export const SIMILAR_EVENTS_LIMIT = 8;
 
 export const eventPageResponseSchema = z.object({
   /** Every known occurrence of the event, soonest first; at least one, or the API answers 404. */
   occurrences: z.array(occurrenceListingSchema).min(1),
   details: eventPageDetailsSchema.optional(),
+  /** Of the occurrences' venue; only MSW sends it for now. */
+  transit: venueTransitSchema.optional(),
   /** The next occurrence of each similar event, best match first. */
   similar: z.array(occurrenceListingSchema).max(SIMILAR_EVENTS_LIMIT),
 });
 
 export type EventPageDetails = z.infer<typeof eventPageDetailsSchema>;
 export type EventPage = z.infer<typeof eventPageResponseSchema>;
+export type VenueTransit = z.infer<typeof venueTransitSchema>;

@@ -7,7 +7,7 @@ import { eventDayOf, isDayInRange } from '@events/time';
 import { hasFilters, matchesFilters, parseFilters, priceBands, priceModeOf, TRAIT_PARAMS, type FilterSelection } from '@/features/schools/schoolFilters';
 import { LOCALITY_PARAM, parsePlace, RADIUS_PARAM, type Place } from '@/features/locality/place';
 import { eventPageHandler } from './eventPages';
-import { sampleEventPageDetails } from './eventPageDetails';
+import { SAMPLE_VENUE_TRANSIT, sampleEventPageDetails } from './eventPageDetails';
 import { kmBetween, localitiesHandlers } from './localities';
 import { SAMPLE_EVENT_ORGANIZERS, SAMPLE_ORGANIZER_PROFILES, SAMPLE_ORGANIZERS } from './organizers';
 import { searchHandlers, searchMatcher } from './schoolSearch';
@@ -110,6 +110,7 @@ export function createHandlers(eventsApiUrl: string) {
           withOrganizer(withSchoolTraits(listing, SAMPLE_SCHOOL_TRAITS[listing.event.id]), SAMPLE_EVENT_ORGANIZERS[listing.event.id]),
         ),
       sampleEventPageDetails,
+      SAMPLE_VENUE_TRANSIT,
     ),
   ];
 }

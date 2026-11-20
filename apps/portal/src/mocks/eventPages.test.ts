@@ -48,4 +48,12 @@ describe('eventPageHandler', () => {
     expect(body.details).toBeUndefined();
     expect((await fetch(`${TEST_EVENTS_API_URL}/events/nothing`)).status).toBe(404);
   });
+
+  it('adds public transport to the venue when MSW knows it', async () => {
+    const transit = { note: '500 m od stacji PKP', lines: ['6', 'K'] };
+    server.use(eventPageHandler(TEST_EVENTS_API_URL, () => [CHOIR], () => undefined, { 'sala-wroclaw': transit }));
+
+    const body = eventPageResponseSchema.parse(await (await fetch(`${TEST_EVENTS_API_URL}/events/choir`)).json());
+    expect(body.transit).toEqual(transit);
+  });
 });

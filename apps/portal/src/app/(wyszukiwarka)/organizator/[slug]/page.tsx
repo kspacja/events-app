@@ -5,6 +5,7 @@ import type { OrganizerProfile } from '@events/contract/search';
 import { currentEventDay } from '@events/time';
 import Link from 'next/link';
 import { GlobeIcon, MailIcon, PhoneIcon, PinIcon } from '@/features/eventPage/components/icons';
+import { DirectionsLink } from '@/features/eventPage/components/DirectionsLink';
 import { VenueMapLoader } from '@/features/eventPage/components/VenueMapLoader';
 import { monogram, traitLabels } from '@/features/eventPage/eventChips';
 import { BackToCalendar } from '@/features/schoolSearch/components/BackToCalendar';
@@ -95,6 +96,7 @@ function Location({ name, profile }: { readonly name: string; readonly profile: 
           <Link href={keywordsHref(profile.city, null)}>{profile.city}</Link>
         </span>
       </p>
+      <DirectionsLink lat={profile.lat} lng={profile.lng} />
     </section>
   );
 }

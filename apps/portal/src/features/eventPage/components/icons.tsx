@@ -61,11 +61,17 @@ export const PinIcon = () => (
     <circle cx="12" cy="9.5" r="2.5" />
   </Icon>
 );
-export const CarIcon = () => (
+export const BusIcon = () => (
   <Icon>
-    <path d="M5 16.5V12l1.8-4.5h10.4L19 12v4.5M5 12h14M7.5 16.5v2M16.5 16.5v2" />
-    <circle cx="8" cy="14.3" r=".6" />
-    <circle cx="16" cy="14.3" r=".6" />
+    <rect x="5" y="3.5" width="14" height="14" rx="2.5" />
+    <path d="M5 11h14M8 17.5V20M16 17.5V20" />
+    <circle cx="8.5" cy="14.3" r=".6" />
+    <circle cx="15.5" cy="14.3" r=".6" />
+  </Icon>
+);
+export const ExternalIcon = () => (
+  <Icon>
+    <path d="M14 4.5h5.5V10M19.5 4.5 11 13M17 13.5v5a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 4 18.5v-10A1.5 1.5 0 0 1 5.5 7h5" />
   </Icon>
 );
 export const CapIcon = () => (

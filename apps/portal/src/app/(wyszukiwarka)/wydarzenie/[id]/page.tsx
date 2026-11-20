@@ -10,7 +10,7 @@ import {
   BookIcon,
   CalendarIcon,
   CapIcon,
-  CarIcon,
+  BusIcon,
   ChevronIcon,
   ClipIcon,
   ClockIcon,
@@ -26,6 +26,7 @@ import {
 } from '@/features/eventPage/components/icons';
 import { SaveButton } from '@/features/eventPage/components/SaveButton';
 import { SimilarEvents } from '@/features/eventPage/components/SimilarEvents';
+import { DirectionsLink } from '@/features/eventPage/components/DirectionsLink';
 import { VenueMapLoader } from '@/features/eventPage/components/VenueMapLoader';
 import styles from '@/features/eventPage/components/EventPage.module.css';
 import { eventChips, monogram } from '@/features/eventPage/eventChips';
@@ -61,7 +62,7 @@ function Fact({ icon, children }: { readonly icon: ReactNode; readonly children:
   return (
     <li className={styles.fact}>
       <span className={styles.factIcon}>{icon}</span>
-      <span>{children}</span>
+      <div>{children}</div>
     </li>
   );
 }
@@ -203,11 +204,21 @@ export default async function EventPage({ params, searchParams }: PageProps<'/wy
                 <Fact icon={<PinIcon />}>
                   {venue.name}, {venue.address}, {venue.city}
                 </Fact>
-                {/* TBD: travel time from the teacher's school, still being designed */}
-                <Fact icon={<CarIcon />}>
-                  <span className={styles.tbd}>{LABELS.travelTime}</span>
-                </Fact>
+                {page.transit?.note ? <Fact icon={<BusIcon />}>{page.transit.note}</Fact> : null}
+                {page.transit && page.transit.lines.length > 0 ? (
+                  <Fact icon={<BusIcon />}>
+                    <span className={styles.linesLabel}>{LABELS.lines}</span>
+                    <ul className={styles.lines}>
+                      {page.transit.lines.map((line) => (
+                        <li key={line} className={styles.line}>
+                          {line}
+                        </li>
+                      ))}
+                    </ul>
+                  </Fact>
+                ) : null}
               </ul>
+              <DirectionsLink lat={venue.lat} lng={venue.lng} />
             </section>
           </aside>
 

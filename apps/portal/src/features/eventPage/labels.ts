@@ -23,7 +23,9 @@ export const EVENT_PAGE_LABELS = {
   saved: 'Zapisane',
   contactPerson: 'Osoba do kontaktu',
   location: 'Lokalizacja',
-  travelTime: 'Czas dojazdu — wkrótce',
+  lines: 'Koło nas zatrzymują się:',
+  directions: 'Wyznacz trasę w Google Maps',
+  newTab: '(otwiera się w nowej karcie)',
   similar: 'Podobne wydarzenia',
   map: (venue: string) => `Mapa: ${venue}`,
 } as const;

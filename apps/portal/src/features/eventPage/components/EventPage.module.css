@@ -527,9 +527,63 @@
   font-weight: 400;
 }
 
-.tbd {
-  color: var(--color-text-tertiary);
-  font-style: italic;
+/* "Koło nas zatrzymują się:" and the lines as badges, wrapping under the label */
+.linesLabel {
+  display: block;
+  margin-bottom: var(--space-1-5);
+}
+
+.lines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  height: 24px;
+  padding: 0 var(--space-1-5);
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-strong);
+  color: var(--color-on-accent);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.directions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+
+.directions:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.directions:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.directions svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
 }
 
 .similar {

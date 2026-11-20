@@ -1,8 +1,9 @@
 import { http, HttpResponse } from 'msw';
-import { SIMILAR_EVENTS_LIMIT, type EventPageDetails } from '@events/contract/event-page';
+import { SIMILAR_EVENTS_LIMIT, type EventPageDetails, type VenueTransit } from '@events/contract/event-page';
 import type { OccurrenceListing } from '@events/contract/listing';
 import { compareListings } from '@events/contract/source';
 import { currentEventDay, eventDayOf } from '@events/time';
+import { venueKey } from '@/features/schoolSearch/searchHref';
 
 type DetailsFor = (listing: OccurrenceListing) => EventPageDetails | undefined;
 
@@ -37,15 +38,22 @@ export function similarTo(event: OccurrenceListing['event'], listings: readonly 
 }
 
 /** `GET /events/:id`: every occurrence of the event, its page details and similar events; 404 for an unknown event. */
-export function eventPageHandler(eventsApiUrl: string, getListings: () => readonly OccurrenceListing[], detailsFor: DetailsFor) {
+export function eventPageHandler(
+  eventsApiUrl: string,
+  getListings: () => readonly OccurrenceListing[],
+  detailsFor: DetailsFor,
+  transit: Readonly<Record<string, VenueTransit>> = {},
+) {
   return http.get(`${eventsApiUrl}/events/:id`, ({ params }) => {
     const listings = getListings();
     const occurrences = listings.filter(({ event }) => event.id === params.id).sort(compareListings);
     if (occurrences.length === 0) return HttpResponse.json({ error: 'Not found.' }, { status: 404 });
     const details = detailsFor(occurrences[0]);
+    const venueTransit = transit[venueKey(occurrences[0].venue)];
     return HttpResponse.json({
       occurrences,
       ...(details ? { details } : {}),
+      ...(venueTransit ? { transit: venueTransit } : {}),
       similar: similarTo(occurrences[0].event, listings, currentEventDay(new Date())),
     });
   });
