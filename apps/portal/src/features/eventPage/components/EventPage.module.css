@@ -206,12 +206,14 @@
   color: var(--color-accent-strong);
 }
 
+/* Stands apart from the grey page: a clear green tint with a green edge */
 .curriculum {
   display: flex;
   gap: var(--space-3);
   padding: var(--space-5);
+  border: 1px solid color-mix(in srgb, var(--color-accent-strong) 45%, transparent);
   border-radius: var(--radius-2xl);
-  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+  background: color-mix(in srgb, var(--color-accent) 22%, var(--color-surface));
 }
 
 .curriculumTitle {
@@ -222,13 +224,14 @@
 
 .curriculumArea {
   margin: 0;
-  font-weight: 500;
+  color: var(--color-accent-strong);
+  font-weight: 600;
 }
 
 .curriculumText {
-  margin: var(--space-1) 0 0;
-  color: var(--color-text-secondary);
-  font-size: var(--text-sm);
+  margin: var(--space-1-5) 0 0;
+  color: var(--color-text);
+  font-size: var(--text-md);
 }
 
 .materials {
